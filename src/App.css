@@ -1,0 +1,25 @@
+/* Admin Layout Styles */
+.admin-layout {
+  position: relative;
+  min-height: 100vh;
+}
+
+.admin-content {
+  margin-left: 260px;
+  padding: 24px;
+  min-height: calc(100vh - 70px);
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 1023px) {
+  .admin-content {
+    margin-left: 0;
+  }
+}
+
+/* Main container styles */
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
