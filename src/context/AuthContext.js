@@ -17,17 +17,25 @@ export const AuthProvider = ({ children }) => {
         if (token) {
           api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
           const { data } = await api.get('/users/profile');
-          if (data.userType !== 'admin') {
-            throw new Error('User is not an admin');
-          }
           setUser(data);
+          
+          // Redirect based on user type if on login page
+          if (window.location.pathname === '/admin/login') {
+            if (data.userType === 'admin') {
+              navigate('/admin');
+            } else {
+              navigate('/');
+            }
+          }
         }
       } catch (error) {
         console.error('Authentication check failed:', error);
         localStorage.removeItem('token');
         delete api.defaults.headers.common['Authorization'];
         setUser(null);
-        navigate('/admin/login');
+        if (window.location.pathname.startsWith('/admin')) {
+          navigate('/admin/login');
+        }
       } finally {
         setLoading(false);
       }
@@ -38,16 +46,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const { data } = await api.post('/auth/login', { email, password });
-      
-      // Verify the user is an admin before proceeding
-      if (data.userType !== 'admin') {
-        throw new Error('Please use an admin account');
-      }
-
       localStorage.setItem('token', data.token);
       api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
       
-      // Get full user profile after successful login
+      // Get full user profile
       const profileResponse = await api.get('/users/profile');
       setUser(profileResponse.data);
       
@@ -58,25 +60,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (username, email, password) => {
-    try {
-      const { data } = await api.post('/auth/register', { username, email, password });
-      localStorage.setItem('token', data.token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-      setUser(data);
-      navigate('/');
-      return data;
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    }
-  };
-
   const logout = () => {
     localStorage.removeItem('token');
     delete api.defaults.headers.common['Authorization'];
     setUser(null);
-    navigate('/admin/login');
+    navigate('/login');
   };
 
   return (
@@ -84,7 +72,6 @@ export const AuthProvider = ({ children }) => {
       user, 
       loading, 
       login, 
-      register, 
       logout 
     }}>
       {children}

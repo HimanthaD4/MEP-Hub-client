@@ -20,20 +20,17 @@ const AdminLogin = () => {
     try {
       const userData = await login(email, password);
       
-      // If login is successful, redirect to admin dashboard
-      const from = location.state?.from?.pathname || '/admin';
-      navigate(from);
-      
-    } catch (err) {
-      // Clear password field on error
-      setPassword('');
-      
-      // Set appropriate error message
-      if (err.message === 'Please use an admin account') {
-        setError('Please use an admin account to login');
+      // Check if user is admin
+      if (userData.userType === 'admin') {
+        const from = location.state?.from?.pathname || '/admin';
+        navigate(from);
       } else {
-        setError(err.response?.data?.message || 'Invalid credentials');
+        // Regular users get redirected to main site
+        navigate('/');
       }
+    } catch (err) {
+      setPassword('');
+      setError(err.response?.data?.message || 'Invalid credentials');
     } finally {
       setIsLoading(false);
     }
@@ -60,23 +57,15 @@ const AdminLogin = () => {
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
       }}>
-        <h2 style={{ 
-          textAlign: 'center', 
-          marginBottom: '1.5rem', 
-          fontSize: '1.5rem',
-          color: '#111827'
-        }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.5rem' }}>
           Admin Login
         </h2>
         
         {error && (
           <div style={{
-            color: '#EF4444',
-            backgroundColor: '#FEE2E2',
+            color: 'red',
             textAlign: 'center',
             marginBottom: '1rem',
-            padding: '0.75rem',
-            borderRadius: '4px',
             fontSize: '0.875rem'
           }}>
             {error}
@@ -85,69 +74,33 @@ const AdminLogin = () => {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label htmlFor="email" style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              color: '#374151'
-            }}>
-              Email
-            </label>
             <input
-              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="admin@example.com"
+              placeholder="Admin Email"
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                border: '1px solid #D1D5DB',
-                borderRadius: '4px',
-                fontSize: '0.875rem',
-                color: '#111827',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                ':focus': {
-                  borderColor: '#2563EB',
-                  boxShadow: '0 0 0 1px #2563EB'
-                }
+                border: '1px solid #ddd',
+                borderRadius: '4px'
               }}
             />
           </div>
 
           <div>
-            <label htmlFor="password" style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              color: '#374151'
-            }}>
-              Password
-            </label>
             <input
-              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="••••••••"
+              placeholder="Password"
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                border: '1px solid #D1D5DB',
-                borderRadius: '4px',
-                fontSize: '0.875rem',
-                color: '#111827',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                ':focus': {
-                  borderColor: '#2563EB',
-                  boxShadow: '0 0 0 1px #2563EB'
-                }
+                border: '1px solid #ddd',
+                borderRadius: '4px'
               }}
             />
           </div>
@@ -158,31 +111,15 @@ const AdminLogin = () => {
             style={{
               width: '100%',
               padding: '0.75rem',
-              backgroundColor: '#2563EB',
+              backgroundColor: '#2563eb',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
               cursor: 'pointer',
-              opacity: isLoading ? 0.7 : 1,
-              transition: 'opacity 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem'
+              opacity: isLoading ? 0.7 : 1
             }}
           >
-            {isLoading ? (
-              <>
-                <svg style={{ animation: 'spin 1s linear infinite' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
-                </svg>
-                Authenticating...
-              </>
-            ) : (
-              'Sign In'
-            )}
+            {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
       </div>
