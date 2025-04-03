@@ -79,17 +79,9 @@ const AdminLayout = () => {
       backgroundColor: '#f9fafb',
       position: 'relative'
     }}>
-      <AdminHeader 
-        toggleSidebar={toggleSidebar} 
-        userInitial={user?.name?.charAt(0).toUpperCase() || 'A'} 
-      />
+ 
       
-      <AdminSidebar 
-        isOpen={sidebarOpen} 
-        isMobile={isMobile} 
-        closeSidebar={closeSidebar}
-        setActiveComponent={setActiveComponent}
-      />
+    
       
       <main style={{
         padding: '24px',

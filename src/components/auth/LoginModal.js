@@ -1,480 +1,383 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
 
-const LoginModal = ({ isOpen, onClose, onSuccess }) => {
+const LoginModal = ({ show, onClose, onSwitch }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError('');
-    setIsLoading(true);
     
-    try {
-      await login(email, password);
-      onSuccess();
+    const result = await login({ email, password, rememberMe });
+    if (result.success) {
       onClose();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
-    } finally {
-      setIsLoading(false);
+    } else {
+      setError(result.error);
     }
+    setLoading(false);
   };
 
+  if (!show) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.7)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 2000,
-            backdropFilter: 'blur(8px)',
-            padding: '20px',
-            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            overflowY: 'auto'
-          }}
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+    <>
+      {/* Add font links to head */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+      <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 2000,
+        backdropFilter: 'blur(8px)',
+        padding: '20px',
+        animation: 'fadeIn 0.3s ease-out'
+      }}>
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '16px',
+          boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+          width: '100%',
+          maxWidth: '440px',
+          padding: '48px',
+          position: 'relative',
+          border: '1px solid rgba(0,0,0,0.05)',
+          animation: 'slideUp 0.3s ease-out'
+        }}>
+          <button 
             style={{
-              backgroundColor: 'white',
-              borderRadius: '14px',
-              width: '100%',
-              maxWidth: '420px',
-              overflow: 'hidden',
-              boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.2)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              margin: 'auto'
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              background: 'none',
+              border: 'none',
+              fontSize: '24px',
+              color: '#64748b',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              fontFamily: "'Jost', sans-serif"
+            }} 
+            onClick={onClose}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#1a56db';
+              e.target.style.backgroundColor = 'rgba(0,0,0,0.03)';
             }}
-            onClick={(e) => e.stopPropagation()}
+            onMouseLeave={(e) => {
+              e.target.style.color = '#64748b';
+              e.target.style.backgroundColor = 'transparent';
+            }}
           >
-            {/* Compact Gradient Header */}
+            ×
+          </button>
+          
+          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <h2 style={{
+              fontSize: '28px',
+              fontWeight: '600',
+              color: '#111827',
+              marginBottom: '8px',
+              fontFamily: "'Jost', sans-serif",
+              letterSpacing: '-0.5px'
+            }}>Welcome Back</h2>
+            <p style={{
+              fontSize: '15px',
+              color: '#6b7280',
+              fontFamily: "'Jost', sans-serif",
+              fontWeight: '400',
+              lineHeight: '1.5'
+            }}>Sign in to access your account</p>
+          </div>
+          
+          {error && (
             <div style={{
-              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-              padding: '22px 28px',
-              position: 'relative'
+              backgroundColor: '#fee2e2',
+              color: '#dc2626',
+              padding: '14px 16px',
+              borderRadius: '8px',
+              marginBottom: '24px',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              fontFamily: "'Jost', sans-serif",
+              fontWeight: '500'
             }}>
-              <h2 style={{
-                color: 'white',
-                fontSize: '22px',
-                fontWeight: 700,
-                margin: 0,
-                letterSpacing: '-0.3px'
-              }}>
-                Welcome Back
-              </h2>
-              <p style={{
-                color: 'rgba(255, 255, 255, 0.85)',
-                fontSize: '14px',
-                marginTop: '6px',
-                marginBottom: 0,
-                lineHeight: '1.4'
-              }}>
-                Sign in to your account
-              </p>
-              
-              <motion.button
-                onClick={onClose}
-                whileHover={{ rotate: 90, backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  position: 'absolute',
-                  top: '20px',
-                  right: '20px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: 'none',
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: 'white',
-                  transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
-                }}
+              <svg 
+                style={{ width: '18px', height: '18px', flexShrink: 0 }} 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="currentColor"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg>
-              </motion.button>
+                <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+              </svg>
+              <span>{error}</span>
             </div>
-
-            {/* Compact Main Content */}
-            <div style={{ padding: '28px' }}>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  style={{
-                    backgroundColor: '#fef2f2',
-                    color: '#b91c1c',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
-                    marginBottom: '20px',
-                    fontSize: '13px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    borderLeft: '3px solid #dc2626'
-                  }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                  </svg>
-                  <span>{error}</span>
-                </motion.div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '18px' }}>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '8px',
-                    fontSize: '13px',
-                    fontWeight: 500,
-                    color: '#374151'
-                  }}>
-                    Email Address
-                  </label>
-                  <div style={{
-                    position: 'relative',
-                    borderRadius: '8px',
-                    border: '1px solid #e5e7eb',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    ':focus-within': {
-                      borderColor: '#3b82f6',
-                      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)'
-                    }
-                  }}>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px',
-                        fontSize: '14px',
-                        border: 'none',
-                        borderRadius: '8px',
-                        backgroundColor: 'transparent',
-                        outline: 'none',
-                        fontFamily: "'Inter', sans-serif",
-                        color: '#1f2937',
-                        '::placeholder': {
-                          color: '#9ca3af'
-                        }
-                      }}
-                      placeholder="your@email.com"
-                    />
-                    <div style={{
-                      position: 'absolute',
-                      right: '12px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: '#9ca3af'
-                    }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '22px' }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '8px'
-                  }}>
-                    <label style={{
-                      fontSize: '13px',
-                      fontWeight: 500,
-                      color: '#374151'
-                    }}>
-                      Password
-                    </label>
-                    <motion.button
-                      type="button"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#3b82f6',
-                        fontSize: '12px',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        padding: '2px 0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}
-                      onClick={() => alert('Password reset functionality')}
-                    >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                      </svg>
-                      Forgot?
-                    </motion.button>
-                  </div>
-                  <div style={{
-                    position: 'relative',
-                    borderRadius: '8px',
-                    border: '1px solid #e5e7eb',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    ':focus-within': {
-                      borderColor: '#3b82f6',
-                      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.15)'
-                    }
-                  }}>
-                    <input
-                      type={isPasswordVisible ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px',
-                        fontSize: '14px',
-                        border: 'none',
-                        borderRadius: '8px',
-                        backgroundColor: 'transparent',
-                        outline: 'none',
-                        fontFamily: "'Inter', sans-serif",
-                        color: '#1f2937',
-                        paddingRight: '40px',
-                        '::placeholder': {
-                          color: '#9ca3af'
-                        }
-                      }}
-                      placeholder="Enter your password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                      style={{
-                        position: 'absolute',
-                        right: '12px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
-                        color: '#9ca3af',
-                        cursor: 'pointer',
-                        padding: '4px'
-                      }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        {isPasswordVisible ? (
-                          <>
-                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                          </>
-                        ) : (
-                          <>
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                          </>
-                        )}
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                <motion.button
-                  type="submit"
-                  disabled={isLoading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+          )}
+          
+          <form onSubmit={handleSubmit} style={{ marginBottom: '24px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{
+                position: 'relative',
+                marginBottom: '4px'
+              }}>
+                <label style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '16px',
+                  transform: 'translateY(-50%)',
+                  backgroundColor: 'white',
+                  padding: '0 6px',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  color: '#4b5563',
+                  fontFamily: "'Jost', sans-serif",
+                  pointerEvents: 'none',
+                  zIndex: 1
+                }}>
+                  Email Address
+                </label>
+                <input
                   style={{
                     width: '100%',
-                    padding: '14px',
-                    background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
+                    padding: '16px',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
                     fontSize: '15px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    position: 'relative',
-                    overflow: 'hidden'
+                    transition: 'all 0.2s ease',
+                    fontFamily: "'Jost', sans-serif",
+                    fontWeight: '400',
+                    backgroundColor: 'white',
+                    ':focus': {
+                      borderColor: '#3b82f6',
+                      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+                      outline: 'none'
+                    }
                   }}
-                >
-                  {isLoading && (
-                    <motion.div
-                      initial={{ x: '-100%' }}
-                      animate={{ x: '100%' }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 1.5,
-                        ease: 'linear'
-                      }}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)'
-                      }}
-                    />
-                  )}
-                  {isLoading ? (
-                    <>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
-                      </svg>
-                      Signing in...
-                    </>
-                  ) : (
-                    <>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                        <polyline points="10 17 15 12 10 7"></polyline>
-                        <line x1="15" y1="12" x2="3" y2="12"></line>
-                      </svg>
-                      Sign In
-                    </>
-                  )}
-                </motion.button>
-              </form>
-
-              <div style={{
-                marginTop: '22px',
-                textAlign: 'center',
-                fontSize: '13px',
-                color: '#6b7280',
-                position: 'relative'
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: 0,
-                  right: 0,
-                  height: '1px',
-                  backgroundColor: '#e5e7eb',
-                  zIndex: 1
-                }}></div>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '0 10px',
-                  backgroundColor: 'white',
-                  position: 'relative',
-                  zIndex: 2
-                }}>
-                  New to us?
-                </span>
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="your@email.com"
+                />
               </div>
-
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                style={{
-                  width: '100%',
-                  padding: '12px',
+            </div>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{
+                position: 'relative',
+                marginBottom: '4px'
+              }}>
+                <label style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '16px',
+                  transform: 'translateY(-50%)',
                   backgroundColor: 'white',
-                  color: '#3b82f6',
-                  border: '1px solid #3b82f6',
-                  borderRadius: '8px',
+                  padding: '0 6px',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  color: '#4b5563',
+                  fontFamily: "'Jost', sans-serif",
+                  pointerEvents: 'none',
+                  zIndex: 1
+                }}>
+                  Password
+                </label>
+                <input
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    borderRadius: '10px',
+                    border: '1px solid #e5e7eb',
+                    fontSize: '15px',
+                    transition: 'all 0.2s ease',
+                    fontFamily: "'Jost', sans-serif",
+                    fontWeight: '400',
+                    backgroundColor: 'white',
+                    ':focus': {
+                      borderColor: '#3b82f6',
+                      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+                      outline: 'none'
+                    }
+                  }}
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '28px'
+            }}>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+                fontFamily: "'Jost', sans-serif"
+              }}>
+                <input 
+                  type="checkbox" 
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '4px',
+                    border: '1px solid #d1d5db',
+                    marginRight: '10px',
+                    cursor: 'pointer',
+                    accentColor: '#3b82f6',
+                    transition: 'all 0.2s ease'
+                  }}
+                />
+                <span style={{
                   fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  marginTop: '18px',
-                  transition: 'all 0.2s ease'
+                  color: '#4b5563',
+                  fontWeight: '400',
+                  fontFamily: "'Jost', sans-serif"
+                }}>Remember me</span>
+              </label>
+              <a href="/forgot-password" style={{
+                fontSize: '14px',
+                color: '#3b82f6',
+                textDecoration: 'none',
+                fontWeight: '500',
+                fontFamily: "'Jost', sans-serif",
+                transition: 'all 0.2s ease',
+                ':hover': {
+                  textDecoration: 'underline'
+                }
+              }}>
+                Forgot password?
+              </a>
+            </div>
+            
+            <button 
+              type="submit" 
+              style={{
+                width: '100%',
+                padding: '16px',
+                borderRadius: '10px',
+                border: 'none',
+                backgroundColor: '#1a56db',
+                color: 'white',
+                fontSize: '15px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                fontFamily: "'Jost', sans-serif",
+                letterSpacing: '0.5px',
+                ':hover': {
+                  backgroundColor: '#1e40af',
+                  transform: 'translateY(-1px)'
+                },
+                ':active': {
+                  transform: 'translateY(0)'
+                },
+                ':disabled': {
+                  backgroundColor: '#93c5fd',
+                  cursor: 'not-allowed',
+                  transform: 'none'
+                }
+              }}
+              disabled={loading}
+            >
+              {loading ? (
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <svg 
+                    style={{ width: '18px', height: '18px', animation: 'spin 1s linear infinite' }} 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    fill="none" 
+                    viewBox="0 0 24 24"
+                  >
+                    <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Signing in...
+                </span>
+              ) : 'Sign In'}
+            </button>
+          </form>
+          
+          <div style={{ textAlign: 'center' }}>
+            <p style={{
+              color: '#6b7280',
+              fontSize: '14px',
+              fontFamily: "'Jost', sans-serif",
+              fontWeight: '400',
+              marginBottom: '16px'
+            }}>
+              Don't have an account?{' '}
+              <a 
+                href="#" 
+                style={{
+                  color: '#1a56db',
+                  fontWeight: '500',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease',
+                  ':hover': {
+                    textDecoration: 'underline'
+                  }
                 }}
-                onClick={() => {
-                  onClose();
-                  // You would typically trigger the register modal here
-                  alert('Trigger register modal');
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSwitch();
                 }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="8.5" cy="7" r="4"></circle>
-                  <line x1="20" y1="8" x2="20" y2="14"></line>
-                  <line x1="23" y1="11" x2="17" y2="11"></line>
-                </svg>
-                Create Account
-              </motion.button>
-            </div>
+                Sign up now
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
 
-            {/* Compact Footer */}
-            <div style={{
-              padding: '14px 28px',
-              backgroundColor: '#f9fafb',
-              borderTop: '1px solid #e5e7eb',
-              textAlign: 'center'
-            }}>
-              <p style={{
-                margin: 0,
-                fontSize: '11px',
-                color: '#6b7280',
-                lineHeight: '1.4'
-              }}>
-                By signing in, you agree to our{' '}
-                <a href="#" style={{
-                  color: '#3b82f6',
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                  ':hover': {
-                    textDecoration: 'underline'
-                  }
-                }}>
-                  Terms
-                </a>{' '}
-                and{' '}
-                <a href="#" style={{
-                  color: '#3b82f6',
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                  ':hover': {
-                    textDecoration: 'underline'
-                  }
-                }}>
-                  Privacy
-                </a>
-              </p>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </>
   );
 };
 

@@ -1,79 +1,84 @@
-// src/context/AuthContext.js
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
+const api = axios.create({
+  baseURL: 'http://localhost:5000/api',
+  withCredentials: true,
+});
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const { data } = await api.get('/users/profile');
-          setUser(data);
-          
-          // Redirect based on user type if on login page
-          if (window.location.pathname === '/admin/login') {
-            if (data.userType === 'admin') {
-              navigate('/admin');
-            } else {
-              navigate('/');
-            }
-          }
+        const { data } = await api.get('/users/check-auth');
+        if (data.isAuthenticated) {
+          setUser(data.user);
+          setIsAuthenticated(true);
         }
       } catch (error) {
-        console.error('Authentication check failed:', error);
-        localStorage.removeItem('token');
-        delete api.defaults.headers.common['Authorization'];
-        setUser(null);
-        if (window.location.pathname.startsWith('/admin')) {
-          navigate('/admin/login');
-        }
+        console.error('Auth check error:', error);
       } finally {
         setLoading(false);
       }
     };
     checkAuth();
-  }, [navigate]);
+  }, []);
 
-  const login = async (email, password) => {
+  const login = async (credentials) => {
     try {
-      const { data } = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', data.token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-      
-      // Get full user profile
-      const profileResponse = await api.get('/users/profile');
-      setUser(profileResponse.data);
-      
-      return profileResponse.data;
+      const { data } = await api.post('/users/login', credentials);
+      setUser(data);
+      setIsAuthenticated(true);
+      return { success: true };
     } catch (error) {
-      console.error('Login error:', error);
-      throw error;
+      return { 
+        success: false, 
+        error: error.response?.data?.details || 'Login failed' 
+      };
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    delete api.defaults.headers.common['Authorization'];
-    setUser(null);
-    navigate('/login');
+  const register = async (userData) => {
+    try {
+      const { data } = await api.post('/users/register', userData);
+      setUser(data);
+      setIsAuthenticated(true);
+      return { success: true };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.details || 'Registration failed' 
+      };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await api.post('/users/logout');
+      setUser(null);
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      login, 
-      logout 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        loading,
+        login,
+        register,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
