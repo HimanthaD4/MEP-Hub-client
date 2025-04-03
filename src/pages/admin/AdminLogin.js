@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
-import { FaShieldAlt, FaUserLock, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
-import { RiLockPasswordFill } from 'react-icons/ri';
-import { HiOutlineMail } from 'react-icons/hi';
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +17,7 @@ const AdminLogin = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user && user.userType === 'admin') {
-      navigate('/admin/dashboard');
+      navigate('/admin');
     }
   }, [user, navigate]);
 
@@ -42,19 +39,30 @@ const AdminLogin = () => {
       
       if (result.success) {
         if (result.user.userType === 'admin') {
-          navigate('/admin/dashboard');
+          navigate('/admin');
         } else {
-          setError('Insufficient privileges: Admin access required');
+          setError('Elevated privileges required');
         }
       } else {
         setError(result.error || 'Authentication failed');
       }
     } catch (err) {
-      setError('System error - please contact IT support');
+      setError('System error - please contact support');
       console.error('Admin login error:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } }
+  };
+
+  const buttonVariants = {
+    hover: { scale: 1.02 },
+    tap: { scale: 0.98 }
   };
 
   return (
@@ -75,22 +83,23 @@ const AdminLogin = () => {
           background: 'rgba(255, 255, 255, 0.98)',
           borderRadius: '16px',
           boxShadow: '0 20px 40px rgba(0, 0, 0, 0.08)',
-          border: '1px solid rgba(226, 232, 240, 0.7)',
+          border: '1px solid rgba(226, 232, 240, 0.8)',
           position: 'relative',
           overflow: 'hidden',
           backdropFilter: 'blur(8px)'
         }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
+        {/* Security Badge */}
         <div style={{
           position: 'absolute',
           top: '-12px',
           right: '24px',
           background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
           color: 'white',
-          padding: '6px 18px',
+          padding: '4px 16px',
           borderRadius: '20px',
           fontSize: '12px',
           fontWeight: '600',
@@ -100,8 +109,10 @@ const AdminLogin = () => {
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           zIndex: 2
         }}>
-          <FaShieldAlt style={{ fontSize: '14px' }} />
-          <span>SECURE ACCESS</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 15V17M9 21H15C16.1046 21 17 20.1046 17 19V13C17 11.8954 16.1046 11 15 11H9C7.89543 11 7 11.8954 7 13V19C7 20.1046 7.89543 21 9 21ZM13 11V7C13 5.34315 11.6569 4 10 4C8.34315 4 7 5.34315 7 7V11H13Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          SECURE ACCESS
         </div>
 
         <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
@@ -113,12 +124,12 @@ const AdminLogin = () => {
             marginBottom: '8px',
             textTransform: 'uppercase'
           }}>
-            ADMIN PORTAL
+            MEPHUB ADMIN CONSOLE
           </div>
           <h1 style={{ 
             color: '#1e293b',
             fontSize: '24px',
-            fontWeight: '700',
+            fontWeight: '600',
             margin: '0',
             lineHeight: '1.3'
           }}>
@@ -127,25 +138,24 @@ const AdminLogin = () => {
         </div>
 
         {error && (
-          <motion.div
-            style={{
-              color: '#b91c1c',
-              background: '#fee2e2',
-              padding: '12px 16px',
-              borderRadius: '8px',
-              marginBottom: '1.5rem',
-              fontSize: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              borderLeft: '4px solid #dc2626'
-            }}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <FaExclamationTriangle />
-            <span>{error}</span>
-          </motion.div>
+          <div style={{
+            color: '#b91c1c',
+            background: '#fee2e2',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            marginBottom: '1.5rem',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            borderLeft: '4px solid #dc2626',
+            animation: 'fadeIn 0.3s ease'
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 8V12M12 16H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            {error}
+          </div>
         )}
 
         <form onSubmit={handleSubmit}>
@@ -153,7 +163,7 @@ const AdminLogin = () => {
             position: 'relative',
             marginBottom: '1.5rem'
           }}>
-            <div style={{
+            <label style={{
               position: 'absolute',
               left: '16px',
               top: focusedField === 'email' || formData.email ? '8px' : '18px',
@@ -164,14 +174,10 @@ const AdminLogin = () => {
               transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
               pointerEvents: 'none',
               zIndex: 1,
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
+              fontWeight: '500'
             }}>
-              <HiOutlineMail style={{ fontSize: '14px' }} />
-              <span>Admin Email</span>
-            </div>
+              Authorized Email
+            </label>
             <input
               type="email"
               name="email"
@@ -182,7 +188,7 @@ const AdminLogin = () => {
               required
               style={{
                 width: '100%',
-                padding: '28px 16px 12px 44px',
+                padding: '28px 16px 12px',
                 border: `1px solid ${focusedField === 'email' ? '#1e40af' : '#e2e8f0'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
@@ -200,7 +206,7 @@ const AdminLogin = () => {
             position: 'relative',
             marginBottom: '2rem'
           }}>
-            <div style={{
+            <label style={{
               position: 'absolute',
               left: '16px',
               top: focusedField === 'password' || formData.password ? '8px' : '18px',
@@ -211,14 +217,10 @@ const AdminLogin = () => {
               transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
               pointerEvents: 'none',
               zIndex: 1,
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
+              fontWeight: '500'
             }}>
-              <RiLockPasswordFill style={{ fontSize: '14px' }} />
-              <span>Secure Password</span>
-            </div>
+              Secure Password
+            </label>
             <input
               type="password"
               name="password"
@@ -229,7 +231,7 @@ const AdminLogin = () => {
               required
               style={{
                 width: '100%',
-                padding: '28px 16px 12px 44px',
+                padding: '28px 16px 12px',
                 border: `1px solid ${focusedField === 'password' ? '#1e40af' : '#e2e8f0'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
@@ -265,23 +267,23 @@ const AdminLogin = () => {
               position: 'relative',
               overflow: 'hidden'
             }}
-            whileHover={!loading ? { scale: 1.02 } : {}}
-            whileTap={!loading ? { scale: 0.98 } : {}}
+            variants={buttonVariants}
+            whileHover={!loading ? "hover" : {}}
+            whileTap={!loading ? "tap" : {}}
           >
             {loading ? (
               <>
-                <motion.span
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                >
-                  <FaSpinner />
-                </motion.span>
-                <span>AUTHENTICATING...</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ animation: 'spin 1s linear infinite' }}>
+                  <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.0784 19.0784L16.25 16.25M19.0784 4.99999L16.25 7.82843M4.92157 19.0784L7.75 16.25M4.92157 4.99999L7.75 7.82843" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                VERIFYING CREDENTIALS...
               </>
             ) : (
               <>
-                <FaShieldAlt />
-                <span>ACCESS DASHBOARD</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 21V19C20 16.7909 18.2091 15 16 15H8C5.79086 15 4 16.7909 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                AUTHORIZE ACCESS
               </>
             )}
           </motion.button>
@@ -292,6 +294,10 @@ const AdminLogin = () => {
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>

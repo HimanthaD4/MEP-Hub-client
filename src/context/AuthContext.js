@@ -6,6 +6,9 @@ const AuthContext = createContext();
 const api = axios.create({
   baseURL: 'http://localhost:5000/api',
   withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  }
 });
 
 export const AuthProvider = ({ children }) => {
@@ -35,11 +38,11 @@ export const AuthProvider = ({ children }) => {
       const { data } = await api.post('/users/login', credentials);
       setUser(data);
       setIsAuthenticated(true);
-      return { success: true };
+      return { success: true, user: data };
     } catch (error) {
       return { 
         success: false, 
-        error: error.response?.data?.details || 'Login failed' 
+        error: error.response?.data?.message || 'Login failed' 
       };
     }
   };
@@ -49,11 +52,11 @@ export const AuthProvider = ({ children }) => {
       const { data } = await api.post('/users/register', userData);
       setUser(data);
       setIsAuthenticated(true);
-      return { success: true };
+      return { success: true, user: data };
     } catch (error) {
       return { 
         success: false, 
-        error: error.response?.data?.details || 'Registration failed' 
+        error: error.response?.data?.message || 'Registration failed' 
       };
     }
   };
