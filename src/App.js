@@ -1,17 +1,16 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext'; // Added useAuth import
-import MainHeader from './components/layout/Header';
-import AdminHeader from './components/layout/AdminHeader';
-import AdminSidebar from './components/layout/AdminSidebar';
-import HomePage from './pages/Home';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import MainHeader from './components/layout/user/Header';
+import AdminHeader from './components/layout/admin/AdminHeader';
+import AdminSidebar from './components/layout/admin/AdminSidebar';
+import HomePage from './pages/user/Home';
 import AdminPanel from './pages/admin/Dashboard';
-import MemberPanel from './pages/Member';
-import AdminLogin from './pages/admin/AdminLogin';
+import MemberPanel from './pages/user/Member';
+import AdminLogin from './components/auth/admin/AdminLogin';
+import AdminLayout from './components/layout/admin/AdminLayout';
 import './styles/main.css';
 
-// Moved ProtectedRoute component outside of App component
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
 
@@ -63,7 +62,6 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={
             <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
               <MainHeader toggleSidebar={toggleSidebar} />
@@ -84,48 +82,17 @@ function App() {
 
           <Route path="/admin/login" element={<AdminLogin />} />
 
-          {/* Admin Protected Routes */}
           <Route path="/admin/*" element={
             <ProtectedRoute adminOnly>
-              <div style={{ 
-                minHeight: '100vh', 
-                display: 'flex', 
-                backgroundColor: '#f9fafb' 
-              }}>
-                <AdminSidebar 
-                  isOpen={sidebarOpen} 
-                  onClose={closeSidebar}
-                  isMobile={isMobile}
-                />
-                
-                <div style={{
-                  flex: 1,
-                  marginLeft: sidebarOpen && !isMobile ? '260px' : '0',
-                  transition: 'margin-left 0.3s ease',
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}>
-                  <AdminHeader 
-                    toggleSidebar={toggleSidebar}
-                    sidebarOpen={sidebarOpen}
-                  />
-                  
-                  <main style={{ 
-                    flex: 1, 
-                    padding: '24px',
-                    overflowX: 'hidden'
-                  }}>
-                    <Routes>
-                      <Route index element={<AdminPanel />} />
-                      {/* Add other admin routes here */}
-                    </Routes>
-                  </main>
-                </div>
-              </div>
+              <AdminLayout 
+                sidebarOpen={sidebarOpen} 
+                isMobile={isMobile}
+                toggleSidebar={toggleSidebar}
+                closeSidebar={closeSidebar}
+              />
             </ProtectedRoute>
           } />
 
-          {/* Catch-all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>

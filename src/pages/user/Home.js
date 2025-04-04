@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import constructionImage from '../images/download.png';
+import constructionImage from '../../images/landingimage.png';
 
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');

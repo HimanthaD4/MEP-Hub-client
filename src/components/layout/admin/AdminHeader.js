@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiBell, FiSearch, FiUser, FiLogOut, FiChevronDown } from 'react-icons/fi';
 
@@ -43,69 +43,71 @@ const AdminHeader = ({ toggleSidebar }) => {
           </h1>
         </div>
 
-        <div className="header-center">
-          <div className="search-container">
-            <FiSearch className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search across admin..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-          </div>
-        </div>
-
         <div className="header-right">
-          <button className="notification-btn" aria-label="Notifications">
-            <FiBell size={20} />
-            <span className="notification-badge">3</span>
-          </button>
+          <div className="header-center">
+            <div className="search-container">
+              <FiSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search across admin..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+            </div>
+          </div>
 
-          <div className="profile-dropdown">
-            <button 
-              className="profile-btn"
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-              aria-label="User profile"
-              aria-expanded={showProfileMenu}
-            >
-              <div className="avatar">
-                {user?.name?.charAt(0) || 'A'}
-              </div>
-              <span className="username">{user?.name || 'Admin'}</span>
-              <FiChevronDown className={`chevron ${showProfileMenu ? 'open' : ''}`} />
+          <div className="header-controls">
+            <button className="notification-btn" aria-label="Notifications">
+              <FiBell size={20} />
+              <span className="notification-badge">3</span>
             </button>
 
-            <AnimatePresence>
-              {showProfileMenu && (
-                <motion.div
-                  className="dropdown-menu"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="dropdown-header">
-                    <div className="dropdown-avatar">
-                      {user?.name?.charAt(0) || 'A'}
+            <div className="profile-dropdown">
+              <button 
+                className="profile-btn"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                aria-label="User profile"
+                aria-expanded={showProfileMenu}
+              >
+                <div className="avatar">
+                  {user?.name?.charAt(0) || 'A'}
+                </div>
+                <span className="username">{user?.name || 'Admin'}</span>
+                <FiChevronDown className={`chevron ${showProfileMenu ? 'open' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {showProfileMenu && (
+                  <motion.div
+                    className="dropdown-menu"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="dropdown-header">
+                      <div className="dropdown-avatar">
+                        {user?.name?.charAt(0) || 'A'}
+                      </div>
+                      <div>
+                        <div className="dropdown-name">{user?.name || 'Admin User'}</div>
+                        <div className="dropdown-email">{user?.email || 'admin@mephub.lk'}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="dropdown-name">{user?.name || 'Admin User'}</div>
-                      <div className="dropdown-email">{user?.email || 'admin@mephub.lk'}</div>
-                    </div>
-                  </div>
-                  <div className="dropdown-divider"></div>
-                  <button className="dropdown-item">
-                    <FiUser className="dropdown-icon" />
-                    My Profile
-                  </button>
-                  <button className="dropdown-item" onClick={handleLogout}>
-                    <FiLogOut className="dropdown-icon" />
-                    Logout
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    <div className="dropdown-divider"></div>
+                    <button className="dropdown-item">
+                      <FiUser className="dropdown-icon" />
+                      My Profile
+                    </button>
+                    <button className="dropdown-item" onClick={handleLogout}>
+                      <FiLogOut className="dropdown-icon" />
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
@@ -144,6 +146,7 @@ const AdminHeader = ({ toggleSidebar }) => {
           display: flex;
           align-items: center;
           gap: 16px;
+          flex: 1;
         }
 
         .sidebar-toggle {
@@ -179,6 +182,14 @@ const AdminHeader = ({ toggleSidebar }) => {
 
         .logo-secondary {
           color: #0ea5e9;
+        }
+
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          flex: 2;
+          justify-content: flex-end;
         }
 
         .header-center {
@@ -218,7 +229,7 @@ const AdminHeader = ({ toggleSidebar }) => {
           box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
         }
 
-        .header-right {
+        .header-controls {
           display: flex;
           align-items: center;
           gap: 16px;
@@ -399,6 +410,15 @@ const AdminHeader = ({ toggleSidebar }) => {
 
           .chevron {
             display: none;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .header-left {
+            flex: none;
+          }
+          .header-right {
+            flex: none;
           }
         }
       `}</style>

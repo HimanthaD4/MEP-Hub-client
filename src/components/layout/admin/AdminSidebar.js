@@ -1,69 +1,64 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  FiHome, FiFolder, FiUsers, FiBriefcase, FiCheckCircle,
+  FiHome, FiFolder, FiUsers, FiBriefcase,
   FiBook, FiUser, FiFileText, FiAward, FiSettings,
-  FiDatabase, FiLayers, FiClipboard, FiCalendar, FiTruck
+  FiClipboard, FiTruck
 } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
-const AdminSidebar = ({ isOpen, isMobile, closeSidebar, setActiveComponent }) => {
+const AdminSidebar = ({ isOpen, isMobile, closeSidebar }) => {
   const navSections = [
     {
       title: 'Management',
       items: [
-        { path: 'Dashboard', label: 'Dashboard', icon: <FiHome size={18} /> },
-        { path: 'Projects', label: 'Projects', icon: <FiFolder size={18} /> },
-     
+        { path: 'dashboard', label: 'Dashboard', icon: <FiHome size={18} /> },
+        { path: 'projects', label: 'Projects', icon: <FiFolder size={18} /> },
       ]
     },
     {
       title: 'Personnel',
       items: [
-        { path: 'Consultants', label: 'Consultants', icon: <FiUsers size={18} /> },
-        { path: 'Contractors', label: 'Contractors', icon: <FiBriefcase size={18} /> },
-        { path: 'Directors', label: 'Directors', icon: <FiUser size={18} /> },
-      
+        { path: 'consultants', label: 'Consultants', icon: <FiUsers size={18} /> },
+        { path: 'contractors', label: 'Contractors', icon: <FiBriefcase size={18} /> },
+        { path: 'directors', label: 'Directors', icon: <FiUser size={18} /> },
       ]
     },
     {
       title: 'Operations',
       items: [
-        { path: 'Suppliers', label: 'Suppliers', icon: <FiTruck size={18} /> },
-        { path: 'Authorities', label: 'Authorities', icon: <FiAward size={18} /> },
-     
+        { path: 'suppliers', label: 'Suppliers', icon: <FiTruck size={18} /> },
+        { path: 'authorities', label: 'Authorities', icon: <FiAward size={18} /> },
       ]
     },
     {
       title: 'Education',
       items: [
-        { path: 'Institutions', label: 'Institutions', icon: <FiBook size={18} /> },
-        { path: 'Lecturers', label: 'Lecturers', icon: <FiUser size={18} /> },
-        { path: 'Training', label: 'Training', icon: <FiClipboard size={18} /> }
+        { path: 'institutions', label: 'Institutions', icon: <FiBook size={18} /> },
+        { path: 'lecturers', label: 'Lecturers', icon: <FiUser size={18} /> },
+        { path: 'training', label: 'Training', icon: <FiClipboard size={18} /> }
       ]
     },
     {
       title: 'Employment',
       items: [
-        { path: 'Vacancies', label: 'Vacancies', icon: <FiFileText size={18} /> },
-        { path: 'Candidates', label: 'Candidates', icon: <FiUsers size={18} /> },
-        
+        { path: 'vacancies', label: 'Vacancies', icon: <FiFileText size={18} /> },
+        { path: 'candidates', label: 'Candidates', icon: <FiUsers size={18} /> },
       ]
     }
   ];
 
   const NavButton = ({ item }) => (
-    <motion.button
-      onClick={() => {
-        setActiveComponent(item.path);
-        if (isMobile) closeSidebar();
-      }}
-      className="nav-button"
-      whileHover={{ backgroundColor: 'rgba(26, 86, 219, 0.1)' }}
-      whileTap={{ scale: 0.98 }}
-    >
-      <span className="nav-icon">{item.icon}</span>
-      <span className="nav-label">{item.label}</span>
-    </motion.button>
+    <Link to={`/admin/${item.path}`} onClick={() => isMobile && closeSidebar()} style={{ textDecoration: 'none' }}>
+      <motion.button
+        className="nav-button"
+        whileHover={{ backgroundColor: 'rgba(26, 86, 219, 0.1)' }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <span className="nav-icon">{item.icon}</span>
+        <span className="nav-label">{item.label}</span>
+      </motion.button>
+    </Link>
   );
 
   return (
@@ -102,7 +97,7 @@ const AdminSidebar = ({ isOpen, isMobile, closeSidebar, setActiveComponent }) =>
               </nav>
 
               <div className="sidebar-settings">
-                <NavButton item={{ path: 'Settings', label: 'Settings', icon: <FiSettings size={18} /> }} />
+                <NavButton item={{ path: 'settings', label: 'Settings', icon: <FiSettings size={18} /> }} />
               </div>
             </div>
 

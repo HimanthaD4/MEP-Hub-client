@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import LoginModal from '../auth/LoginModal';
-import RegisterModal from '../auth/RegisterModal';
+import { useAuth } from '../../../context/AuthContext';
+import LoginModal from '../../auth/LoginModal';
+import RegisterModal from '../../auth/RegisterModal';
 
 const Header = ({ toggleSidebar }) => {
   const { user, isAuthenticated, logout } = useAuth();
