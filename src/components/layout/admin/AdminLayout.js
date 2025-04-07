@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
+import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
 
 import Dashboard from '../../../pages/admin/Dashboard';
 import Projects from '../../../pages/admin/Projects';
-
+import Consultants from '../../../pages/admin/Consultants';
 
 const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => {
   const { user, loading, isAuthenticated } = useAuth();
@@ -40,25 +40,6 @@ const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => 
           <div className="spinner"></div>
           <p>Loading admin panel...</p>
         </div>
-        <style jsx>{`
-          .loading-spinner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-          }
-          .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(26, 86, 219, 0.1);
-            border-radius: 50%;
-            border-top-color: #1a56db;
-            animation: spin 1s ease-in-out infinite;
-          }
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     );
   }
@@ -68,7 +49,7 @@ const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => 
       minHeight: '100vh', 
       display: 'flex', 
       backgroundColor: '#f9fafb', 
-      paddingTop:'30px',
+      paddingTop: '30px',
     }}>
       <AdminSidebar 
         isOpen={sidebarOpen} 
@@ -94,10 +75,11 @@ const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => 
           overflowX: 'hidden'
         }}>
           <Routes>
+            <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
-           
-            <Route path="*" element={<Dashboard />} />
+            <Route path="consultants" element={<Consultants />} />
+            <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Routes>
         </main>
       </div>
