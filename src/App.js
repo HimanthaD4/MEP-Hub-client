@@ -2,27 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import MainHeader from './components/layout/user/Header';
-import AdminHeader from './components/layout/admin/AdminHeader';
-import AdminSidebar from './components/layout/admin/AdminSidebar';
 import HomePage from './pages/user/Home';
-import AdminPanel from './pages/admin/Dashboard';
+
 import MemberPanel from './pages/user/Member';
 import AdminLogin from './components/auth/admin/AdminLogin';
 import AdminLayout from './components/layout/admin/AdminLayout';
+
+import ProjectDetail from './pages/user/details/project/ProjectDetail';
+import ProjectsList from './pages/user/details/project/ProjectsList';
+
+import ConsultantDetail from './pages/user/details/consultant/ConsultantDetail';
+import ConsultantsList from './pages/user/details/consultant/ConsultantsList';
+
 import './styles/main.css';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '100vh',
-      fontSize: '1.2rem',
-      color: '#4f46e5'
-    }}>Loading...</div>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '1.2rem', color: '#4f46e5' }}>
+        Loading...
+      </div>
+    );
   }
 
   if (!user) {
@@ -58,27 +60,28 @@ function App() {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => isMobile && setSidebarOpen(false);
 
+  const LayoutWithHeader = ({ children }) => (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <MainHeader toggleSidebar={toggleSidebar} />
+      <main style={{ flex: 1, padding: '20px' }}>{children}</main>
+    </div>
+  );
+
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={
-            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-              <MainHeader toggleSidebar={toggleSidebar} />
-              <main style={{ flex: 1, padding: '20px' }}>
-                <HomePage />
-              </main>
-            </div>
-          } />
-          
-          <Route path="/member" element={
-            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-              <MainHeader toggleSidebar={toggleSidebar} />
-              <main style={{ flex: 1, padding: '20px' }}>
-                <MemberPanel />
-              </main>
-            </div>
-          } />
+          <Route path="/" element={<LayoutWithHeader><HomePage /></LayoutWithHeader>} />
+
+          <Route path="/member" element={<LayoutWithHeader><MemberPanel /></LayoutWithHeader>} />
+
+          <Route path="/projects" element={<LayoutWithHeader><ProjectsList /></LayoutWithHeader>} />
+
+          <Route path="/projects/:id" element={<LayoutWithHeader><ProjectDetail /></LayoutWithHeader>} />
+
+          <Route path="/consultants" element={<LayoutWithHeader><ConsultantsList /></LayoutWithHeader>} />
+
+          <Route path="/consultants/:id" element={<LayoutWithHeader><ConsultantDetail /></LayoutWithHeader>} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
 
