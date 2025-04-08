@@ -7,6 +7,7 @@ import AdminSidebar from './AdminSidebar';
 import Dashboard from '../../../pages/admin/Dashboard';
 import Projects from '../../../pages/admin/Projects';
 import Consultants from '../../../pages/admin/Consultants';
+import Contractors from '../../../pages/admin/Contractors';
 
 const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => {
   const { user, loading, isAuthenticated } = useAuth();
@@ -79,6 +80,7 @@ const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => 
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
             <Route path="consultants" element={<Consultants />} />
+            <Route path="contractors" element={<Contractors />} />
             <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Routes>
         </main>
