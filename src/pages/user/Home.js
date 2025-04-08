@@ -6,19 +6,22 @@ import { Link } from 'react-router-dom';
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [projects, setProjects] = useState([]);
-  const [consultantFirms, setConsultantFirms] = useState([]); // Changed to consultantFirms
+  const [consultantFirms, setConsultantFirms] = useState([]);
+  const [contractorFirms, setContractorFirms] = useState([]); // Changed to consultantFirms
   const [loading, setLoading] = useState(true);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projectsRes, consultantsRes] = await Promise.all([
+        const [projectsRes, consultantsRes,contractorsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/projects`),
-          axios.get(`${API_BASE_URL}/consultants`)
+          axios.get(`${API_BASE_URL}/consultants`),
+          axios.get(`${API_BASE_URL}/contractors`)
         ]);
         setProjects(projectsRes.data);
         setConsultantFirms(consultantsRes.data); // Changed to setConsultantFirms
+        setContractorFirms(contractorsRes.data); 
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -41,6 +44,14 @@ const HomePage = () => {
       consultant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       consultant.companyEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
       consultant.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+  ).slice(0, 3);
+
+  const filteredContractorFirms = contractorFirms.filter(contractor => 
+    contractor.visible && ( // Check visibility
+      contractor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contractor.companyEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      contractor.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
     )
   ).slice(0, 3);
 
@@ -299,6 +310,9 @@ const HomePage = () => {
             <div style={styles.statBadge}>
               {consultantFirms.length}+ Verified Consultant Firms
             </div>
+            <div style={styles.statBadge}>
+              {contractorFirms.length}+ Verified Contractor Firms
+            </div>
           </div>
         </div>
       </div>
@@ -360,6 +374,35 @@ const HomePage = () => {
             </div>
           )}
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         {/* Consultant Firms Section */}
         <div style={styles.contentSection}>
@@ -424,6 +467,100 @@ const HomePage = () => {
             </div>
           )}
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  {/* Contractor Firms Section */}
+  <div style={styles.contentSection}>
+          <h2 style={styles.sectionTitle}>Featured Contractor Firms</h2>
+          
+          {loading ? (
+            <div style={styles.cardGrid}>
+              {[1, 2, 3].map((item) => (
+                <div key={item} style={styles.card}>
+                  <div style={styles.cardPlaceholder}>
+                    Loading...
+                  </div>
+                  <div style={styles.cardContent}>
+                    <div style={{ height: '24px', width: '80%', backgroundColor: '#f1f5f9', marginBottom: '16px', borderRadius: '4px' }}></div>
+                    <div style={{ height: '16px', width: '60%', backgroundColor: '#f1f5f9', marginBottom: '24px', borderRadius: '4px' }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredContractorFirms.length > 0 ? (
+            <>
+              <div style={styles.cardGrid}>
+                {filteredContractorFirms.map(contractor => (
+                  <Link to={`/contractors/${contractor._id}`} key={contractor._id} style={{ textDecoration: 'none' }}>
+                    <div style={styles.card}>
+                      <div style={styles.cardContent}>
+                        <h3 style={styles.cardTitle}>{contractor.name}</h3>
+                        <p style={styles.cardText}>{contractor.companyEmail}</p>
+                        <div style={{ marginBottom: '16px' }}>
+                          {contractor.specialties.slice(0, 2).map((specialty, i) => (
+                            <span key={i} style={styles.specialtyBadge}>
+                              {specialty.split(' ')[0]}...
+                            </span>
+                          ))}
+                          {contractor.specialties.length > 2 && (
+                            <span style={styles.specialtyBadge}>
+                              +{contractor.specialties.length - 2} more
+ </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              
+              <div style={{ textAlign: 'center', marginTop: '40px' }}>
+                <Link to="/contractors" style={styles.ctaButton}>
+                  View All Contractor Firms
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div style={styles.emptyState}>
+              <h3 style={styles.emptyStateTitle}>No matching contractor firms found</h3>
+              <button 
+                onClick={() => setSearchTerm('')}
+                style={styles.ctaButton}
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
       </div>
     </div>
   );
