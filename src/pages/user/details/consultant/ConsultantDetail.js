@@ -1,37 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiPhone, FiMail, FiGlobe, FiMapPin, FiBriefcase, FiCheck } from 'react-icons/fi';
+import { FiArrowLeft, FiPhone, FiMail, FiGlobe, FiMapPin, FiBriefcase, FiClock, FiEye, FiEyeOff, FiCheck } from 'react-icons/fi';
 
-const AgentDetail = () => {
+const ConsultantDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [agent, setAgent] = useState(null);
+  const [consultant, setConsultant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
-    const fetchAgent = async () => {
+    const fetchConsultant = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/agents/${id}`);
-        setAgent(res.data);
+        const res = await axios.get(`${API_BASE_URL}/consultants/${id}`);
+        setConsultant(res.data);
       } catch (err) {
-        console.error('Error fetching agent details:', err);
+        console.error('Error fetching consultant details:', err);
         setError(err.response?.status === 404 
-          ? 'Agent not found.' 
-          : 'Failed to load agent details.');
+          ? 'Consultant not found.' 
+          : 'Failed to load consultant details.');
       } finally {
         setLoading(false);
       }
     };
-    fetchAgent();
+    fetchConsultant();
   }, [id]);
 
   if (loading) {
     return (
-      <div className="agent-detail-container">
+      <div className="consultant-detail-container">
         <div className="loading-placeholder">
           <div className="loading-line w-64 h-8"></div>
           <div className="loading-line w-48 h-4 mt-4"></div>
@@ -42,32 +42,54 @@ const AgentDetail = () => {
 
   if (error) {
     return (
-      <div className="agent-detail-container">
+      <div className="consultant-detail-container">
         <div className="error-message">
           <p>{error}</p>
+         
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="agent-detail-container">
-      <header className="agent-header">
-        <div className="agent-title-container">
-          <h1 style={{ textTransform: 'capitalize' }}>{agent.name}</h1>
-          <span className={`agent-type-badge`}>
-            {agent.role || 'Agent'}
-          </span>
-        </div>
+  const getTypeBadgeStyle = (type) => {
+    switch(type) {
+      case 'MEP': return 'mep-badge';
+      case 'Project Management': return 'pm-badge';
+      case 'Cost': return 'cost-badge';
+      default: return 'default-badge';
+    }
+  };
 
-        <div className="agent-summary">
+  return (
+    <div className="consultant-detail-container">
+   
+
+   <header className="consultant-header">
+    <div className="consultant-title-container">
+        <h1 style={{ textTransform: 'capitalize' }}>{consultant.name}</h1>
+        <span className={`consultant-type-badge ${getTypeBadgeStyle(consultant.consultantType)}`}>
+        {consultant.consultantType || 'Consulting Firm'}
+        </span>
+    </div>
+
+        {consultant.specialties?.length > 0 && (
+          <div className="specialties-container">
+            {consultant.specialties.map((specialty, index) => (
+              <span key={index} className="specialty-tag">
+                {specialty}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="consultant-summary">
           <p>
-            {agent.description || `${agent.name} is an agent providing services in ${agent.equipmentType.join(', ') || 'various'} areas.`}
+            {consultant.bio || `${consultant.name} is a professional consulting firm with expertise in ${consultant.consultantType || 'various'} services.`}
           </p>
         </div>
       </header>
 
-      <div className="agent-content-grid">
+      <div className="consultant-content-grid">
         <div className="contact-info-section">
           <div className="contact-card">
             <h2>Contact Information</h2>
@@ -78,7 +100,7 @@ const AgentDetail = () => {
                 </div>
                 <div>
                   <h3>Phone</h3>
-                  <p>{agent.contactNumber || 'Not provided'}</p>
+                  <p>{consultant.contactNumber || 'Not provided'}</p>
                 </div>
               </div>
 
@@ -88,11 +110,11 @@ const AgentDetail = () => {
                 </div>
                 <div>
                   <h3>Email</h3>
-                  <p className="break-all">{agent.companyEmail || 'Not provided'}</p>
+                  <p className="break-all">{consultant.companyEmail || 'Not provided'}</p>
                 </div>
               </div>
 
-              {agent.companyWebsite && (
+              {consultant.companyWebsite && (
                 <div className="contact-item">
                   <div className="contact-icon">
                     <FiGlobe />
@@ -100,12 +122,12 @@ const AgentDetail = () => {
                   <div>
                     <h3>Website</h3>
                     <a 
-                      href={agent.companyWebsite.startsWith('http') ? agent.companyWebsite : `https://${agent.companyWebsite}`}
+                      href={consultant.companyWebsite.startsWith('http') ? consultant.companyWebsite : `https://${consultant.companyWebsite}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="website-link"
                     >
-                      {agent.companyWebsite}
+                      {consultant.companyWebsite}
                     </a>
                   </div>
                 </div>
@@ -116,8 +138,8 @@ const AgentDetail = () => {
                   <FiMapPin />
                 </div>
                 <div>
-                  <h3>Location</h3>
-                  <p>{agent.location || 'Not provided'}</p>
+                  <h3>Address</h3>
+                  <p>{consultant.companyAddress || 'Not provided'}</p>
                 </div>
               </div>
             </div>
@@ -129,28 +151,30 @@ const AgentDetail = () => {
             <h2>Professional Details</h2>
             <div className="details-grid">
               <div className="detail-item">
-                <h3>Equipment Type</h3>
-                <div className="detail-value">
-                  <FiBriefcase />
-                  <p >{agent.equipmentType.join(', ') || 'N/A'}</p>
-                </div>
-              </div>
-
-              <div className="detail-item">
                 <h3>Years of Experience</h3>
                 <div className="detail-value">
                   <FiBriefcase />
-                  <p>{agent.yearsOfExperience || 'N/A'} years</p>
+                  <p>{consultant.yearsOfExperience || 'N/A'} years</p>
                 </div>
               </div>
+
+       
+             
+
+              {consultant.registrationYears && (
+                <div className="detail-item full-width">
+                  <h3>Registration Years</h3>
+                  <p>{consultant.registrationYears}</p>
+                </div>
+              )}
             </div>
           </section>
 
-          {agent.projects && agent.projects.length > 0 && (
+          {consultant.projects && consultant.projects.length > 0 && (
             <section className="detail-card">
               <h2>Notable Projects</h2>
               <div className="projects-list">
-                {agent.projects.map((project, index) => (
+                {consultant.projects.map((project, index) => (
                   <div key={index} className="project-item">
                     <h3>{project.name || 'Unnamed Project'}</h3>
                     {project.description && (
@@ -168,26 +192,40 @@ const AgentDetail = () => {
               </div>
             </section>
           )}
+
+          {consultant.specialties && consultant.specialties.length > 0 && (
+            <section className="detail-card">
+              <h2>Services Offered</h2>
+              <div className="services-grid">
+                {consultant.specialties.map((service, index) => (
+                  <div key={index} className="service-item">
+                    <FiCheck className="service-icon" />
+                    <p>{service}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
 
       <div className="cta-section">
-        <h3>Interested in working with {agent.name}?</h3>
+        <h3>Interested in working with {consultant.name}?</h3>
         <p>
           Contact them directly using the information provided to discuss your project requirements.
         </p>
         <div className="cta-buttons">
-          {agent.contactNumber && (
+          {consultant.contactNumber && (
             <a
-              href={`tel:${agent.contactNumber}`}
+              href={`tel:${consultant.contactNumber}`}
               className="primary-button"
             >
               <FiPhone /> Call Now
             </a>
           )}
-          {agent.companyEmail && (
+          {consultant.companyEmail && (
             <a
-              href={`mailto:${agent.companyEmail}`}
+              href={`mailto:${consultant.companyEmail}`}
               className="secondary-button"
             >
               <FiMail /> Send Email
@@ -198,7 +236,7 @@ const AgentDetail = () => {
 
       <style>
         {`
-          .agent-detail-container {
+          .consultant-detail-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
@@ -207,12 +245,14 @@ const AgentDetail = () => {
             margin-top: 40px;
           }
 
-          .agent-header {
+
+
+          .consultant-header {
             margin-bottom: 40px;
-            padding: 10px 20px;
+            padding: 10px 20px 10px 20px;
           }
 
-          .agent-title-container {
+          .consultant-title-container {
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -220,47 +260,100 @@ const AgentDetail = () => {
           }
 
           @media (min-width: 768px) {
-            .agent-title-container {
+            .consultant-title-container {
               flex-direction: row;
               align-items: center;
               justify-content: space-between;
             }
           }
 
-          .agent-header h1 {
+          .consultant-header h1 {
             font-size: 32px;
             font-weight: 700;
             color: #111827;
             margin: 0;
           }
 
-          .agent-summary {
+          .consultant-type-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+          }
+
+          .mep-badge {
+            background-color: #e0f2fe;
+            color: #0369a1;
+          }
+
+          .pm-badge {
+            background-color: #dcfce7;
+            color: #166534;
+          }
+
+          .cost-badge {
+            background-color: #fef3c7;
+            color: #92400e;
+          }
+
+          .default-badge {
+            background-color: #f1f5f9;
+            color: #1a56db;
+          }
+
+          .specialties-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+          }
+
+          .specialty-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: #f1f5f9;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #1a56db;
+          }
+
+          .consultant-summary {
             background-color: #f0f7ff;
             border-left: 4px solid #1a56db;
             padding: 16px;
             border-radius: 0 8px 8px 0;
           }
 
-          .agent-summary p {
+          .consultant-summary p {
             margin: 0;
             color: #1a56db;
             font-weight: 500;
           }
 
-          .agent-content-grid {
+          .consultant-content-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 24px;
           }
 
           @media (min-width: 1024px) {
-            .agent-content-grid {
+            .consultant-content-grid {
               grid-template-columns: 1fr 2fr;
             }
           }
 
           .contact-info-section {
             position: relative;
+          }
+
+          @media (min-width: 1024px) {
+            .contact-info-section {
+              position: sticky;
+              top: 20px;
+              align-self: start;
+            }
           }
 
           .contact-card {
@@ -343,6 +436,15 @@ const AgentDetail = () => {
             margin-bottom: 20px;
           }
 
+          .prose {
+            line-height: 1.6;
+            color: #4b5563;
+          }
+
+          .prose p {
+            margin: 0;
+          }
+
           .details-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -361,6 +463,17 @@ const AgentDetail = () => {
             gap: 8px;
           }
 
+          .detail-item.full-width {
+            grid-column: 1 / -1;
+          }
+
+          .detail-item h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            margin: 0;
+          }
+
           .detail-value {
             display: flex;
             align-items: center;
@@ -370,6 +483,14 @@ const AgentDetail = () => {
 
           .detail-value svg {
             color: #1a56db;
+          }
+
+          .visible-icon {
+            color: #10b981;
+          }
+
+          .hidden-icon {
+            color: #6b7280;
           }
 
           .projects-list {
@@ -401,6 +522,35 @@ const AgentDetail = () => {
             font-size: 12px;
             color: #6b7280;
             margin: 0;
+          }
+
+          .services-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
+
+          @media (min-width: 640px) {
+            .services-grid {
+              grid-template-columns: 1fr 1fr;
+            }
+          }
+
+          .service-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+          }
+
+          .service-icon {
+            color: #10b981;
+            flex-shrink: 0;
+            margin-top: 2px;
+          }
+
+          .service-item p {
+            margin: 0;
+            color: #4b5563;
           }
 
           .cta-section {
@@ -483,7 +633,8 @@ const AgentDetail = () => {
           .loading-line {
             background-color: #f1f5f9;
             border-radius: 4px;
-            margin-bottom: 16px animation: pulse 2s infinite ease-in-out;
+            margin-bottom: 16px;
+            animation: pulse 2s infinite ease-in-out;
           }
 
           @keyframes pulse {
@@ -508,11 +659,11 @@ const AgentDetail = () => {
           }
 
           @media (max-width: 768px) {
-            .agent-detail-container {
+            .consultant-detail-container {
               padding: 20px 16px;
             }
 
-            .agent-header h1 {
+            .consultant-header h1 {
               font-size: 24px;
             }
 
@@ -538,4 +689,4 @@ const AgentDetail = () => {
   );
 };
 
-export default AgentDetail;
+export default ConsultantDetail;
