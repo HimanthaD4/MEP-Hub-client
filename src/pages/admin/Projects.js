@@ -2,16 +2,27 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff, FiX, FiAlertTriangle } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff, FiX, FiAlertTriangle, FiSearch, FiFilter } from 'react-icons/fi';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentProject, setCurrentProject] = useState(null);
   const [expandedProjectId, setExpandedProjectId] = useState(null);
   const [toast, setToast] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    status: '',
+    visible: '',
+    minAmount: '',
+    maxAmount: '',
+    startDate: '',
+    endDate: ''
+  });
 
   const [formData, setFormData] = useState({
     title: '',
@@ -40,6 +51,10 @@ const Projects = () => {
     }
   }, [toast]);
 
+  useEffect(() => {
+    filterProjects();
+  }, [projects, searchQuery, filters]);
+
   const fetchProjects = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/projects`);
@@ -47,6 +62,66 @@ const Projects = () => {
     } catch (error) {
       showNotification('Failed to load projects', 'error');
     }
+  };
+
+  const filterProjects = () => {
+    let result = [...projects];
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(project => 
+        project.title.toLowerCase().includes(query) ||
+        project.description.toLowerCase().includes(query) ||
+        project.contractor.toLowerCase().includes(query) ||
+        project.status.toLowerCase().includes(query) ||
+        project.amount.toString().includes(query)
+      );
+    }
+    if (filters.status) {
+      result = result.filter(project => project.status === filters.status);
+    }
+    if (filters.visible !== '') {
+      result = result.filter(project => project.visible === (filters.visible === 'true'));
+    }
+    if (filters.minAmount) {
+      result = result.filter(project => Number(project.amount) >= Number(filters.minAmount));
+    }
+    if (filters.maxAmount) {
+      result = result.filter(project => Number(project.amount) <= Number(filters.maxAmount));
+    }
+    if (filters.startDate) {
+      result = result.filter(project => new Date(project.startDate) >= new Date(filters.startDate));
+    }
+    if (filters.endDate) {
+      result = result.filter(project => {
+        if (!project.endDate) return false;
+        return new Date(project.endDate) <= new Date(filters.endDate);
+      });
+    }
+    setFilteredProjects(result);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      status: '',
+      visible: '',
+      minAmount: '',
+      maxAmount: '',
+      startDate: '',
+      endDate: ''
+    });
+    setSearchQuery('');
   };
 
   const handleChange = (e) => {
@@ -178,7 +253,6 @@ const Projects = () => {
 
   return (
     <div style={styles.container}>
-      {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -205,7 +279,6 @@ const Projects = () => {
         )}
       </AnimatePresence>
 
-      {/* Confirmation Dialog */}
       <AnimatePresence>
         {confirmDialog && (
           <motion.div
@@ -248,22 +321,168 @@ const Projects = () => {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {isFilterOpen && (
+          <motion.div
+            style={styles.filterOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              style={styles.filterDialog}
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+            >
+              <div style={styles.filterHeader}>
+                <h3 style={styles.filterTitle}>Filter Projects</h3>
+                <button 
+                  onClick={() => setIsFilterOpen(false)}
+                  style={styles.filterCloseButton}
+                >
+                  <FiX />
+                </button>
+              </div>
+              
+              <div style={styles.filterContent}>
+                <div style={styles.filterGroup}>
+                  <label style={styles.filterLabel}>Status</label>
+                  <select
+                    name="status"
+                    value={filters.status}
+                    onChange={handleFilterChange}
+                    style={styles.filterSelect}
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+
+                <div style={styles.filterGroup}>
+                  <label style={styles.filterLabel}>Visibility</label>
+                  <select
+                    name="visible"
+                    value={filters.visible}
+                    onChange={handleFilterChange}
+                    style={styles.filterSelect}
+                  >
+                    <option value="">All</option>
+                    <option value="true">Visible</option>
+                    <option value="false">Hidden</option>
+                  </select>
+                </div>
+
+                <div style={styles.filterGrid}>
+                  <div style={styles.filterGroup}>
+                    <label style={styles.filterLabel}>Min Amount ($)</label>
+                    <input
+                      type="number"
+                      name="minAmount"
+                      value={filters.minAmount}
+                      onChange={handleFilterChange}
+                      style={styles.filterInput}
+                      placeholder="0"
+                    />
+                  </div>
+                  <div style={styles.filterGroup}>
+                    <label style={styles.filterLabel}>Max Amount ($)</label>
+                    <input
+                      type="number"
+                      name="maxAmount"
+                      value={filters.maxAmount}
+                      onChange={handleFilterChange}
+                      style={styles.filterInput}
+                      placeholder="Any"
+                    />
+                  </div>
+                </div>
+
+                <div style={styles.filterGrid}>
+                  <div style={styles.filterGroup}>
+                    <label style={styles.filterLabel}>Start After</label>
+                    <input
+                      type="date"
+                      name="startDate"
+                      value={filters.startDate}
+                      onChange={handleFilterChange}
+                      style={styles.filterInput}
+                    />
+                  </div>
+                  <div style={styles.filterGroup}>
+                    <label style={styles.filterLabel}>End Before</label>
+                    <input
+                      type="date"
+                      name="endDate"
+                      value={filters.endDate}
+                      onChange={handleFilterChange}
+                      style={styles.filterInput}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div style={styles.filterFooter}>
+                <motion.button
+                  style={styles.filterResetButton}
+                  onClick={resetFilters}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Reset Filters
+                </motion.button>
+                <motion.button
+                  style={styles.filterApplyButton}
+                  onClick={() => setIsFilterOpen(false)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Apply Filters
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div style={styles.header}>
         <h1 style={styles.title}>Projects Management</h1>
-        <motion.button
-          onClick={openNewProjectModal}
-          style={styles.addButton}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <FiPlus style={{ marginRight: '8px' }} />
-          Add Project
-        </motion.button>
+        <div style={styles.actions}>
+          <div style={styles.searchContainer}>
+            <FiSearch style={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              style={styles.searchInput}
+            />
+            <motion.button
+              style={styles.filterButton}
+              onClick={() => setIsFilterOpen(true)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <FiFilter style={styles.filterIcon} />
+            </motion.button>
+          </div>
+          <motion.button
+            onClick={openNewProjectModal}
+            style={styles.addButton}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <FiPlus style={{ marginRight: '8px' }} />
+            Add Project
+          </motion.button>
+        </div>
       </div>
 
-      {projects.length === 0 ? (
+      {filteredProjects.length === 0 ? (
         <div style={styles.emptyState}>
-          <p>No projects found. Create your first project to get started.</p>
+          <p>{projects.length === 0 ? 'No projects found. Create your first project to get started.' : 'No projects match your search or filters.'}</p>
         </div>
       ) : (
         <div style={styles.tableContainer}>
@@ -280,7 +499,7 @@ const Projects = () => {
               </tr>
             </thead>
             <tbody>
-              {projects.map((project) => (
+              {filteredProjects.map((project) => (
                 <motion.tr 
                   key={project._id}
                   style={styles.tableRow}
@@ -367,7 +586,6 @@ const Projects = () => {
         </div>
       )}
 
-      {/* Project Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -555,6 +773,55 @@ const styles = {
     fontWeight: 600,
     color: '#111827',
     margin: 0
+  },
+  actions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px'
+  },
+  searchContainer: {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    borderRadius: '6px',
+    padding: '6px 12px',
+    transition: 'all 0.2s ease',
+    '&:focus-within': {
+      backgroundColor: 'white',
+      boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)'
+    }
+  },
+  searchIcon: {
+    color: '#6B7280',
+    marginRight: '8px',
+    fontSize: '16px'
+  },
+  searchInput: {
+    border: 'none',
+    background: 'transparent',
+    outline: 'none',
+    fontSize: '14px',
+    width: '180px',
+    padding: '4px 0',
+    color: '#111827',
+    '&::placeholder': {
+      color: '#9CA3AF'
+    }
+  },
+  filterButton: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '4px',
+    marginLeft: '8px',
+    color: '#6B7280',
+    '&:hover': {
+      color: '#3B82F6'
+    }
+  },
+  filterIcon: {
+    fontSize: '16px'
   },
   addButton: {
     backgroundColor: '#3B82F6',
@@ -948,6 +1215,135 @@ const styles = {
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: '#DC2626'
+    }
+  },
+  filterOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+    padding: '20px'
+  },
+  filterDialog: {
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    width: '100%',
+    maxWidth: '400px',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
+  },
+  filterHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px 20px',
+    borderBottom: '1px solid #E5E7EB',
+    position: 'sticky',
+    top: 0,
+    backgroundColor: 'white',
+    zIndex: 10
+  },
+  filterTitle: {
+    fontSize: '16px',
+    fontWeight: 600,
+    color: '#111827',
+    margin: 0
+  },
+  filterCloseButton: {
+    background: 'none',
+    border: 'none',
+    fontSize: '20px',
+    color: '#6B7280',
+    cursor: 'pointer',
+    padding: '4px',
+    '&:hover': {
+      color: '#111827'
+    }
+  },
+  filterContent: {
+    padding: '20px'
+  },
+  filterGroup: {
+    marginBottom: '16px'
+  },
+  filterLabel: {
+    display: 'block',
+    fontSize: '13px',
+    fontWeight: 500,
+    color: '#374151',
+    marginBottom: '8px'
+  },
+  filterSelect: {
+    width: '100%',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    border: '1px solid #D1D5DB',
+    fontSize: '14px',
+    backgroundColor: 'white',
+    '&:focus': {
+      outline: 'none',
+      borderColor: '#3B82F6',
+      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)'
+    }
+  },
+  filterInput: {
+    width: '100%',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    border: '1px solid #D1D5DB',
+    fontSize: '14px',
+    '&:focus': {
+      outline: 'none',
+      borderColor: '#3B82F6',
+      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)'
+    }
+  },
+  filterGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '16px'
+  },
+  filterFooter: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '12px',
+    padding: '16px 20px',
+    borderTop: '1px solid #E5E7EB',
+    position: 'sticky',
+    bottom: 0,
+    backgroundColor: 'white'
+  },
+  filterResetButton: {
+    padding: '8px 16px',
+    backgroundColor: 'white',
+    color: '#374151',
+    border: '1px solid #D1D5DB',
+    borderRadius: '6px',
+    fontSize: '14px',
+    fontWeight: 500,
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#F9FAFB'
+    }
+  },
+  filterApplyButton: {
+    padding: '8px 16px',
+    backgroundColor: '#3B82F6',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '14px',
+    fontWeight: 500,
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#2563EB'
     }
   }
 };

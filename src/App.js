@@ -17,6 +17,9 @@ import ConsultantsList from './pages/user/details/consultant/ConsultantsList';
 import ContractorDetail from './pages/user/details/contractor/ContractorDetail';
 import ContractorsList from './pages/user/details/contractor/ContractorsList';
 
+import AgentDetail from './pages/user/details/agent/AgentDetail.js';
+import AgentList from './pages/user/details/agent/AgentsList.js';
+
 import './styles/main.css';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
@@ -90,6 +93,10 @@ function App() {
           <Route path="/contractors" element={<LayoutWithHeader><ContractorsList /></LayoutWithHeader>} />
 
           <Route path="/contractors/:id" element={<LayoutWithHeader><ContractorDetail /></LayoutWithHeader>} />
+
+          <Route path="/agents" element={<LayoutWithHeader><AgentList /></LayoutWithHeader>} />
+
+          <Route path="/agents/:id" element={<LayoutWithHeader><AgentDetail /></LayoutWithHeader>} />
 
           
 

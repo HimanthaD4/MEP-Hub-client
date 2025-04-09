@@ -125,18 +125,7 @@ const Header = ({ toggleSidebar }) => {
             }}>
               Services
             </a>
-            <a href="/docs" style={{
-              color: '#111827',
-              textDecoration: 'none',
-              fontWeight: 500,
-              fontSize: '15px',
-              position: 'relative',
-              padding: '6px 12px',
-              borderRadius: '8px',
-              transition: 'all 0.2s ease'
-            }}>
-              Docs
-            </a>
+         
             <a href="/blog" style={{
               color: '#111827',
               textDecoration: 'none',
@@ -147,7 +136,7 @@ const Header = ({ toggleSidebar }) => {
               borderRadius: '8px',
               transition: 'all 0.2s ease'
             }}>
-              Blog
+              Contact Us
             </a>
           </nav>
         )}
@@ -226,27 +215,7 @@ const Header = ({ toggleSidebar }) => {
                   Admin
                 </a>
               )}
-              <a 
-                href={user?.userType === 'admin' ? '/admin' : '/member'}
-                style={{
-                  padding: '6px 16px',
-                  borderRadius: '20px',
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  border: '1px solid rgba(26, 86, 219, 0.3)',
-                  backgroundColor: 'rgba(26, 86, 219, 0.08)',
-                  color: '#1a56db',
-                  textDecoration: 'none',
-                  ':hover': {
-                    backgroundColor: 'rgba(26, 86, 219, 0.15)',
-                    transform: 'translateY(-1px)'
-                  }
-                }}
-              >
-                Dashboard
-              </a>
+      
               <button 
                 onClick={logout}
                 style={{

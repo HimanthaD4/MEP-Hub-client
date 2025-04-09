@@ -27,7 +27,7 @@ const AdminSidebar = ({ isOpen, isMobile, closeSidebar }) => {
     {
       title: 'Operations',
       items: [
-        { path: 'suppliers', label: 'Suppliers', icon: <FiTruck size={18} /> },
+        { path: 'agents', label: 'Suppliers', icon: <FiTruck size={18} /> },
         { path: 'authorities', label: 'Authorities', icon: <FiAward size={18} /> },
       ]
     },

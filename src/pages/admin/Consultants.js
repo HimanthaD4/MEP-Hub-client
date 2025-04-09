@@ -81,6 +81,8 @@ const Consultants = () => {
     }
   }, [toast]);
 
+  
+
   const fetchConsultants = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/consultants`);

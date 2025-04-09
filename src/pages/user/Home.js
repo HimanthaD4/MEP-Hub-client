@@ -7,21 +7,24 @@ const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [projects, setProjects] = useState([]);
   const [consultantFirms, setConsultantFirms] = useState([]);
-  const [contractorFirms, setContractorFirms] = useState([]); // Changed to consultantFirms
+  const [contractorFirms, setContractorFirms] = useState([]); 
+  const [agents, setAgents] = useState([]); 
   const [loading, setLoading] = useState(true);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projectsRes, consultantsRes,contractorsRes] = await Promise.all([
+        const [projectsRes, consultantsRes, contractorsRes, agentsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/projects`),
           axios.get(`${API_BASE_URL}/consultants`),
-          axios.get(`${API_BASE_URL}/contractors`)
+          axios.get(`${API_BASE_URL}/contractors`),
+          axios.get(`${API_BASE_URL}/agents`)
         ]);
         setProjects(projectsRes.data);
-        setConsultantFirms(consultantsRes.data); // Changed to setConsultantFirms
+        setConsultantFirms(consultantsRes.data);
         setContractorFirms(contractorsRes.data); 
+        setAgents(agentsRes.data); 
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -32,7 +35,7 @@ const HomePage = () => {
   }, []);
 
   const filteredProjects = projects.filter(project => 
-    project.visible && ( // Check visibility
+    project.visible && (
       project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.contractor.toLowerCase().includes(searchTerm.toLowerCase())
@@ -40,7 +43,7 @@ const HomePage = () => {
   );
 
   const filteredConsultantFirms = consultantFirms.filter(consultant => 
-    consultant.visible && ( // Check visibility
+    consultant.visible && (
       consultant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       consultant.companyEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
       consultant.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -48,14 +51,21 @@ const HomePage = () => {
   ).slice(0, 3);
 
   const filteredContractorFirms = contractorFirms.filter(contractor => 
-    contractor.visible && ( // Check visibility
+    contractor.visible && (
       contractor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contractor.companyEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contractor.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
     )
   ).slice(0, 3);
 
-  // Styles
+  const filteredAgents = agents.filter(agent => 
+    agent.visible && (
+      agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.companyEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.equipmentType.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+  ).slice(0, 3);
+
   const styles = {
     container: {
       fontFamily: "'Outfit', sans-serif",
@@ -277,7 +287,6 @@ const HomePage = () => {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       
-      {/* Hero Section */}
       <div style={styles.hero}>
         <div style={styles.heroContent}>
           <h1 style={styles.title}>
@@ -313,13 +322,14 @@ const HomePage = () => {
             <div style={styles.statBadge}>
               {contractorFirms.length}+ Verified Contractor Firms
             </div>
+            <div style={styles.statBadge}>
+              {agents.length}+ Verified Suppliers
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div>
-        {/* Projects Section */}
         <div style={styles.contentSection}>
           <h2 style={styles.sectionTitle}>Featured Projects</h2>
           
@@ -375,36 +385,6 @@ const HomePage = () => {
           )}
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {/* Consultant Firms Section */}
         <div style={styles.contentSection}>
           <h2 style={styles.sectionTitle}>Featured Consultant Firms</h2>
           
@@ -440,7 +420,7 @@ const HomePage = () => {
                           {consultant.specialties.length > 2 && (
                             <span style={styles.specialtyBadge}>
                               +{consultant.specialties.length - 2} more
- </span>
+                            </span>
                           )}
                         </div>
                       </div>
@@ -468,23 +448,7 @@ const HomePage = () => {
           )}
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  {/* Contractor Firms Section */}
-  <div style={styles.contentSection}>
+        <div style={styles.contentSection}>
           <h2 style={styles.sectionTitle}>Featured Contractor Firms</h2>
           
           {loading ? (
@@ -519,7 +483,7 @@ const HomePage = () => {
                           {contractor.specialties.length > 2 && (
                             <span style={styles.specialtyBadge}>
                               +{contractor.specialties.length - 2} more
- </span>
+                            </span>
                           )}
                         </div>
                       </div>
@@ -547,20 +511,68 @@ const HomePage = () => {
           )}
         </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
+        <div style={styles.contentSection}>
+          <h2 style={styles.sectionTitle}>Suppliers, Dealers & Agents</h2>
+          
+          {loading ? (
+            <div style={styles.cardGrid}>
+              {[1, 2, 3].map((item) => (
+                <div key={item} style={styles.card}>
+                  <div style={styles.cardPlaceholder}>
+                    Loading...
+                  </div>
+                  <div style={styles.cardContent}>
+                    <div style={{ height: '24px', width: '80%', backgroundColor: '#f1f5f9', marginBottom: '16px', borderRadius: '4px' }}></div>
+                    <div style={{ height: '16px', width: '60%', backgroundColor: '#f1f5f9', marginBottom: '24px', borderRadius: '4px' }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredAgents.length > 0 ? (
+            <>
+              <div style={styles.cardGrid}>
+                {filteredAgents.map(agent => (
+                  <Link to={`/agents/${agent._id}`} key={agent._id} style={{ textDecoration: 'none' }}>
+                    <div style={styles.card}>
+                      <div style={styles.cardContent}>
+                        <h3 style={styles.cardTitle}>{agent.name}</h3>
+                        <p style={styles.cardText}>{agent.companyEmail}</p>
+                        <div style={{ marginBottom: '16px' }}>
+                          {agent.equipmentType.slice(0, 2).map((equipment, i) => (
+                            <span key={i} style={styles.specialtyBadge}>
+                              {equipment.split(' ')[0]}...
+                            </span>
+                          ))}
+                          {agent.equipmentType.length > 2 && (
+                            <span style={styles.specialtyBadge}>
+                              +{agent.equipmentType.length - 2} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              
+              <div style={{ textAlign: 'center', marginTop: '40px' }}>
+                <Link to="/agents" style={styles.ctaButton}>
+                  View All Suppliers
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div style={styles.emptyState}>
+              <h3 style={styles.emptyStateTitle}>No matching suppliers found</h3>
+              <button 
+                onClick={() => setSearchTerm('')}
+                style={styles.ctaButton}
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
