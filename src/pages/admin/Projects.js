@@ -27,6 +27,7 @@ const Projects = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    type: 'residential',
     amount: '',
     startDate: format(new Date(), 'yyyy-MM-dd'),
     endDate: '',
@@ -490,6 +491,7 @@ const Projects = () => {
             <thead>
               <tr style={styles.tableHeaderRow}>
                 <th style={styles.tableHeader}>Title</th>
+                <th style={styles.tableHeader}>Type</th>
                 <th style={styles.tableHeader}>Contractor</th>
                 <th style={styles.tableHeader}>Amount</th>
                 <th style={styles.tableHeader}>Status</th>
@@ -507,82 +509,112 @@ const Projects = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <td style={styles.tableCell}>
-                    <div style={styles.projectTitle}>{project.title}</div>
-                    <div style={styles.projectDescription}>
-                      {expandedProjectId === project._id
-                        ? project.description
-                        : `${project.description.slice(0, 50)}...`}
-                      {project.description.length > 50 && (
-                        <button
-                          onClick={() => toggleDescription(project._id)}
-                          style={styles.viewMoreButton}
-                        >
-                          {expandedProjectId === project._id ? 'Show Less' : 'View More'}
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                  <td style={styles.tableCell}>{project.contractor}</td>
-                  <td style={styles.tableCell}>${Number(project.amount).toLocaleString()}</td>
-                  <td style={styles.tableCell}>
-                    <span style={{
-                      ...styles.statusBadge,
-                      ...(project.status === 'completed' ? styles.statusCompleted : 
-                           project.status === 'active' ? styles.statusActive : 
-                           styles.statusPending)
-                    }}>
-                      {project.status}
-                    </span>
-                  </td>
-                  <td style={styles.tableCell}>
-                    <div style={styles.dateText}>
-                      Start: {format(new Date(project.startDate), 'MMM d, yyyy')}
-                    </div>
-                    {project.endDate && (
-                      <div style={styles.dateText}>
-                        End: {format(new Date(project.endDate), 'MMM d, yyyy')}
-                      </div>
-                    )}
-                  </td>
-                  <td style={styles.tableCell}>
-                    <motion.button 
-                      onClick={() => toggleVisibility(project)}
-                      style={styles.visibilityButton}
-                      whileHover={{ scale: 1.2 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      {project.visible ? (
-                        <FiEye style={styles.visibleIcon} />
-                      ) : (
-                        <FiEyeOff style={styles.hiddenIcon} />
-                      )}
-                    </motion.button>
-                  </td>
-                  <td style={styles.tableCell}>
-                    <div style={styles.actionButtons}>
-                      <motion.button
-                        onClick={() => openEditProjectModal(project)}
-                        style={styles.editButton}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        <FiEdit2 />
-                      </motion.button>
-                      <motion.button
-                        onClick={() => showConfirmDialog(project._id)}
-                        style={styles.deleteButton}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        <FiTrash2 />
-                      </motion.button>
-                    </div>
-                  </td>
+
+
+
+
+
+<td style={styles.tableCell}>
+  <div style={styles.projectTitle}>{project.title}</div>
+  <div style={styles.projectDescription}>
+    {expandedProjectId === project._id
+      ? project.description
+      : `${project.description.slice(0, 50)}...`}
+    {project.description.length > 50 && (
+      <button
+        onClick={() => toggleDescription(project._id)}
+        style={styles.viewMoreButton}
+      >
+        {expandedProjectId === project._id ? 'Show Less' : 'View More'}
+      </button>
+    )}
+  </div>
+</td>
+<td style={styles.tableCell}>
+  <span style={{
+    ...styles.typeBadge,
+    ...(project.type === 'residential' ? styles.typeResidential :
+         project.type === 'commercial' ? styles.typeCommercial :
+         project.type === 'industrial' ? styles.typeIndustrial :
+         project.type === 'mix development' ? styles.typeMixDevelopment :
+         styles.typeOfficeComplex)
+  }}>
+    {project.type}
+  </span>
+</td>
+<td style={styles.tableCell}>{project.contractor}</td>
+<td style={styles.tableCell}>${Number(project.amount).toLocaleString()}</td>
+<td style={styles.tableCell}>
+  <span style={{
+    ...styles.statusBadge,
+    ...(project.status === 'completed' ? styles.statusCompleted : 
+         project.status === 'active' ? styles.statusActive : 
+         styles.statusPending)
+  }}>
+    {project.status}
+  </span>
+</td>
+<td style={styles.tableCell}>
+  <div style={styles.dateText}>
+    Start: {format(new Date(project.startDate), 'MMM d, yyyy')}
+  </div>
+  {project.endDate && (
+    <div style={styles.dateText}>
+      End: {format(new Date(project.endDate), 'MMM d, yyyy')}
+    </div>
+  )}
+</td>
+<td style={styles.tableCell}>
+  <motion.button 
+    onClick={() => toggleVisibility(project)}
+    style={styles.visibilityButton}
+    whileHover={{ scale: 1.2 }}
+    whileTap={{ scale: 0.9 }}
+  >
+    {project.visible ? (
+      <FiEye style={styles.visibleIcon} />
+    ) : (
+      <FiEyeOff style={styles.hiddenIcon} />
+    )}
+  </motion.button>
+</td>
+<td style={styles.tableCell}>
+  <div style={styles.actionButtons}>
+    <motion.button
+      onClick={() => openEditProjectModal(project)}
+      style={styles.editButton}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+    >
+      <FiEdit2 />
+    </motion.button>
+    <motion.button
+      onClick={() => showConfirmDialog(project._id)}
+      style={styles.deleteButton}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+    >
+      <FiTrash2 />
+    </motion.button>
+  </div>
+</td>
+
+
+
+
+
+
                 </motion.tr>
               ))}
             </tbody>
           </table>
+
+
+
+
+
+
+
         </div>
       )}
 
@@ -612,97 +644,68 @@ const Projects = () => {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} style={styles.form}>
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Title</label>
-                    <input
-                      name="title"
-                      value={formData.title}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formInput,
-                        ...(errors.title && styles.formInputError)
-                      }}
-                    />
-                    {errors.title && <p style={styles.errorText}>{errors.title}</p>}
-                  </div>
+             <form onSubmit={handleSubmit} style={styles.form}>
+  <div style={styles.formGrid}>
+    <div style={styles.formGroup}>
+      <label style={styles.formLabel}>Title</label>
+      <input
+        name="title"
+        value={formData.title}
+        onChange={handleChange}
+        style={{
+          ...styles.formInput,
+          ...(errors.title && styles.formInputError)
+        }}
+      />
+      {errors.title && <p style={styles.errorText}>{errors.title}</p>}
+    </div>
 
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Amount ($)</label>
-                    <input
-                      name="amount"
-                      value={formData.amount}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formInput,
-                        ...(errors.amount && styles.formInputError)
-                      }}
-                    />
-                    {errors.amount && <p style={styles.errorText}>{errors.amount}</p>}
-                  </div>
-                </div>
+    <div style={styles.formGroup}>
+      <label style={styles.formLabel}>Type</label>
+      <select
+        name="type"
+        value={formData.type}
+        onChange={handleChange}
+        style={styles.formSelect}
+      >
+        <option value="residential">Residential</option>
+        <option value="commercial">Commercial</option>
+        <option value="industrial">Industrial</option>
+        <option value="mix development">Mix Development</option>
+        <option value="office complex">Office Complex</option>
+      </select>
+    </div>
+  </div>
 
-                <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>Description</label>
-                  <textarea
-                    name="description"
-                    rows="4"
-                    value={formData.description}
-                    onChange={handleChange}
-                    style={{
-                      ...styles.formTextarea,
-                      ...(errors.description && styles.formInputError)
-                    }}
-                  />
-                  {errors.description && <p style={styles.errorText}>{errors.description}</p>}
-                </div>
+  <div style={styles.formGrid}>
+    <div style={styles.formGroup}>
+      <label style={styles.formLabel}>Amount ($)</label>
+      <input
+        name="amount"
+        value={formData.amount}
+        onChange={handleChange}
+        style={{
+          ...styles.formInput,
+          ...(errors.amount && styles.formInputError)
+        }}
+      />
+      {errors.amount && <p style={styles.errorText}>{errors.amount}</p>}
+    </div>
 
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Start Date</label>
-                    <input
-                      type="date"
-                      name="startDate"
-                      value={formData.startDate}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formInput,
-                        ...(errors.startDate && styles.formInputError)
-                      }}
-                    />
-                    {errors.startDate && <p style={styles.errorText}>{errors.startDate}</p>}
-                  </div>
-
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>End Date</label>
-                    <input
-                      type="date"
-                      name="endDate"
-                      value={formData.endDate}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formInput,
-                        ...(errors.endDate && styles.formInputError)
-                      }}
-                    />
-                    {errors.endDate && <p style={styles.errorText}>{errors.endDate}</p>}
-                  </div>
-                </div>
-
-                <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>Contractor</label>
-                  <input
-                    name="contractor"
-                    value={formData.contractor}
-                    onChange={handleChange}
-                    style={{
-                      ...styles.formInput,
-                      ...(errors.contractor && styles.formInputError)
-                    }}
-                  />
-                  {errors.contractor && <p style={styles.errorText}>{errors.contractor}</p>}
-                </div>
+    <div style={styles.formGroup}>
+      <label style={styles.formLabel}>Contractor</label>
+      <input
+        name="contractor"
+        value={formData.contractor}
+        onChange={handleChange}
+        style={{
+          ...styles.formInput,
+          ...(errors.contractor && styles.formInputError)
+        }}
+      />
+      {errors.contractor && <p style={styles.errorText}>{errors.contractor}</p>}
+    </div>
+  </div>
 
                 <div style={styles.formGroup}>
                   <label style={styles.formLabel}>Status</label>
@@ -717,6 +720,21 @@ const Projects = () => {
                     <option value="completed">Completed</option>
                   </select>
                 </div>
+
+                <div style={styles.formGroup}>
+  <label style={styles.formLabel}>Description</label>
+  <textarea
+    name="description"
+    value={formData.description}
+    onChange={handleChange}
+    style={{
+      ...styles.formTextarea,
+      ...(errors.description && styles.formInputError)
+    }}
+    rows={4}
+  />
+  {errors.description && <p style={styles.errorText}>{errors.description}</p>}
+</div>
 
                 <div style={styles.formGroup}>
                   <label style={styles.checkboxLabel}>
@@ -875,6 +893,34 @@ const styles = {
     padding: '16px',
     fontSize: '14px',
     color: '#111827'
+  },
+  typeBadge: {
+    display: 'inline-block',
+    padding: '4px 8px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: 500,
+    textTransform: 'capitalize'
+  },
+  typeResidential: {
+    backgroundColor: '#E0F2FE',
+    color: '#0369A1'
+  },
+  typeCommercial: {
+    backgroundColor: '#DCFCE7',
+    color: '#166534'
+  },
+  typeIndustrial: {
+    backgroundColor: '#FEF3C7',
+    color: '#92400E'
+  },
+  typeMixDevelopment: {
+    backgroundColor: '#EDE9FE',
+    color: '#5B21B6'
+  },
+  typeOfficeComplex: {
+    backgroundColor: '#FCE7F3',
+    color: '#9D174D'
   },
   projectTitle: {
     fontWeight: 500,

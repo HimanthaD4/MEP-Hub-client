@@ -214,7 +214,10 @@ const HomePage = () => {
       color: '#9ca3af'
     },
     cardContent: {
-      padding: '20px'
+      padding: '20px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px' 
     },
     cardTitle: {
       fontSize: '18px',
@@ -277,6 +280,35 @@ const HomePage = () => {
       borderRadius: '12px',
       textAlign: 'center',
       border: '1px dashed rgba(0,0,0,0.1)'
+    },
+    projectTypeBadge: {
+      display: 'inline-block',
+      padding: '4px 10px',
+      borderRadius: '50px',
+      fontSize: '12px',
+      fontWeight: 600,
+      marginBottom: '12px',
+      textTransform: 'capitalize'
+    },
+    typeResidential: {
+      backgroundColor: '#e0f2fe',
+      color: '#0369a1'
+    },
+    typeCommercial: {
+      backgroundColor: '#dbeafe',
+      color: '#1e40af'
+    },
+    typeIndustrial: {
+      backgroundColor: '#fef3c7',
+      color: '#92400e'
+    },
+    typeMixDevelopment: {
+      backgroundColor: '#ede9fe',
+      color: '#5b21b6'
+    },
+    typeOfficeComplex: {
+      backgroundColor: '#fce7f3',
+      color: '#9d174d'
     },
     emptyStateTitle: {
       fontSize: '20px',
@@ -388,17 +420,28 @@ const HomePage = () => {
               <div style={styles.cardGrid}>
                 {filteredProjects.slice(0, 3).map(project => (
                   <Link to={`/projects/${project._id}`} key={project._id} style={{ textDecoration: 'none' }}>
-                    <div style={styles.card}>
-                      <div style={styles.cardContent}>
-                        <h3 style={styles.cardTitle}>{project.title}</h3>
-                        <p style={styles.cardText}>{project.contractor}</p>
-                        <div style={styles.statusBadge}>{project.status}</div>
-                        <p style={styles.cardText}>
-                          Starts {format(new Date(project.startDate), 'MMM d, yyyy')}
-                        </p>
-                      </div>
+                  <div style={styles.card}>
+                    <div style={styles.cardContent}>
+                      <h3 style={styles.cardTitle}>{project.title}</h3>
+                      <span style={{
+                        ...styles.projectTypeBadge,
+                        ...(project.type === 'residential' ? styles.typeResidential :
+                             project.type === 'commercial' ? styles.typeCommercial :
+                             project.type === 'industrial' ? styles.typeIndustrial :
+                             project.type === 'mix development' ? styles.typeMixDevelopment :
+                             styles.typeOfficeComplex)
+                      }}>
+                        {project.type}
+                      </span>
+                      <p style={styles.cardText}>{project.contractor}</p>
+                      <div style={styles.statusBadge}>{project.status}</div>
+                      <p style={styles.cardText}>
+                        Starts {format(new Date(project.startDate), 'MMM d, yyyy')}
+                      </p>
                     </div>
-                  </Link>
+                  </div>
+                </Link>
+                
                 ))}
               </div>
               
