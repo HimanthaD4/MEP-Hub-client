@@ -7,24 +7,27 @@ const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [projects, setProjects] = useState([]);
   const [consultantFirms, setConsultantFirms] = useState([]);
-  const [contractorFirms, setContractorFirms] = useState([]); 
-  const [agents, setAgents] = useState([]); 
+  const [contractorFirms, setContractorFirms] = useState([]);
+  const [agents, setAgents] = useState([]);
+  const [directors, setDirectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projectsRes, consultantsRes, contractorsRes, agentsRes] = await Promise.all([
+        const [projectsRes, consultantsRes, contractorsRes, agentsRes, directorsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/projects`),
           axios.get(`${API_BASE_URL}/consultants`),
           axios.get(`${API_BASE_URL}/contractors`),
-          axios.get(`${API_BASE_URL}/agents`)
+          axios.get(`${API_BASE_URL}/agents`),
+          axios.get(`${API_BASE_URL}/directors`)
         ]);
         setProjects(projectsRes.data);
         setConsultantFirms(consultantsRes.data);
-        setContractorFirms(contractorsRes.data); 
-        setAgents(agentsRes.data); 
+        setContractorFirms(contractorsRes.data);
+        setAgents(agentsRes.data);
+        setDirectors(directorsRes.data);
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -63,6 +66,15 @@ const HomePage = () => {
       agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       agent.companyEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
       agent.equipmentType.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+  ).slice(0, 3);
+
+  const filteredDirectors = directors.filter(director => 
+    director.visible && (
+      director.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      director.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      director.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      director.areasOfExpertise.some(e => e.toLowerCase().includes(searchTerm.toLowerCase()))
     )
   ).slice(0, 3);
 
@@ -161,6 +173,14 @@ const HomePage = () => {
       margin: '0 auto',
       padding: '60px 24px'
     },
+    adminSection: {
+      maxWidth: '1280px',
+      margin: '0 auto',
+      padding: '60px 24px',
+      backgroundColor: '#f8fafc',
+      borderTop: '1px solid rgba(0,0,0,0.05)',
+      borderBottom: '1px solid rgba(0,0,0,0.05)'
+    },
     sectionTitle: {
       fontSize: 'clamp(28px, 3vw, 36px)',
       fontWeight: 700,
@@ -230,6 +250,27 @@ const HomePage = () => {
       marginRight: '8px',
       marginBottom: '8px'
     },
+    directorBadge: {
+      display: 'inline-block',
+      padding: '4px 10px',
+      backgroundColor: '#e0f2fe',
+      borderRadius: '50px',
+      fontSize: '12px',
+      fontWeight: 600,
+      color: '#0369a1',
+      marginRight: '8px',
+      marginBottom: '8px'
+    },
+    experienceBadge: {
+      display: 'inline-block',
+      padding: '4px 10px',
+      backgroundColor: '#ecfdf5',
+      borderRadius: '50px',
+      fontSize: '12px',
+      fontWeight: 600,
+      color: '#059669',
+      marginRight: '8px'
+    },
     emptyState: {
       padding: '40px',
       backgroundColor: '#f8fafc',
@@ -257,27 +298,19 @@ const HomePage = () => {
         backgroundColor: '#1e40af'
       }
     },
-    ctaSection: {
-      backgroundColor: '#1a56db',
-      borderRadius: '12px',
-      padding: '60px 40px',
-      textAlign: 'center',
-      position: 'relative',
-      overflow: 'hidden'
-    },
-    ctaTitle: {
-      fontSize: 'clamp(24px, 3vw, 32px)',
-      fontWeight: 700,
-      marginBottom: '24px',
-      color: 'white'
-    },
-    ctaText: {
-      fontSize: '18px',
-      color: 'rgba(255,255,255,0.9)',
-      marginBottom: '32px',
-      maxWidth: '600px',
-      marginLeft: 'auto',
-      marginRight: 'auto'
+    adminCtaButton: {
+      padding: '12px 24px',
+      backgroundColor: '#0369a1',
+      color: 'white',
+      border: 'none',
+      borderRadius: '6px',
+      fontSize: '16px',
+      fontWeight: 600,
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      ':hover': {
+        backgroundColor: '#075985'
+      }
     }
   };
 
@@ -324,6 +357,9 @@ const HomePage = () => {
             </div>
             <div style={styles.statBadge}>
               {agents.length}+ Verified Suppliers
+            </div>
+            <div style={styles.statBadge}>
+              {directors.length}+ Industry Leaders
             </div>
           </div>
         </div>
@@ -567,6 +603,77 @@ const HomePage = () => {
               <button 
                 onClick={() => setSearchTerm('')}
                 style={styles.ctaButton}
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div style={styles.adminSection}>
+          <h2 style={styles.sectionTitle}>Industry Leaders</h2>
+          
+          {loading ? (
+            <div style={styles.cardGrid}>
+              {[1, 2, 3].map((item) => (
+                <div key={item} style={styles.card}>
+                  <div style={styles.cardPlaceholder}>
+                    Loading...
+                  </div>
+                  <div style={styles.cardContent}>
+                    <div style={{ height: '24px', width: '80%', backgroundColor: '#f1f5f9', marginBottom: '16px', borderRadius: '4px' }}></div>
+                    <div style={{ height: '16px', width: '60%', backgroundColor: '#f1f5f9', marginBottom: '24px', borderRadius: '4px' }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredDirectors.length > 0 ? (
+            <>
+              <div style={styles.cardGrid}>
+                {filteredDirectors.map(director => (
+                  <Link to={`/directors/${director._id}`} key={director._id} style={{ textDecoration: 'none' }}>
+                    <div style={styles.card}>
+                      <div style={styles.cardContent}>
+                        <h3 style={styles.cardTitle}>{director.name}</h3>
+                        <p style={styles.cardText}>{director.company}</p>
+                        <div style={{ marginBottom: '12px' }}>
+                          <span style={styles.experienceBadge}>
+                            {director.yearsOfExperience} years experience
+                          </span>
+                        </div>
+                        <div style={{ marginBottom: '16px' }}>
+                          {director.areasOfExpertise.slice(0, 3).map((expertise, i) => (
+                            <span key={i} style={styles.directorBadge}>
+                              {expertise}
+                            </span>
+                          ))}
+                          {director.areasOfExpertise.length > 3 && (
+                            <span style={styles.directorBadge}>
+                              +{director.areasOfExpertise.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                        <p style={styles.cardText}>
+                          {director.position}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              
+              <div style={{ textAlign: 'center', marginTop: '40px' }}>
+                <Link to="/directors" style={styles.adminCtaButton}>
+                  Meet All Industry Leaders
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div style={styles.emptyState}>
+              <h3 style={styles.emptyStateTitle}>No matching directors found</h3>
+              <button 
+                onClick={() => setSearchTerm('')}
+                style={styles.adminCtaButton}
               >
                 Clear Search
               </button>

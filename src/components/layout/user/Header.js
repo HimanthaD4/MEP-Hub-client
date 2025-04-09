@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import LoginModal from '../../auth/LoginModal';
 import RegisterModal from '../../auth/RegisterModal';
+import { FiMenu } from 'react-icons/fi';
+import { RiLogoutCircleRLine } from 'react-icons/ri';
+import { FaUserCircle } from 'react-icons/fa';
+import { MdAdminPanelSettings } from 'react-icons/md';
 
 const Header = ({ toggleSidebar }) => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -9,6 +13,14 @@ const Header = ({ toggleSidebar }) => {
   const [showRegister, setShowRegister] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Google's brand colors
+  const colors = {
+    blue: '#4285F4',
+    red: '#EA4335',
+    yellow: '#FBBC05',
+    green: '#34A853' // Adding green for completeness
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -68,9 +80,7 @@ const Header = ({ toggleSidebar }) => {
               }
             }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2">
-              <path d="M3 12h18M3 6h18M3 18h18" />
-            </svg>
+            <FiMenu size={20} color="#111827" />
           </button>
 
           <a href="/" style={{ 
@@ -88,9 +98,11 @@ const Header = ({ toggleSidebar }) => {
               transition: 'all 0.2s ease'
             }}>
               mephub<span style={{ 
-                color: '#1a56db',
+                color: colors.blue,
                 transition: 'all 0.2s ease'
-              }}>.lk</span>
+              }}>.</span><span style={{
+                color: colors.red
+              }}>lk</span>
             </span>
           </a>
         </div>
@@ -125,7 +137,6 @@ const Header = ({ toggleSidebar }) => {
             }}>
               Services
             </a>
-         
             <a href="/blog" style={{
               color: '#111827',
               textDecoration: 'none',
@@ -157,12 +168,12 @@ const Header = ({ toggleSidebar }) => {
                   fontSize: '14px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  border: '1px solid rgba(0,0,0,0.2)',
+                  border: `1px solid ${colors.blue}`,
                   backgroundColor: 'transparent',
-                  color: '#111827',
+                  color: colors.blue,
                   ':hover': {
-                    backgroundColor: 'rgba(0,0,0,0.03)',
-                    borderColor: 'rgba(0,0,0,0.3)'
+                    backgroundColor: 'rgba(66, 133, 244, 0.08)',
+                    transform: 'translateY(-1px)'
                   }
                 }}
               >
@@ -177,12 +188,12 @@ const Header = ({ toggleSidebar }) => {
                   fontSize: '14px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  border: '1px solid #1a56db',
-                  backgroundColor: '#1a56db',
+                  border: `1px solid ${colors.red}`,
+                  backgroundColor: colors.red,
                   color: 'white',
                   ':hover': {
-                    backgroundColor: '#1e40af',
-                    borderColor: '#1e40af',
+                    backgroundColor: '#D33426',
+                    borderColor: '#D33426',
                     transform: 'translateY(-1px)'
                   }
                 }}
@@ -192,6 +203,8 @@ const Header = ({ toggleSidebar }) => {
             </>
           ) : (
             <>
+            
+
               {user?.userType === 'admin' && (
                 <a 
                   href="/admin" 
@@ -202,16 +215,20 @@ const Header = ({ toggleSidebar }) => {
                     fontSize: '14px',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    border: '1px solid rgba(26, 86, 219, 0.3)',
-                    backgroundColor: 'rgba(26, 86, 219, 0.08)',
-                    color: '#1a56db',
+                    border: `1px solid rgba(251, 188, 5, 0.3)`,
+                    backgroundColor: 'rgba(251, 188, 5, 0.08)',
+                    color: colors.yellow,
                     textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
                     ':hover': {
-                      backgroundColor: 'rgba(26, 86, 219, 0.15)',
+                      backgroundColor: 'rgba(251, 188, 5, 0.15)',
                       transform: 'translateY(-1px)'
                     }
                   }}
                 >
+                  <MdAdminPanelSettings size={16} />
                   Admin
                 </a>
               )}
@@ -227,22 +244,18 @@ const Header = ({ toggleSidebar }) => {
                   borderRadius: '8px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                  color: '#ef4444',
+                  border: `1px solid rgba(234, 67, 53, 0.3)`,
+                  backgroundColor: 'rgba(234, 67, 53, 0.08)',
+                  color: colors.red,
                   marginLeft: '4px',
                   ':hover': {
-                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                    backgroundColor: 'rgba(234, 67, 53, 0.15)',
                     transform: 'translateY(-1px)'
                   }
                 }}
                 title="Logout"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                  <polyline points="16 17 21 12 16 7"></polyline>
-                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                </svg>
+                <RiLogoutCircleRLine size={18} />
               </button>
             </>
           )}
@@ -251,7 +264,7 @@ const Header = ({ toggleSidebar }) => {
 
       <style jsx>{`
         nav a:hover {
-          background-color: rgba(26, 86, 219, 0.05);
+          background-color: rgba(66, 133, 244, 0.05);
         }
         nav a::after {
           content: '';
@@ -260,7 +273,7 @@ const Header = ({ toggleSidebar }) => {
           left: 12px;
           right: 12px;
           height: 2px;
-          background-color: #1a56db;
+          background-color: ${colors.yellow};
           transform: scaleX(0);
           transform-origin: center;
           transition: transform 0.2s ease;

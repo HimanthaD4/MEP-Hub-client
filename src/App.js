@@ -20,6 +20,8 @@ import ContractorsList from './pages/user/details/contractor/ContractorsList';
 import AgentDetail from './pages/user/details/agent/AgentDetail.js';
 import AgentList from './pages/user/details/agent/AgentsList.js';
 
+import ContactUs from './pages/user/ContactUs';
+
 import './styles/main.css';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
@@ -77,25 +79,25 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+
           <Route path="/" element={<LayoutWithHeader><HomePage /></LayoutWithHeader>} />
+          <Route path="/contact" element={<LayoutWithHeader><ContactUs /></LayoutWithHeader>} />
+
+
 
           <Route path="/member" element={<LayoutWithHeader><MemberPanel /></LayoutWithHeader>} />
 
           <Route path="/projects" element={<LayoutWithHeader><ProjectsList /></LayoutWithHeader>} />
-
           <Route path="/projects/:id" element={<LayoutWithHeader><ProjectDetail /></LayoutWithHeader>} />
 
           <Route path="/consultants" element={<LayoutWithHeader><ConsultantsList /></LayoutWithHeader>} />
-
           <Route path="/consultants/:id" element={<LayoutWithHeader><ConsultantDetail /></LayoutWithHeader>} />
 
           
           <Route path="/contractors" element={<LayoutWithHeader><ContractorsList /></LayoutWithHeader>} />
-
           <Route path="/contractors/:id" element={<LayoutWithHeader><ContractorDetail /></LayoutWithHeader>} />
 
           <Route path="/agents" element={<LayoutWithHeader><AgentList /></LayoutWithHeader>} />
-
           <Route path="/agents/:id" element={<LayoutWithHeader><AgentDetail /></LayoutWithHeader>} />
 
           
