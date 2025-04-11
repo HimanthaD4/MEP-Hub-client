@@ -3,60 +3,32 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff, FiX, FiAlertTriangle } from 'react-icons/fi';
 
-const JobVacancies = () => {
-  const [vacancies, setVacancies] = useState([]);
+const Institutions = () => {
+  const [institutions, setInstitutions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentVacancy, setCurrentVacancy] = useState(null);
+  const [currentInstitution, setCurrentInstitution] = useState(null);
   const [toast, setToast] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(null);
 
   const [formData, setFormData] = useState({
-    positionTitle: '',
-    jobType: '',
-    jobDescription: '',
-    qualifications: [],
-    experienceLevel: '',
-    yearsOfExperience: '',
-    employmentType: '',
-    city: '',
-    country: '',
-    company: '',
-    contactEmail: '',
-    status: 'Draft',
+    name: '',
+    type: '',
+    email: '',
+    contactNumber: '',
+    address: '',
+    status: 'Active',
     visible: true
   });
 
   const [errors, setErrors] = useState({});
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  const jobTypeOptions = [
-    'MECHANICAL',
-    'ELECTRICAL',
-    'BUILDING_SERVICES',
-    'DRAFTING',
-    'QUANTITY_SURVEYING'
-  ];
-
-  const qualificationOptions = [
-    'Diploma', 'Bachelor', 'Master', 'PhD',
-    'Professional Certification', 'Trade Certification', 'None'
-  ];
-
-  const experienceLevelOptions = [
-    'Entry Level', 'Junior', 'Mid-Level', 'Senior', 
-    'Lead', 'Manager', 'Director'
-  ];
-
-  const employmentTypeOptions = [
-    'Full-time', 'Part-time', 'Contract', 'Temporary',
-    'Internship', 'Freelance'
-  ];
-
-  const statusOptions = ['Draft', 'Published', 'Filled'];
+  const institutionTypeOptions = ['LEARNING', 'TRAINING'];
+  const statusOptions = ['Active', 'Inactive'];
 
   useEffect(() => {
-    fetchVacancies();
+    fetchInstitutions();
   }, []);
 
   useEffect(() => {
@@ -68,18 +40,17 @@ const JobVacancies = () => {
     }
   }, [toast]);
 
-  const fetchVacancies = async () => {
+  const fetchInstitutions = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/job-vacancies`);
-      setVacancies(response.data);
+      const response = await axios.get(`${API_BASE_URL}/institutions`);
+      setInstitutions(response.data);
     } catch (error) {
-      showNotification('Failed to load job vacancies', 'error');
+      showNotification('Failed to load institutions', 'error');
     }
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -88,31 +59,13 @@ const JobVacancies = () => {
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  const handleQualificationChange = (qualification) => {
-    setFormData(prev => {
-      const newQualifications = prev.qualifications.includes(qualification)
-        ? prev.qualifications.filter(q => q !== qualification)
-        : [...prev.qualifications, qualification];
-      
-      return {
-        ...prev,
-        qualifications: newQualifications
-      };
-    });
-  };
-
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.positionTitle.trim()) newErrors.positionTitle = 'Position title is required';
-    if (!formData.jobType) newErrors.jobType = 'Job type is required';
-    if (!formData.jobDescription.trim()) newErrors.jobDescription = 'Job description is required';
-    if (!formData.experienceLevel) newErrors.experienceLevel = 'Experience level is required';
-    if (!formData.yearsOfExperience || isNaN(formData.yearsOfExperience)) 
-      newErrors.yearsOfExperience = 'Valid years of experience is required';
-    if (!formData.employmentType) newErrors.employmentType = 'Employment type is required';
-    if (!formData.country.trim()) newErrors.country = 'Country is required';
-    if (!formData.company) newErrors.company = 'Company is required';
-    if (!formData.contactEmail.trim()) newErrors.contactEmail = 'Contact email is required';
+    if (!formData.name.trim()) newErrors.name = 'Institution name is required';
+    if (!formData.type) newErrors.type = 'Institution type is required';
+    if (!formData.email.trim()) newErrors.email = 'Institution email is required';
+    if (!formData.contactNumber.trim()) newErrors.contactNumber = 'Contact number is required';
+    if (!formData.address.trim()) newErrors.address = 'Address is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -126,24 +79,23 @@ const JobVacancies = () => {
 
     try {
       const dataToSend = {
-        ...formData,
-        yearsOfExperience: Number(formData.yearsOfExperience)
+        ...formData
       };
 
-      const response = currentVacancy
-        ? await axios.put(`${API_BASE_URL}/job-vacancies/${currentVacancy._id}`, dataToSend)
-        : await axios.post(`${API_BASE_URL}/job-vacancies`, dataToSend);
+      const response = currentInstitution
+        ? await axios.put(`${API_BASE_URL}/institutions/${currentInstitution._id}`, dataToSend)
+        : await axios.post(`${API_BASE_URL}/institutions`, dataToSend);
 
       showNotification(
-        currentVacancy ? 'Job vacancy updated successfully' : 'Job vacancy added successfully',
+        currentInstitution ? 'Institution updated successfully' : 'Institution added successfully',
         'success'
       );
 
       setIsModalOpen(false);
       resetForm();
-      await fetchVacancies();
+      await fetchInstitutions();
     } catch (error) {
-      showNotification(error.response?.data?.message || 'Failed to save job vacancy', 'error');
+      showNotification(error.response?.data?.message || 'Failed to save institution', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -151,68 +103,56 @@ const JobVacancies = () => {
 
   const resetForm = () => {
     setFormData({
-      positionTitle: '',
-      jobType: '',
-      jobDescription: '',
-      qualifications: [],
-      experienceLevel: '',
-      yearsOfExperience: '',
-      employmentType: '',
-      city: '',
-      country: '',
-      company: '',
-      contactEmail: '',
-      status: 'Draft',
+      name: '',
+      type: '',
+      email: '',
+      contactNumber: '',
+      address: '',
+      status: 'Active',
       visible: true
     });
-    setCurrentVacancy(null);
+    setCurrentInstitution(null);
   };
 
-  const openNewVacancyModal = () => {
+  const openNewInstitutionModal = () => {
     resetForm();
     setIsModalOpen(true);
   };
 
-  const openEditVacancyModal = (vacancy) => {
-    setCurrentVacancy(vacancy);
+  const openEditInstitutionModal = (institution) => {
+    setCurrentInstitution(institution);
     setFormData({
-      positionTitle: vacancy.positionTitle,
-      jobType: vacancy.jobType,
-      jobDescription: vacancy.jobDescription,
-      qualifications: vacancy.qualifications || [],
-      experienceLevel: vacancy.experienceLevel,
-      yearsOfExperience: vacancy.yearsOfExperience.toString(),
-      employmentType: vacancy.employmentType,
-      city: vacancy.city || '',
-      country: vacancy.country,
-      company: vacancy.company,
-      contactEmail: vacancy.contactEmail,
-      status: vacancy.status,
-      visible: vacancy.visible
+      name: institution.name,
+      type: institution.type,
+      email: institution.email,
+      contactNumber: institution.contactNumber,
+      address: institution.address,
+      status: institution.status,
+      visible: institution.visible
     });
     setIsModalOpen(true);
   };
 
-  const deleteVacancy = async (id) => {
+  const deleteInstitution = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/job-vacancies/${id}`);
-      showNotification('Job vacancy deleted successfully', 'success');
-      setVacancies(vacancies.filter(vacancy => vacancy._id !== id));
+      await axios.delete(`${API_BASE_URL}/institutions/${id}`);
+      showNotification('Institution deleted successfully', 'success');
+      setInstitutions(institutions.filter(institution => institution._id !== id));
       setConfirmDialog(null);
     } catch (error) {
-      showNotification('Failed to delete job vacancy', 'error');
+      showNotification('Failed to delete institution', 'error');
       setConfirmDialog(null);
     }
   };
 
-  const toggleVisibility = async (vacancy) => {
+  const toggleVisibility = async (institution) => {
     try {
-      await axios.patch(`${API_BASE_URL}/job-vacancies/${vacancy._id}/visibility`);
+      await axios.patch(`${API_BASE_URL}/institutions/${institution._id}/visibility`);
       showNotification(
-        `Job vacancy is now ${!vacancy.visible ? 'visible' : 'hidden'}`,
+        `Institution is now ${!institution.visible ? 'visible' : 'hidden'}`,
         'success'
       );
-      fetchVacancies();
+      fetchInstitutions();
     } catch {
       showNotification('Failed to update visibility', 'error');
     }
@@ -222,10 +162,10 @@ const JobVacancies = () => {
     setToast({ message, type, id: Date.now() });
   };
 
-  const showConfirmDialog = (vacancyId) => {
+  const showConfirmDialog = (institutionId) => {
     setConfirmDialog({
-      id: vacancyId,
-      message: 'Are you sure you want to delete this job vacancy? This action cannot be undone.',
+      id: institutionId,
+      message: 'Are you sure you want to delete this institution? This action cannot be undone.',
       title: 'Confirm Deletion'
     });
   };
@@ -288,7 +228,7 @@ const JobVacancies = () => {
                 </motion.button>
                 <motion.button
                   style={styles.deleteConfirmButton}
-                  onClick={() => deleteVacancy(confirmDialog.id)}
+                  onClick={() => deleteInstitution(confirmDialog.id)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -301,84 +241,69 @@ const JobVacancies = () => {
       </AnimatePresence>
 
       <div style={styles.header}>
-        <h1 style={styles.title}>Job Vacancies Management</h1>
+        <h1 style={styles.title}>Institutions Management</h1>
         <motion.button
-          onClick={openNewVacancyModal}
+          onClick={openNewInstitutionModal}
           style={styles.addButton}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.98 }}
         >
           <FiPlus style={{ marginRight: '8px' }} />
-          Add Job Vacancy
+          Add Institution
         </motion.button>
       </div>
 
-      {vacancies.length === 0 ? (
+      {institutions.length === 0 ? (
         <div style={styles.emptyState}>
-          <p>No job vacancies found. Create your first job vacancy to get started.</p>
+          <p>No institutions found. Create your first institution to get started.</p>
         </div>
       ) : (
         <div style={styles.tableContainer}>
           <table style={styles.table}>
             <thead>
               <tr style={styles.tableHeaderRow}>
-                <th style={styles.tableHeader}>Position</th>
+                <th style={styles.tableHeader}>Name</th>
+                <th style={styles.tableHeader}>Email</th>
+                <th style={styles.tableHeader}>Contact</th>
                 <th style={styles.tableHeader}>Type</th>
-                <th style={styles.tableHeader}>Experience</th>
-                <th style={styles.tableHeader}>Employment</th>
-                <th style={styles.tableHeader}>Location</th>
+                <th style={styles.tableHeader}>Address</th>
                 <th style={styles.tableHeader}>Status</th>
                 <th style={styles.tableHeader}>Visibility</th>
                 <th style={styles.tableHeader}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {vacancies.map((vacancy) => (
+              {institutions.map((institution) => (
                 <motion.tr 
-                  key={vacancy._id}
+                  key={institution._id}
                   style={styles.tableRow}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
                 >
+                  <td style={styles.tableCell}>{institution.name }</td>
+                  <td style={styles.tableCell}>{institution.email}</td>
+                  <td style={styles.tableCell}>{institution.contactNumber}</td>
                   <td style={styles.tableCell}>
-                    <div style={styles.positionTitle}>
-                      {vacancy.positionTitle}
-                    </div>
-                    <div style={styles.companyName}>{vacancy.company?.name}</div>
+                    <span style={styles.typeBadge}>{institution.type}</span>
                   </td>
-                  <td style={styles.tableCell}>
-                    <span style={styles.typeBadge}>
-                      {vacancy.jobType.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td style={styles.tableCell}>
-                    {vacancy.yearsOfExperience} years ({vacancy.experienceLevel})
-                  </td>
-                  <td style={styles.tableCell}>
-                    {vacancy.employmentType}
-                  </td>
-                  <td style={styles.tableCell}>
-                    {vacancy.city ? `${vacancy.city}, ${vacancy.country}` : vacancy.country}
-                  </td>
+                  <td style={styles.tableCell}>{institution.address}</td>
                   <td style={styles.tableCell}>
                     <span style={{
                       ...styles.statusBadge,
-                      ...(vacancy.status === 'Published' ? styles.statusPublished : 
-                           vacancy.status === 'Filled' ? styles.statusFilled : 
-                           styles.statusDraft)
+                      ...(institution.status === 'Active' ? styles.statusActive : styles.statusInactive)
                     }}>
-                      {vacancy.status}
+                      {institution.status}
                     </span>
                   </td>
                   <td style={styles.tableCell}>
                     <motion.button 
-                      onClick={() => toggleVisibility(vacancy)}
+                      onClick={() => toggleVisibility(institution)}
                       style={styles.visibilityButton}
                       whileHover={{ scale: 1.2 }}
                       whileTap={{ scale: 0.9 }}
                     >
-                      {vacancy.visible ? (
+                      {institution.visible ? (
                         <FiEye style={styles.visibleIcon} />
                       ) : (
                         <FiEyeOff style={styles.hiddenIcon} />
@@ -388,7 +313,7 @@ const JobVacancies = () => {
                   <td style={styles.tableCell}>
                     <div style={styles.actionButtons}>
                       <motion.button
-                        onClick={() => openEditVacancyModal(vacancy)}
+                        onClick={() => openEditInstitutionModal(institution)}
                         style={styles.editButton}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -396,7 +321,7 @@ const JobVacancies = () => {
                         <FiEdit2 />
                       </motion.button>
                       <motion.button
-                        onClick={() => showConfirmDialog(vacancy._id)}
+                        onClick={() => showConfirmDialog(institution._id)}
                         style={styles.deleteButton}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -428,7 +353,7 @@ const JobVacancies = () => {
             >
               <div style={styles.modalHeader}>
                 <h2 style={styles.modalTitle}>
-                  {currentVacancy ? 'Edit Job Vacancy' : 'Add New Job Vacancy'}
+                  {currentInstitution ? 'Edit Institution' : 'Add New Institution'}
                 </h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
@@ -441,213 +366,108 @@ const JobVacancies = () => {
               <form onSubmit={handleSubmit} style={styles.form}>
                 <div style={styles.formGrid}>
                   <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Position Title</label>
+                    <label style={styles.formLabel}>Institution Name</label>
                     <input
-                      name="positionTitle"
-                      value={formData.positionTitle}
+                      name="name"
+                      value={formData.name}
                       onChange={handleChange}
                       style={{
                         ...styles.formInput,
-                        ...(errors.positionTitle && styles.formInputError)
+                        ...(errors.name && styles.formInputError)
                       }}
                     />
-                    {errors.positionTitle && <p style={styles.errorText}>{errors.positionTitle}</p>}
+                    {errors.name && <p style={styles.errorText}>{errors.name}</p>}
                   </div>
 
                   <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Job Type</label>
+                    <label style={styles.formLabel}>Institution Type</label>
                     <select
-                      name="jobType"
-                      value={formData.jobType}
+                      name="type"
+                      value={formData.type}
                       onChange={handleChange}
                       style={{
                         ...styles.formSelect,
-                        ...(errors.jobType && styles.formInputError)
+                        ...(errors.type && styles.formInputError)
                       }}
                     >
-                      <option value="">Select Job Type</option>
-                      {jobTypeOptions.map(type => (
-                        <option key={type} value={type}>{type.replace('_', ' ')}</option>
-                      ))}
-                    </select>
-                    {errors.jobType && <p style={styles.errorText}>{errors.jobType}</p>}
-                  </div>
-                </div>
-
-                <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>Job Description</label>
-                  <textarea
-                    name="jobDescription"
-                    value={formData.jobDescription}
-                    onChange={handleChange}
-                    rows={5}
-                    style={{
-                      ...styles.formInput,
-                      ...(errors.jobDescription && styles.formInputError)
-                    }}
-                  />
-                  {errors.jobDescription && <p style={styles.errorText}>{errors.jobDescription}</p>}
-                </div>
-
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Experience Level</label>
-                    <select
-                      name="experienceLevel"
-                      value={formData.experienceLevel}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formSelect,
-                        ...(errors.experienceLevel && styles.formInputError)
-                      }}
-                    >
-                      <option value="">Select Experience Level</option>
-                      {experienceLevelOptions.map(level => (
-                        <option key={level} value={level}>{level}</option>
-                      ))}
-                    </select>
-                    {errors.experienceLevel && <p style={styles.errorText}>{errors.experienceLevel}</p>}
-                  </div>
-
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Years of Experience</label>
-                    <input
-                      type="number"
-                      name="yearsOfExperience"
-                      value={formData.yearsOfExperience}
-                      onChange={handleChange}
-                      min="0"
-                      style={{
-                        ...styles.formInput,
-                        ...(errors.yearsOfExperience && styles.formInputError)
-                      }}
-                    />
-                    {errors.yearsOfExperience && <p style={styles.errorText}>{errors.yearsOfExperience}</p>}
-                  </div>
-                </div>
-
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Employment Type</label>
-                    <select
-                      name="employmentType"
-                      value={formData.employmentType}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formSelect,
-                        ...(errors.employmentType && styles.formInputError)
-                      }}
-                    >
-                      <option value="">Select Employment Type</option>
-                      {employmentTypeOptions.map(type => (
+                      <option value="">Select Institution Type</option>
+                      {institutionTypeOptions.map(type => (
                         <option key={type} value={type}>{type}</option>
                       ))}
                     </select>
-                    {errors.employmentType && <p style={styles.errorText}>{errors.employmentType}</p>}
-                  </div>
-
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Country</label>
-                    <input
-                      name="country"
-                      value={formData.country}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formInput,
-                        ...(errors.country && styles.formInputError)
-                      }}
-                    />
-                    {errors.country && <p style={styles.errorText}>{errors.country}</p>}
+                    {errors.type && <p style={styles.errorText}>{errors.type}</p>}
                   </div>
                 </div>
 
-                <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>City (Optional)</label>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Email</label>
+                    <input
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      style={{
+                        ...styles.formInput,
+                        ...(errors.email && styles.formInputError)
+                      }}
+                    />
+                    {errors.email && <p style={styles.errorText}>{errors.email}</p>}
+                  </div>
+
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Contact Number</label>
+                    <input
+                      name="contactNumber"
+                      value={formData.contactNumber}
+                      onChange={handleChange}
+                      style={{
+                        ...styles.formInput,
+                        ...(errors.contactNumber && styles.formInputError)
+                      }}
+                    />
+                    {errors.contactNumber && <p style={styles.errorText}>{errors.contactNumber}</p>}
+                  </div>
+                </div>
+
+                < div style={styles.formGroup}>
+                  <label style={styles.formLabel}>Address</label>
                   <input
-                    name="city"
-                    value={formData.city}
+                    name="address"
+                    value={formData.address}
                     onChange={handleChange}
-                    style={styles.formInput}
+                    style={{
+                      ...styles.formInput,
+                      ...(errors.address && styles.formInputError)
+                    }}
                   />
-                </div>
-
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Company</label>
-                    <input
-                      name="company"
-                      value={formData.company}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formInput,
-                        ...(errors.company && styles.formInputError)
-                      }}
-                    />
-                    {errors.company && <p style={styles.errorText}>{errors.company}</p>}
-                  </div>
-
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Contact Email</label>
-                    <input
-                      name="contactEmail"
-                      value={formData.contactEmail}
-                      onChange={handleChange}
-                      style={{
-                        ...styles.formInput,
-                        ...(errors.contactEmail && styles.formInputError)
-                      }}
-                    />
-                    {errors.contactEmail && <p style={styles.errorText}>{errors.contactEmail}</p>}
-                  </div>
+                  {errors.address && <p style={styles.errorText}>{errors.address}</p>}
                 </div>
 
                 <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>Qualifications</label>
-                  <div style={styles.qualificationsGrid}>
-                    {qualificationOptions.map((qualification) => (
-                      <div key={qualification} style={styles.qualificationOption}>
-                        <input
-                          type="checkbox"
-                          id={`qualification-${qualification}`}
-                          checked={formData.qualifications.includes(qualification)}
-                          onChange={() => handleQualificationChange(qualification)}
-                          style={styles.checkboxInput}
-                        />
-                        <label htmlFor={`qualification-${qualification}`} style={styles.qualificationLabel}>
-                          {qualification}
-                        </label>
-                      </div>
+                  <label style={styles.formLabel}>Status</label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    style={styles.formSelect}
+                  >
+                    {statusOptions.map(status => (
+                      <option key={status} value={status}>{status}</option>
                     ))}
-                  </div>
+                  </select>
                 </div>
 
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Status</label>
-                    <select
-                      name="status"
-                      value={formData.status}
+                <div style={styles.formGroup}>
+                  <label style={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="visible"
+                      checked={formData.visible}
                       onChange={handleChange}
-                      style={styles.formSelect}
-                    >
-                      {statusOptions.map(status => (
-                        <option key={status} value={status}>{status}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div style={styles.formGroup}>
-                    <label style={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        name="visible"
-                        checked={formData.visible}
-                        onChange={handleChange}
-                        style={styles.checkboxInput}
-                      />
-                      <span style={styles.checkboxText}>Visible to applicants</span>
-                    </label>
-                  </div>
+                      style={styles.checkboxInput}
+                    />
+                    <span style={styles.checkboxText}>Visible to users</span>
+                  </label>
                 </div>
 
                 <motion.button
@@ -659,10 +479,10 @@ const JobVacancies = () => {
                 >
                   {isLoading ? (
                     <span style={styles.loadingText}>Processing...</span>
-                  ) : currentVacancy ? (
-                    'Update Job Vacancy'
+                  ) : currentInstitution ? (
+                    'Update Institution'
                   ) : (
-                    'Add Job Vacancy'
+                    'Add Institution'
                   )}
                 </motion.button>
               </form>
@@ -746,14 +566,6 @@ const styles = {
     fontSize: '14px',
     color: '#111827'
   },
-  positionTitle: {
-    fontWeight: 500,
-    marginBottom: '4px'
-  },
-  companyName: {
-    fontSize: '13px',
-    color: '#6B7280'
-  },
   typeBadge: {
     backgroundColor: '#EFF6FF',
     color: '#1E40AF',
@@ -764,22 +576,18 @@ const styles = {
   },
   statusBadge: {
     display: 'inline-block',
-    padding: '6px 12px',
-    borderRadius: '20px',
+    padding: '4px 8px',
+    borderRadius: '12px',
     fontSize: '12px',
     fontWeight: 500
   },
-  statusPublished: {
-    backgroundColor: '#D1FAE5',
-    color: '#065F46'
-  },
-  statusFilled: {
+  statusActive: {
     backgroundColor: '#DBEAFE',
     color: '#1E40AF'
   },
-  statusDraft: {
-    backgroundColor: '#FEF3C7',
-    color: '#92400E'
+  statusInactive: {
+    backgroundColor: '#F EE2E2',
+    color: '#B91C1C'
   },
   visibilityButton: {
     background: 'none',
@@ -923,41 +731,6 @@ const styles = {
       boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)'
     }
   },
-  qualificationsGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '12px',
-    maxHeight: '200px',
-    overflowY: 'auto',
-    padding: '8px',
-    border: '1px solid #E5E7EB',
-    borderRadius: '6px'
-  },
-  qualificationOption: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  qualificationLabel: {
-    fontSize: '14px',
-    color: '#374151',
-    marginLeft: '8px',
-    cursor: 'pointer'
-  },
-  checkboxLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  checkboxInput: {
-    marginRight: '8px',
-    width: '16px',
-    height: '16px',
-    accentColor: '#3B82F6'
-  },
-  checkboxText: {
-    fontSize: '14px',
-    color: '#374151'
-  },
   errorText: {
     color: '#EF4444',
     fontSize: '12px',
@@ -1091,4 +864,4 @@ const styles = {
   }
 };
 
-export default JobVacancies;
+export default Institutions;

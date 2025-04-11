@@ -258,10 +258,10 @@ const Agents = () => {
       </AnimatePresence>
 
       <div style={styles.header}>
-        <h1 style={styles.title}>Agents Management</h1>
+        <h1 style={styles.title}>Supplier Management</h1>
         <motion.button onClick={openNewAgentModal} style={styles.addButton} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
           <FiPlus style={{ marginRight: '8px' }} />
-          Add Agent
+          Add Supplier
         </motion.button>
       </div>
 

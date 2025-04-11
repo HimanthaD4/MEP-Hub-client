@@ -8,8 +8,12 @@ import Dashboard from '../../../pages/admin/Dashboard';
 import Projects from '../../../pages/admin/Projects';
 import Consultants from '../../../pages/admin/Consultants';
 import Contractors from '../../../pages/admin/Contractors';
-import Agents from '../../../pages/admin/Agents';
+import Agents from '../../../pages/admin/Supplier';
 import Directors from '../../../pages/admin/Directors';
+import Lecturers from '../../../pages/admin/Lecturers'
+import JobSeekers from '../../../pages/admin/JobSeekers';
+import Vacancies from '../../../pages/admin/JobVacancies';
+import Institutions from '../../../pages/admin/Institutions';
 
 const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => {
   const { user, loading, isAuthenticated } = useAuth();
@@ -85,6 +89,10 @@ const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => 
             <Route path="contractors" element={<Contractors />} />
             <Route path="agents" element={<Agents />} />
             <Route path="directors" element={<Directors />} />
+            <Route path="lecturers" element={<Lecturers />}/>
+            <Route path="jobseekers" element={<JobSeekers />}/>
+            <Route path="vacancies" element={<Vacancies />}/>
+            <Route path="institutions" element={<Institutions />}/>
             <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Routes>
         </main>
