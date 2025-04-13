@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import MainHeader from './components/layout/user/Header';
+import MainFooter from './components/layout/user/Footer.js';
 import HomePage from './pages/user/Home';
 
 import MemberPanel from './pages/user/Member';
@@ -19,6 +20,23 @@ import ContractorsList from './pages/user/details/contractor/ContractorsList';
 
 import AgentDetail from './pages/user/details/agent/AgentDetail.js';
 import AgentList from './pages/user/details/agent/AgentsList.js';
+
+import LecturerDetail from './pages/user/details/lecturer/LecturerDetail.js';
+import LecturerList from './pages/user/details/lecturer/LecturersList.js';
+
+import InstitutionsList from './pages/user/details/Institution/InstitutionsList.js';
+import InstitutionsDetail from './pages/user/details/Institution/InstitutionDetail.js';
+
+import DirectorList from './pages/user/details/director/DirectorList.js';
+import DirectorDetail from './pages/user/details/director/DirectorDetails.js';
+
+import JobSeekersList from './pages/user/details/jobseeker/JobSeekersList.js';
+import JobSeekersDetail from './pages/user/details/jobseeker/JobSeekersDetail.js';
+
+import JobVacanciesList from './pages/user/details/JobVacancies/JobVacancyList.js';
+import JobVacanciesDetail from './pages/user/details/JobVacancies/JobVacancyDetail.js';
+
+
 
 import ContactUs from './pages/user/ContactUs';
 
@@ -72,6 +90,7 @@ function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <MainHeader toggleSidebar={toggleSidebar} />
       <main style={{ flex: 1, padding: '20px' }}>{children}</main>
+      <MainFooter />
     </div>
   );
 
@@ -100,8 +119,27 @@ function App() {
           <Route path="/agents" element={<LayoutWithHeader><AgentList /></LayoutWithHeader>} />
           <Route path="/agents/:id" element={<LayoutWithHeader><AgentDetail /></LayoutWithHeader>} />
 
-          
 
+          <Route path="/lecturers" element={<LayoutWithHeader><LecturerList /></LayoutWithHeader>} />
+          <Route path="/lecturers/:id" element={<LayoutWithHeader><LecturerDetail /></LayoutWithHeader>} />
+
+          
+          <Route path="/Institutions" element={<LayoutWithHeader><InstitutionsList /></LayoutWithHeader>} />
+          <Route path="/Institutions/:id" element={<LayoutWithHeader><InstitutionsDetail/></LayoutWithHeader>} />
+
+
+          <Route path="/directors" element={<LayoutWithHeader><DirectorList /></LayoutWithHeader>} />
+          <Route path="/directors/:id" element={<LayoutWithHeader><DirectorDetail /></LayoutWithHeader>} />
+
+
+          <Route path="/job-vacancies" element={<LayoutWithHeader><JobVacanciesList /></LayoutWithHeader>} />
+          <Route path="/job-vacancies/:id" element={<LayoutWithHeader><JobVacanciesDetail /></LayoutWithHeader>} />
+
+
+
+          <Route path="/jobseekers" element={<LayoutWithHeader><JobSeekersList /></LayoutWithHeader>} />
+          <Route path="/jobseekers/:id" element={<LayoutWithHeader><JobSeekersDetail /></LayoutWithHeader>} />
+        
           <Route path="/admin/login" element={<AdminLogin />} />
 
           <Route path="/admin/*" element={

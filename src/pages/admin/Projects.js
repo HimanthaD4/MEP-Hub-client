@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -27,7 +28,7 @@ const Projects = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: 'residential',
+    type: 'residential', 
     amount: '',
     startDate: format(new Date(), 'yyyy-MM-dd'),
     endDate: '',
@@ -131,7 +132,7 @@ const Projects = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
+    if (errors[name]) setErrors ((prev) => ({ ...prev, [name]: '' }));
   };
 
   const validateForm = () => {
@@ -178,6 +179,7 @@ const Projects = () => {
     setFormData({
       title: '',
       description: '',
+      type: 'residential', // Reset to default type
       amount: '',
       startDate: format(new Date(), 'yyyy-MM-dd'),
       endDate: '',
@@ -203,7 +205,8 @@ const Projects = () => {
       endDate: project.endDate ? format(new Date(project.endDate), 'yyyy-MM-dd') : '',
       status: project.status,
       visible: project.visible,
-      contractor: project.contractor
+      contractor: project.contractor,
+      type: project.type // Ensure type is set when editing
     });
     setIsModalOpen(true);
   };
@@ -378,7 +381,7 @@ const Projects = () => {
 
                 <div style={styles.filterGrid}>
                   <div style={styles.filterGroup}>
-                    <label style={styles.filterLabel}>Min Amount ($)</label>
+                    <label style={styles.filterLabel}>Min Amount (Rs.)</label>
                     <input
                       type="number"
                       name="minAmount"
@@ -389,7 +392,7 @@ const Projects = () => {
                     />
                   </div>
                   <div style={styles.filterGroup}>
-                    <label style={styles.filterLabel}>Max Amount ($)</label>
+                    <label style={styles.filterLabel}>Max Amount (Rs.)</label>
                     <input
                       type="number"
                       name="maxAmount"
@@ -426,7 +429,7 @@ const Projects = () => {
               </div>
 
               <div style={styles.filterFooter}>
-                <motion.button
+                <motion.button 
                   style={styles.filterResetButton}
                   onClick={resetFilters}
                   whileHover={{ scale: 1.02 }}
@@ -493,7 +496,7 @@ const Projects = () => {
                 <th style={styles.tableHeader}>Title</th>
                 <th style={styles.tableHeader}>Type</th>
                 <th style={styles.tableHeader}>Contractor</th>
-                <th style={styles.tableHeader}>Amount</th>
+                <th style={styles.tableHeader}>Amount(Rs)</th>
                 <th style={styles.tableHeader}>Status</th>
                 <th style={styles.tableHeader}>Dates</th>
                 <th style={styles.tableHeader}>Visibility</th>
@@ -509,112 +512,95 @@ const Projects = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-
-
-
-
-
-<td style={styles.tableCell}>
-  <div style={styles.projectTitle}>{project.title}</div>
-  <div style={styles.projectDescription}>
-    {expandedProjectId === project._id
-      ? project.description
-      : `${project.description.slice(0, 50)}...`}
-    {project.description.length > 50 && (
-      <button
-        onClick={() => toggleDescription(project._id)}
-        style={styles.viewMoreButton}
-      >
-        {expandedProjectId === project._id ? 'Show Less' : 'View More'}
-      </button>
-    )}
-  </div>
-</td>
-<td style={styles.tableCell}>
-  <span style={{
-    ...styles.typeBadge,
-    ...(project.type === 'residential' ? styles.typeResidential :
-         project.type === 'commercial' ? styles.typeCommercial :
-         project.type === 'industrial' ? styles.typeIndustrial :
-         project.type === 'mix development' ? styles.typeMixDevelopment :
-         styles.typeOfficeComplex)
-  }}>
-    {project.type}
-  </span>
-</td>
-<td style={styles.tableCell}>{project.contractor}</td>
-<td style={styles.tableCell}>${Number(project.amount).toLocaleString()}</td>
-<td style={styles.tableCell}>
-  <span style={{
-    ...styles.statusBadge,
-    ...(project.status === 'completed' ? styles.statusCompleted : 
-         project.status === 'active' ? styles.statusActive : 
-         styles.statusPending)
-  }}>
-    {project.status}
-  </span>
-</td>
-<td style={styles.tableCell}>
-  <div style={styles.dateText}>
-    Start: {format(new Date(project.startDate), 'MMM d, yyyy')}
-  </div>
-  {project.endDate && (
-    <div style={styles.dateText}>
-      End: {format(new Date(project.endDate), 'MMM d, yyyy')}
-    </div>
-  )}
-</td>
-<td style={styles.tableCell}>
-  <motion.button 
-    onClick={() => toggleVisibility(project)}
-    style={styles.visibilityButton}
-    whileHover={{ scale: 1.2 }}
-    whileTap={{ scale: 0.9 }}
-  >
-    {project.visible ? (
-      <FiEye style={styles.visibleIcon} />
-    ) : (
-      <FiEyeOff style={styles.hiddenIcon} />
-    )}
-  </motion.button>
-</td>
-<td style={styles.tableCell}>
-  <div style={styles.actionButtons}>
-    <motion.button
-      onClick={() => openEditProjectModal(project)}
-      style={styles.editButton}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-    >
-      <FiEdit2 />
-    </motion.button>
-    <motion.button
-      onClick={() => showConfirmDialog(project._id)}
-      style={styles.deleteButton}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-    >
-      <FiTrash2 />
-    </motion.button>
-  </div>
-</td>
-
-
-
-
-
-
+                  <td style={styles.tableCell}>
+                    <div style={styles.projectTitle}>{project.title}</div>
+                    <div style={styles.projectDescription}>
+                      {expandedProjectId === project._id
+                        ? project.description
+                        : `${project.description.slice(0, 50)}...`}
+                      {project.description.length > 50 && (
+                        <button
+                          onClick={() => toggleDescription(project._id)}
+                          style={styles.viewMoreButton}
+                        >
+                          {expandedProjectId === project._id ? 'Show Less' : 'View More'}
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td style={styles.tableCell}>
+                    <span style={{
+                      ...styles.typeBadge,
+                      ...(project.type === 'residential' ? styles.typeResidential :
+                           project.type === 'commercial' ? styles.typeCommercial :
+                           project.type === 'industrial' ? styles.typeIndustrial :
+                           project.type === 'office complex' ? styles.typeOfficeComplex :
+                           project.type === 'mix development' ? styles.typeMixDevelopment :
+                           styles.typeOfficeComplex)
+                    }}>
+                      {project.type}
+                    </span>
+                  </td>
+                  <td style={styles.tableCell}>{project.contractor}</td>
+                  <td style={styles.tableCell}>{Number(project.amount).toLocaleString()}</td>
+                  <td style={styles.tableCell}>
+                    <span style={{
+                      ...styles.statusBadge,
+                      ...(project.status === 'completed' ? styles.statusCompleted : 
+                           project.status === 'active' ? styles.statusActive : 
+                           styles.statusPending)
+                    }}>
+                      {project.status}
+                    </span>
+                  </td>
+                  <td style={styles.tableCell}>
+                    <div style={styles.dateText}>
+                      Start: {format(new Date(project.startDate), 'MMM d, yyyy')}
+                    </div>
+                    {project.endDate && (
+ <div style={styles.dateText}>
+                        End: {format(new Date(project.endDate), 'MMM d, yyyy')}
+                      </div>
+                    )}
+                  </td>
+                  <td style={styles.tableCell}>
+                    <motion.button 
+                      onClick={() => toggleVisibility(project)}
+                      style={styles.visibilityButton}
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      {project.visible ? (
+                        <FiEye style={styles.visibleIcon} />
+                      ) : (
+                        <FiEyeOff style={styles.hiddenIcon} />
+                      )}
+                    </motion.button>
+                  </td>
+                  <td style={styles.tableCell}>
+                    <div style={styles.actionButtons}>
+                      <motion.button
+                        onClick={() => openEditProjectModal(project)}
+                        style={styles.editButton}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <FiEdit2 />
+                      </motion.button>
+                      <motion.button
+                        onClick={() => showConfirmDialog(project._id)}
+                        style={styles.deleteButton}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <FiTrash2 />
+                      </motion.button>
+                    </div>
+                  </td>
                 </motion.tr>
               ))}
             </tbody>
           </table>
-
-
-
-
-
-
-
         </div>
       )}
 
@@ -644,68 +630,68 @@ const Projects = () => {
                 </button>
               </div>
 
-             <form onSubmit={handleSubmit} style={styles.form}>
-  <div style={styles.formGrid}>
-    <div style={styles.formGroup}>
-      <label style={styles.formLabel}>Title</label>
-      <input
-        name="title"
-        value={formData.title}
-        onChange={handleChange}
-        style={{
-          ...styles.formInput,
-          ...(errors.title && styles.formInputError)
-        }}
-      />
-      {errors.title && <p style={styles.errorText}>{errors.title}</p>}
-    </div>
+              <form onSubmit={handleSubmit} style={styles.form}>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Title</label>
+                    <input
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      style={{
+                        ...styles.formInput,
+                        ...(errors.title && styles.formInputError)
+                      }}
+                    />
+                    {errors.title && <p style={styles.errorText}>{errors.title}</p>}
+                  </div>
 
-    <div style={styles.formGroup}>
-      <label style={styles.formLabel}>Type</label>
-      <select
-        name="type"
-        value={formData.type}
-        onChange={handleChange}
-        style={styles.formSelect}
-      >
-        <option value="residential">Residential</option>
-        <option value="commercial">Commercial</option>
-        <option value="industrial">Industrial</option>
-        <option value="mix development">Mix Development</option>
-        <option value="office complex">Office Complex</option>
-      </select>
-    </div>
-  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Type</label>
+                    <select
+                      name="type"
+                      value={formData.type}
+                      onChange={handleChange}
+                      style={styles.formSelect}
+                    >
+                      <option value="residential">Residential</option>
+                      <option value="commercial">Commercial</option>
+                      <option value="industrial">Industrial</option>
+                      <option value="mix development">Mix Development</option>
+                      <option value="office complex">Office Complex</option>
+                    </select>
+                  </div>
+                </div>
 
-  <div style={styles.formGrid}>
-    <div style={styles.formGroup}>
-      <label style={styles.formLabel}>Amount ($)</label>
-      <input
-        name="amount"
-        value={formData.amount}
-        onChange={handleChange}
-        style={{
-          ...styles.formInput,
-          ...(errors.amount && styles.formInputError)
-        }}
-      />
-      {errors.amount && <p style={styles.errorText}>{errors.amount}</p>}
-    </div>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Amount (Rs)</label>
+                    <input
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleChange}
+                      style={{
+                        ...styles.formInput,
+                        ...(errors.amount && styles.formInputError)
+                      }}
+                    />
+                    {errors.amount && <p style={styles.errorText}>{errors.amount}</p>}
+                  </div>
 
-    <div style={styles.formGroup}>
-      <label style={styles.formLabel}>Contractor</label>
-      <input
-        name="contractor"
-        value={formData.contractor}
-        onChange={handleChange}
-        style={{
-          ...styles.formInput,
-          ...(errors.contractor && styles.formInputError)
-        }}
-      />
-      {errors.contractor && <p style={styles.errorText}>{errors.contractor}</p>}
-    </div>
-  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Contractor</label>
+                    <input
+                      name="contractor"
+                      value={formData.contractor}
+                      onChange={handleChange}
+                      style={{
+                        ...styles.formInput,
+                        ...(errors.contractor && styles.formInputError)
+                      }}
+                    />
+                    {errors.contractor && <p style={styles.errorText}>{errors.contractor}</p>}
+                  </div>
+                </div>
 
                 <div style={styles.formGroup}>
                   <label style={styles.formLabel}>Status</label>
@@ -722,19 +708,20 @@ const Projects = () => {
                 </div>
 
                 <div style={styles.formGroup}>
-  <label style={styles.formLabel}>Description</label>
-  <textarea
-    name="description"
-    value={formData.description}
-    onChange={handleChange}
-    style={{
-      ...styles.formTextarea,
-      ...(errors.description && styles.formInputError)
-    }}
-    rows={4}
-  />
-  {errors.description && <p style={styles.errorText}>{errors.description}</p>}
-</div>
+
+                  <label style={styles.formLabel}>Description</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    style={{
+                      ...styles.formTextarea,
+                      ...(errors.description && styles.formInputError)
+                    }}
+                    rows={4}
+                  />
+                  {errors.description && <p style={styles.errorText}>{errors.description}</p>}
+                </div>
 
                 <div style={styles.formGroup}>
                   <label style={styles.checkboxLabel}>
@@ -805,10 +792,6 @@ const styles = {
     borderRadius: '6px',
     padding: '6px 12px',
     transition: 'all 0.2s ease',
-    '&:focus-within': {
-      backgroundColor: 'white',
-      boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)'
-    }
   },
   searchIcon: {
     color: '#6B7280',
@@ -1043,7 +1026,7 @@ const styles = {
   },
   modalCloseButton: {
     background: 'none',
-    border: 'none',
+ border: 'none',
     fontSize: '24px',
     color: '#6B7280',
     cursor: 'pointer',
@@ -1190,7 +1173,7 @@ const styles = {
     fontSize: '16px'
   },
   confirmOverlay: {
-    position: 'fixed',
+ position: 'fixed',
     top: 0,
     left: 0,
     right: 0,
@@ -1336,7 +1319,7 @@ const styles = {
     '&:focus': {
       outline: 'none',
       borderColor: '#3B82F6',
-      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)'
+      boxShadow: '0 0 0 3px rgba(59, 130, 246, 0 .1)'
     }
   },
   filterInput: {

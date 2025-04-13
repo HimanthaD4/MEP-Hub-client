@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiSearch, FiPhone, FiMail, FiMapPin } from 'react-icons/fi';
+import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiSearch, FiPhone, FiMail, FiMapPin, FiUser, FiBook } from 'react-icons/fi';
 
-const ConsultantsList = () => {
-  const [consultants, setConsultants] = useState([]);
+const LecturersList = () => {
+  const [lecturers, setLecturers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    consultantType: '',
+    lecturerType: '',
     specialties: [],
     location: '',
     sort: 'name-asc'
@@ -23,76 +23,70 @@ const ConsultantsList = () => {
     blue: '#4285F4',
     red: '#EA4335',
     yellow: '#FBBC05',
-    green: '#34A853', 
+    green: '#34A853',
     darkText: '#202124',
     lightText: '#5F6368',
     background: '#F8F9FA',
     cardBg: '#FFFFFF',
-    border: '#DADCE0'
+    border: '#DADCE0',
+    black: '#000000'
   };
 
   useEffect(() => {
-    const fetchConsultants = async () => {
+    const fetchLecturers = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/consultants`);
-        const visibleConsultants = response.data.filter(consultant => consultant.visible);
-        setConsultants(visibleConsultants || []);
+        const response = await axios.get(`${API_BASE_URL}/lecturers`);
+        const visibleLecturers = response.data.filter(lecturer => lecturer.visible);
+        setLecturers(visibleLecturers || []);
       } catch (err) {
-        console.error('Failed to fetch consultants:', err);
-        setError('Failed to load consultant firms. Please try again later.');
+        console.error('Failed to fetch lecturers:', err);
+        setError('Failed to load lecturers. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
-    fetchConsultants();
+    fetchLecturers();
   }, []);
 
-  const filteredConsultants = consultants.filter((consultant) => {
+  const filteredLecturers = lecturers.filter((lecturer) => {
     const matchesSearch = 
-      consultant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.companyEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.companyAddress?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.specialties?.some(specialty => 
+      lecturer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lecturer?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lecturer?.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lecturer?.specialties?.some(specialty => 
         specialty.toLowerCase().includes(searchTerm.toLowerCase())
       );
     
-    const matchesType = !filters.consultantType || consultant?.consultantType === filters.consultantType;
+    const matchesType = !filters.lecturerType || lecturer?.type === filters.lecturerType;
     const matchesSpecialties = filters.specialties.length === 0 || 
-      filters.specialties.every(filterSpecialty => consultant?.specialties?.includes(filterSpecialty));
+      filters.specialties.every(filterSpecialty => lecturer?.specialties?.includes(filterSpecialty));
     const matchesLocation = !filters.location || 
-      consultant?.companyAddress?.toLowerCase().includes(filters.location.toLowerCase());
+      lecturer?.location?.toLowerCase().includes(filters.location.toLowerCase());
     
     return matchesSearch && matchesType && matchesSpecialties && matchesLocation;
   });
 
-  const sortedConsultants = [...filteredConsultants].sort((a, b) => {
+  const sortedLecturers = [...filteredLecturers].sort((a, b) => {
     if (filters.sort === 'name-asc') return a.name.localeCompare(b.name);
     if (filters.sort === 'name-desc') return b.name.localeCompare(a.name);
+    if (filters.sort === 'experience-asc') return (a.experience || 0) - (b.experience || 0);
+    if (filters.sort === 'experience-desc') return (b.experience || 0) - (a.experience || 0);
     return 0;
   });
 
   const allSpecialties = [
-    'Air Conditioning systems (Central, Packaged, VRF & Splits)',
-    'Mechanical ventilation systems',
-    'Water supply & drainage systems',
-    'Fire Protection systems',
-    'Fire Detection systems',
-    'Storm water & rain water harvesting systems',
-    'Low Voltage Electrical Systems',
-    'Extra low voltages systems - BMS, Data, CCTV, IPTV, AC',
-    'Lighting systems',
-    'Elevator & escalators',
-    'Boilers & steam systems',
-    'Swimming pools',
-    'LPG distribution',
-    'Solar electricity',
-    'Compressed air systems',
-    'Generators',
-    'Structured cabling & IT network',
-    'Waste water treatment',
-    'Solid waste management',
-    'Facade Engineering',
-    'Cold rooms'
+    'MEP Systems',
+    'Construction Management',
+    'Structural Engineering',
+    'Project Planning',
+    'Cost Estimation',
+    'Safety Management',
+    'BIM Modeling',
+    'Sustainable Design',
+    'HVAC Design',
+    'Electrical Systems',
+    'Plumbing Design',
+    'Fire Protection'
   ].sort();
 
   const toggleSpecialty = (specialty) => {
@@ -107,7 +101,7 @@ const ConsultantsList = () => {
   const resetFilters = () => {
     setSearchTerm('');
     setFilters({
-      consultantType: '',
+      lecturerType: '',
       specialties: [],
       location: '',
       sort: 'name-asc'
@@ -125,29 +119,29 @@ const ConsultantsList = () => {
     };
     
     switch(type) {
-      case 'MEP': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
-      case 'Project Management': return { ...baseStyle, backgroundColor: '#FEE8E8', color: colors.red };
-      case 'Cost': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' }; // Darker yellow for better contrast
+      case 'lecturer': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
+      case 'trainer': return { ...baseStyle, backgroundColor: '#E6F4EA', color: colors.green };
+      case 'guest': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' };
       default: return baseStyle;
     }
   };
 
   return (
-    <div className="consultants-container">
+    <div className="lecturers-container">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
       
-      <div className="consultants-header">
-        <h1>Consultant Firms Directory</h1>
-        <p>Browse our directory of professional MEP, Project Management, and Cost consulting firms in Sri Lanka.</p>
+      <div className="lecturers-header">
+        <h1>Lecturers & Trainers Directory</h1>
+        <p>Browse our directory of professional lecturers, trainers, and guest speakers in the construction industry.</p>
         
         <div className="search-controls">
           <div className="search-bar">
             <FiSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search firms..."
+              placeholder="Search lecturers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -158,9 +152,9 @@ const ConsultantsList = () => {
             onClick={() => setShowFilters(!showFilters)}
           >
             <FiFilter /> Filters
-            {(filters.consultantType || filters.specialties.length > 0 || filters.location) && (
+            {(filters.lecturerType || filters.specialties.length > 0 || filters.location) && (
               <span className="filter-count">
-                {[filters.consultantType, ...filters.specialties, filters.location].filter(Boolean).length}
+                {[filters.lecturerType, ...filters.specialties, filters.location].filter(Boolean).length}
               </span>
             )}
           </button>
@@ -173,26 +167,26 @@ const ConsultantsList = () => {
                 className="filter-header"
                 onClick={() => setExpandedFilter(expandedFilter === 'type' ? null : 'type')}
               >
-                <h3>Consultant Type</h3>
+                <h3>Lecturer Type</h3>
                 {expandedFilter === 'type' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
               {expandedFilter === 'type' && (
                 <div className="filter-options">
-                  {['MEP', 'Project Management', 'Cost'].map(type => (
+                  {['lecturer', 'trainer', 'guest'].map(type => (
                     <label key={type} className="filter-option">
                       <input
                         type="radio"
-                        name="consultantType"
-                        checked={filters.consultantType === type}
-                        onChange={() => setFilters({...filters, consultantType: type})}
+                        name="lecturerType"
+                        checked={filters.lecturerType === type}
+                        onChange={() => setFilters({...filters, lecturerType: type})}
                       />
-                      <span>{type}</span>
+                      <span>{type.charAt(0).toUpperCase() + type.slice(1)}</span>
                     </label>
                   ))}
                   <button 
                     className="clear-option"
-                    onClick={() => setFilters({...filters, consultantType: ''})}
+                    onClick={() => setFilters({...filters, lecturerType: ''})}
                   >
                     Clear
                   </button>
@@ -259,6 +253,57 @@ const ConsultantsList = () => {
                 </div>
               )}
             </div>
+
+            <div className="filter-section">
+              <div 
+                className="filter-header"
+                onClick={() => setExpandedFilter(expandedFilter === 'sort' ? null : 'sort')}
+              >
+                <h3>Sort By</h3>
+                {expandedFilter === 'sort' ? <FiChevronUp /> : <FiChevronDown />}
+              </div>
+              
+              {expandedFilter === 'sort' && (
+                <div className="filter-options">
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'name-asc'}
+                      onChange={() => setFilters({...filters, sort: 'name-asc'})}
+                    />
+                    <span>Name (A-Z)</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'name-desc'}
+                      onChange={() => setFilters({...filters, sort: 'name-desc'})}
+                    />
+                    <span>Name (Z-A)</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'experience-desc'}
+                      onChange={() => setFilters({...filters, sort: 'experience-desc'})}
+                    />
+                    <span>Most Experienced</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'experience-asc'}
+                      onChange={() => setFilters({...filters, sort: 'experience-asc'})}
+                    />
+                    <span>Least Experienced</span>
+                  </label>
+                </div>
+              )}
+            </div>
             
             <div className="filter-actions">
               <button className="apply-filters" onClick={() => setShowFilters(false)}>
@@ -271,12 +316,12 @@ const ConsultantsList = () => {
           </div>
         )}
         
-        {(filters.consultantType || filters.specialties.length > 0 || filters.location) && (
+        {(filters.lecturerType || filters.specialties.length > 0 || filters.location) && (
           <div className="active-filters">
-            {filters.consultantType && (
+            {filters.lecturerType && (
               <span className="active-filter">
-                {filters.consultantType}
-                <button onClick={() => setFilters({...filters, consultantType: ''})}>
+                {filters.lecturerType.charAt(0).toUpperCase() + filters.lecturerType.slice(1)}
+                <button onClick={() => setFilters({...filters, lecturerType: ''})}>
                   <FiX />
                 </button>
               </span>
@@ -304,15 +349,15 @@ const ConsultantsList = () => {
         
         {!loading && (
           <div className="results-count">
-            Showing {sortedConsultants.length} of {consultants.length} firms
+            Showing {sortedLecturers.length} of {lecturers.length} lecturers
           </div>
         )}
       </div>
 
       {loading ? (
-        <div className="consultants-grid loading">
+        <div className="lecturers-grid loading">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="consultant-card loading">
+            <div key={i} className="lecturer-card loading">
               <div className="image-placeholder"></div>
               <div className="content-placeholder">
                 <div className="line"></div>
@@ -322,50 +367,50 @@ const ConsultantsList = () => {
             </div>
           ))}
         </div>
-      ) : sortedConsultants.length > 0 ? (
-        <div className="consultants-grid">
-          {sortedConsultants.map((consultant) => (
-            <div key={consultant._id} className="consultant-card">
+      ) : sortedLecturers.length > 0 ? (
+        <div className="lecturers-grid">
+          {sortedLecturers.map((lecturer) => (
+            <div key={lecturer._id} className="lecturer-card">
               <div className="card-header">
-                <div className="consultant-type" style={getTypeBadgeStyle(consultant.consultantType)}>
-                  {consultant.consultantType}
+                <div className="lecturer-type" style={getTypeBadgeStyle(lecturer.type)}>
+                  {lecturer.type.charAt(0).toUpperCase() + lecturer.type.slice(1)}
                 </div>
-                <h3>{consultant.name}</h3>
+                <h3>{lecturer.name}</h3>
               </div>
               
               <div className="card-body">
                 <div className="contact-info">
                   <div className="info-item">
                     <FiMail className="icon" />
-                    <span>{consultant.companyEmail}</span>
+                    <span>{lecturer.email}</span>
                   </div>
                   <div className="info-item">
                     <FiMapPin className="icon" />
-                    <span>{consultant.companyAddress}</span>
+                    <span>{lecturer.location}</span>
                   </div>
                   <div className="info-item">
-                    <FiPhone className="icon" />
-                    <span>{consultant.contactNumber || 'Not provided'}</span>
+                    <FiUser className="icon" />
+                    <span>{lecturer.experience ? `${lecturer.experience} years experience` : 'Experience not specified'}</span>
                   </div>
                 </div>
                 
                 <div className="specialties">
-                  {consultant.specialties?.slice(0, 3).map((specialty, i) => (
+                  {lecturer.specialties?.slice(0, 3).map((specialty, i) => (
                     <span key={i} className="specialty-badge">
                       {specialty}
                     </span>
                   ))}
-                  {consultant.specialties?.length > 3 && (
+                  {lecturer.specialties?.length > 3 && (
                     <span className="specialty-badge">
-                      +{consultant.specialties.length - 3} more
+                      +{lecturer.specialties.length - 3} more
                     </span>
                   )}
                 </div>
               </div>
               
               <div className="card-footer">
-                <Link to={`/consultants/${consultant._id}`} className="view-button">
-                  View Firm Details
+                <Link to={`/lecturers/${lecturer._id}`} className="view-button">
+                  View Profile
                 </Link>
               </div>
             </div>
@@ -373,7 +418,7 @@ const ConsultantsList = () => {
         </div>
       ) : (
         <div className="empty-state">
-          <h3>No consultant firms match your search criteria</h3>
+          <h3>No lecturers match your search criteria</h3>
           <p>Try adjusting your filters or search term</p>
           <button className="reset-button" onClick={resetFilters}>
             Reset All Filters
@@ -382,7 +427,7 @@ const ConsultantsList = () => {
       )}
 
       <style jsx>{`
-        .consultants-container {
+        .lecturers-container {
           font-family: 'Outfit', sans-serif;
           max-width: 1400px;
           margin: 25px auto;
@@ -391,18 +436,18 @@ const ConsultantsList = () => {
           background-color: ${colors.background};
         }
         
-        .consultants-header {
+        .lecturers-header {
           margin-bottom: 40px;
         }
         
-        .consultants-header h1 {
+        .lecturers-header h1 {
           font-size: 32px;
           font-weight: 700;
-          color: ${colors.darkText};
+          color: ${colors.black};
           margin-bottom: 16px;
         }
         
-        .consultants-header p {
+        .lecturers-header p {
           font-size: 16px;
           color: ${colors.red};
           margin-bottom: 24px;
@@ -615,17 +660,17 @@ const ConsultantsList = () => {
           font-style: italic;
         }
         
-        .consultants-grid {
+        .lecturers-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
           gap: 24px;
         }
         
-        .consultants-grid.loading {
+        .lecturers-grid.loading {
           opacity: 0.6;
         }
         
-        .consultant-card {
+        .lecturer-card {
           background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
@@ -636,7 +681,7 @@ const ConsultantsList = () => {
           flex-direction: column;
         }
         
-        .consultant-card:hover {
+        .lecturer-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 15px 30px rgba(0,0,0,0.1);
           border-color: ${colors.yellow};
@@ -718,7 +763,7 @@ const ConsultantsList = () => {
           background-color: #3367d6;
         }
         
-        .consultant-card.loading {
+        .lecturer-card.loading {
           background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
@@ -791,11 +836,11 @@ const ConsultantsList = () => {
         }
         
         @media (max-width: 768px) {
-          .consultants-container {
+          .lecturers-container {
             padding: 20px 16px;
           }
           
-          .consultants-header h1 {
+          .lecturers-header h1 {
             font-size: 24px;
           }
           
@@ -803,7 +848,7 @@ const ConsultantsList = () => {
             flex-direction: column;
           }
           
-          .consultants-grid {
+          .lecturers-grid {
             grid-template-columns: 1fr;
           }
           
@@ -820,4 +865,4 @@ const ConsultantsList = () => {
   );
 };
 
-export default ConsultantsList;
+export default LecturersList;

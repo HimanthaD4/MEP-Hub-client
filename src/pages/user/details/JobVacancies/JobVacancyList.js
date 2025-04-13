@@ -1,120 +1,103 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiSearch, FiPhone, FiMail, FiMapPin } from 'react-icons/fi';
+import { 
+  FiFilter, FiX, FiChevronDown, FiChevronUp, 
+  FiSearch, FiPhone, FiMail, FiBriefcase, 
+  FiMapPin, FiClock, FiDollarSign, FiCalendar
+} from 'react-icons/fi';
 
-const ConsultantsList = () => {
-  const [consultants, setConsultants] = useState([]);
+const JobVacancyList = () => {
+  const [jobVacancies, setJobVacancies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    consultantType: '',
-    specialties: [],
-    location: '',
-    sort: 'name-asc'
+    jobType: '',
+    experienceLevel: '',
+    employmentType: '',
+    status: 'all'
   });
   const [showFilters, setShowFilters] = useState(false);
   const [expandedFilter, setExpandedFilter] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
-  // Google brand colors
   const colors = {
     blue: '#4285F4',
     red: '#EA4335',
     yellow: '#FBBC05',
-    green: '#34A853', 
+    green: '#34A853',
     darkText: '#202124',
     lightText: '#5F6368',
     background: '#F8F9FA',
     cardBg: '#FFFFFF',
-    border: '#DADCE0'
+    border: '#DADCE0',
+    black: '#000000'
   };
 
   useEffect(() => {
-    const fetchConsultants = async () => {
+    const fetchJobVacancies = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/consultants`);
-        const visibleConsultants = response.data.filter(consultant => consultant.visible);
-        setConsultants(visibleConsultants || []);
+        const response = await axios.get(`${API_BASE_URL}/job-vacancies`);
+        setJobVacancies(response.data || []);
+        setLoading(false);
       } catch (err) {
-        console.error('Failed to fetch consultants:', err);
-        setError('Failed to load consultant firms. Please try again later.');
-      } finally {
+        console.error('Failed to fetch job vacancies:', err);
+        setError('Failed to load job vacancies. Please try again later.');
         setLoading(false);
       }
     };
-    fetchConsultants();
+    fetchJobVacancies();
   }, []);
 
-  const filteredConsultants = consultants.filter((consultant) => {
+  const filteredJobVacancies = jobVacancies.filter((vacancy) => {
     const matchesSearch = 
-      consultant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.companyEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.companyAddress?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.specialties?.some(specialty => 
-        specialty.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      vacancy.positionTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vacancy.jobDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vacancy.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vacancy.country.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesType = !filters.consultantType || consultant?.consultantType === filters.consultantType;
-    const matchesSpecialties = filters.specialties.length === 0 || 
-      filters.specialties.every(filterSpecialty => consultant?.specialties?.includes(filterSpecialty));
-    const matchesLocation = !filters.location || 
-      consultant?.companyAddress?.toLowerCase().includes(filters.location.toLowerCase());
+    const matchesType = !filters.jobType || vacancy.jobType === filters.jobType;
+    const matchesExperience = !filters.experienceLevel || vacancy.experienceLevel === filters.experienceLevel;
+    const matchesEmployment = !filters.employmentType || vacancy.employmentType === filters.employmentType;
+    const matchesStatus = filters.status === 'all' || vacancy.status === filters.status;
     
-    return matchesSearch && matchesType && matchesSpecialties && matchesLocation;
+    return matchesSearch && matchesType && matchesExperience && matchesEmployment && matchesStatus;
   });
 
-  const sortedConsultants = [...filteredConsultants].sort((a, b) => {
-    if (filters.sort === 'name-asc') return a.name.localeCompare(b.name);
-    if (filters.sort === 'name-desc') return b.name.localeCompare(a.name);
-    return 0;
-  });
+  const jobTypes = [
+    'MECHANICAL',
+    'ELECTRICAL',
+    'BUILDING_SERVICES',
+    'DRAFTING',
+    'QUANTITY_SURVEYING'
+  ];
 
-  const allSpecialties = [
-    'Air Conditioning systems (Central, Packaged, VRF & Splits)',
-    'Mechanical ventilation systems',
-    'Water supply & drainage systems',
-    'Fire Protection systems',
-    'Fire Detection systems',
-    'Storm water & rain water harvesting systems',
-    'Low Voltage Electrical Systems',
-    'Extra low voltages systems - BMS, Data, CCTV, IPTV, AC',
-    'Lighting systems',
-    'Elevator & escalators',
-    'Boilers & steam systems',
-    'Swimming pools',
-    'LPG distribution',
-    'Solar electricity',
-    'Compressed air systems',
-    'Generators',
-    'Structured cabling & IT network',
-    'Waste water treatment',
-    'Solid waste management',
-    'Facade Engineering',
-    'Cold rooms'
-  ].sort();
+  const experienceLevels = [
+    'Entry Level', 'Junior', 'Mid-Level', 'Senior', 
+    'Lead', 'Manager', 'Director'
+  ];
 
-  const toggleSpecialty = (specialty) => {
-    setFilters({
-      ...filters,
-      specialties: filters.specialties.includes(specialty)
-        ? filters.specialties.filter(s => s !== specialty)
-        : [...filters.specialties, specialty]
-    });
-  };
+  const employmentTypes = [
+    'Full-time', 'Part-time', 'Contract', 'Temporary',
+    'Internship', 'Freelance'
+  ];
+
+  const statusOptions = [
+    'Draft', 'Published', 'Filled'
+  ];
 
   const resetFilters = () => {
     setSearchTerm('');
     setFilters({
-      consultantType: '',
-      specialties: [],
-      location: '',
-      sort: 'name-asc'
+      jobType: '',
+      experienceLevel: '',
+      employmentType: '',
+      status: 'all'
     });
   };
 
-  const getTypeBadgeStyle = (type) => {
+  const getJobTypeBadgeStyle = (type) => {
     const baseStyle = {
       display: 'inline-block',
       padding: '4px 12px',
@@ -125,29 +108,62 @@ const ConsultantsList = () => {
     };
     
     switch(type) {
-      case 'MEP': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
-      case 'Project Management': return { ...baseStyle, backgroundColor: '#FEE8E8', color: colors.red };
-      case 'Cost': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' }; // Darker yellow for better contrast
-      default: return baseStyle;
+      case 'MECHANICAL': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
+      case 'ELECTRICAL': return { ...baseStyle, backgroundColor: '#FEE8E8', color: colors.red };
+      case 'BUILDING_SERVICES': return { ...baseStyle, backgroundColor: '#E6F4EA', color: colors.green };
+      case 'DRAFTING': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' };
+      case 'QUANTITY_SURVEYING': return { ...baseStyle, backgroundColor: '#E8E0FE', color: '#7B61FF' };
+      default: return { ...baseStyle, backgroundColor: '#F1F3F4', color: colors.darkText };
     }
   };
 
+  const getStatusBadgeStyle = (status) => {
+    const baseStyle = {
+      display: 'inline-block',
+      padding: '4px 12px',
+      borderRadius: '50px',
+      fontSize: '12px',
+      fontWeight: 600,
+      marginLeft: '8px'
+    };
+    
+    switch(status) {
+      case 'Published': return { ...baseStyle, backgroundColor: '#E6F4EA', color: colors.green };
+      case 'Filled': return { ...baseStyle, backgroundColor: '#FEE8E8', color: colors.red };
+      case 'Draft': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' };
+      default: return { ...baseStyle, backgroundColor: '#F1F3F4', color: colors.darkText };
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="jobvacancies-container">
+        <div className="error-message">
+          {error}
+          <button onClick={() => window.location.reload()} className="try-again-button">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="consultants-container">
+    <div className="jobvacancies-container">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
       
-      <div className="consultants-header">
-        <h1>Consultant Firms Directory</h1>
-        <p>Browse our directory of professional MEP, Project Management, and Cost consulting firms in Sri Lanka.</p>
+      <div className="jobvacancies-header">
+        <h1>Job Vacancies</h1>
+        <p>Browse current job openings in the MEP industry</p>
         
         <div className="search-controls">
           <div className="search-bar">
             <FiSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search firms..."
+              placeholder="Search job vacancies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -158,9 +174,9 @@ const ConsultantsList = () => {
             onClick={() => setShowFilters(!showFilters)}
           >
             <FiFilter /> Filters
-            {(filters.consultantType || filters.specialties.length > 0 || filters.location) && (
+            {(filters.jobType || filters.experienceLevel || filters.employmentType || filters.status !== 'all') && (
               <span className="filter-count">
-                {[filters.consultantType, ...filters.specialties, filters.location].filter(Boolean).length}
+                {[filters.jobType, filters.experienceLevel, filters.employmentType, filters.status !== 'all' ? filters.status : null].filter(Boolean).length}
               </span>
             )}
           </button>
@@ -173,26 +189,26 @@ const ConsultantsList = () => {
                 className="filter-header"
                 onClick={() => setExpandedFilter(expandedFilter === 'type' ? null : 'type')}
               >
-                <h3>Consultant Type</h3>
+                <h3>Job Type</h3>
                 {expandedFilter === 'type' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
               {expandedFilter === 'type' && (
                 <div className="filter-options">
-                  {['MEP', 'Project Management', 'Cost'].map(type => (
+                  {jobTypes.map(type => (
                     <label key={type} className="filter-option">
                       <input
                         type="radio"
-                        name="consultantType"
-                        checked={filters.consultantType === type}
-                        onChange={() => setFilters({...filters, consultantType: type})}
+                        name="jobType"
+                        checked={filters.jobType === type}
+                        onChange={() => setFilters({...filters, jobType: type})}
                       />
-                      <span>{type}</span>
+                      <span>{type.replace('_', ' ')}</span>
                     </label>
                   ))}
                   <button 
                     className="clear-option"
-                    onClick={() => setFilters({...filters, consultantType: ''})}
+                    onClick={() => setFilters({...filters, jobType: ''})}
                   >
                     Clear
                   </button>
@@ -203,59 +219,98 @@ const ConsultantsList = () => {
             <div className="filter-section">
               <div 
                 className="filter-header"
-                onClick={() => setExpandedFilter(expandedFilter === 'specialties' ? null : 'specialties')}
+                onClick={() => setExpandedFilter(expandedFilter === 'experience' ? null : 'experience')}
               >
-                <h3>Specialties ({filters.specialties.length})</h3>
-                {expandedFilter === 'specialties' ? <FiChevronUp /> : <FiChevronDown />}
+                <h3>Experience Level</h3>
+                {expandedFilter === 'experience' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
-              {expandedFilter === 'specialties' && (
-                <div className="filter-options specialties-grid">
-                  {allSpecialties.map(specialty => (
-                    <label key={specialty} className="filter-option">
+              {expandedFilter === 'experience' && (
+                <div className="filter-options">
+                  {experienceLevels.map(level => (
+                    <label key={level} className="filter-option">
                       <input
-                        type="checkbox"
-                        checked={filters.specialties.includes(specialty)}
-                        onChange={() => toggleSpecialty(specialty)}
+                        type="radio"
+                        name="experienceLevel"
+                        checked={filters.experienceLevel === level}
+                        onChange={() => setFilters({...filters, experienceLevel: level})}
                       />
-                      <span>{specialty}</span>
+                      <span>{level}</span>
                     </label>
                   ))}
                   <button 
                     className="clear-option"
-                    onClick={() => setFilters({...filters, specialties: []})}
+                    onClick={() => setFilters({...filters, experienceLevel: ''})}
                   >
-                    Clear All
+                    Clear
                   </button>
                 </div>
               )}
             </div>
-            
+
             <div className="filter-section">
               <div 
                 className="filter-header"
-                onClick={() => setExpandedFilter(expandedFilter === 'location' ? null : 'location')}
+                onClick={() => setExpandedFilter(expandedFilter === 'employment' ? null : 'employment')}
               >
-                <h3>Location</h3>
-                {expandedFilter === 'location' ? <FiChevronUp /> : <FiChevronDown />}
+                <h3>Employment Type</h3>
+                {expandedFilter === 'employment' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
-              {expandedFilter === 'location' && (
+              {expandedFilter === 'employment' && (
                 <div className="filter-options">
-                  <input
-                    type="text"
-                    placeholder="Enter location..."
-                    value={filters.location}
-                    onChange={(e) => setFilters({...filters, location: e.target.value})}
-                  />
-                  {filters.location && (
-                    <button 
-                      className="clear-option"
-                      onClick={() => setFilters({...filters, location: ''})}
-                    >
-                      Clear
-                    </button>
-                  )}
+                  {employmentTypes.map(type => (
+                    <label key={type} className="filter-option">
+                      <input
+                        type="radio"
+                        name="employmentType"
+                        checked={filters.employmentType === type}
+                        onChange={() => setFilters({...filters, employmentType: type})}
+                      />
+                      <span>{type}</span>
+                    </label>
+                  ))}
+                  <button 
+                    className="clear-option"
+                    onClick={() => setFilters({...filters, employmentType: ''})}
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="filter-section">
+              <div 
+                className="filter-header"
+                onClick={() => setExpandedFilter(expandedFilter === 'status' ? null : 'status')}
+              >
+                <h3>Status</h3>
+                {expandedFilter === 'status' ? <FiChevronUp /> : <FiChevronDown />}
+              </div>
+              
+              {expandedFilter === 'status' && (
+                <div className="filter-options">
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="status"
+                      checked={filters.status === 'all'}
+                      onChange={() => setFilters({...filters, status: 'all'})}
+                    />
+                    <span>All Statuses</span>
+                  </label>
+                  {statusOptions.map(status => (
+                    <label key={status} className="filter-option">
+                      <input
+                        type="radio"
+                        name="status"
+                        checked={filters.status === status}
+                        onChange={() => setFilters({...filters, status})}
+                      />
+                      <span>{status}</span>
+                    </label>
+                  ))}
                 </div>
               )}
             </div>
@@ -271,30 +326,39 @@ const ConsultantsList = () => {
           </div>
         )}
         
-        {(filters.consultantType || filters.specialties.length > 0 || filters.location) && (
+        {(filters.jobType || filters.experienceLevel || filters.employmentType || filters.status !== 'all') && (
           <div className="active-filters">
-            {filters.consultantType && (
+            {filters.jobType && (
               <span className="active-filter">
-                {filters.consultantType}
-                <button onClick={() => setFilters({...filters, consultantType: ''})}>
+                {filters.jobType.replace('_', ' ')}
+                <button onClick={() => setFilters({...filters, jobType: ''})}>
                   <FiX />
                 </button>
               </span>
             )}
             
-            {filters.specialties.map(specialty => (
-              <span key={specialty} className="active-filter">
-                {specialty}
-                <button onClick={() => toggleSpecialty(specialty)}>
+            {filters.experienceLevel && (
+              <span className="active-filter">
+                {filters.experienceLevel}
+                <button onClick={() => setFilters({...filters, experienceLevel: ''})}>
                   <FiX />
                 </button>
               </span>
-            ))}
+            )}
             
-            {filters.location && (
+            {filters.employmentType && (
               <span className="active-filter">
-                {filters.location}
-                <button onClick={() => setFilters({...filters, location: ''})}>
+                {filters.employmentType}
+                <button onClick={() => setFilters({...filters, employmentType: ''})}>
+                  <FiX />
+                </button>
+              </span>
+            )}
+            
+            {filters.status !== 'all' && (
+              <span className="active-filter">
+                {filters.status}
+                <button onClick={() => setFilters({...filters, status: 'all'})}>
                   <FiX />
                 </button>
               </span>
@@ -304,15 +368,15 @@ const ConsultantsList = () => {
         
         {!loading && (
           <div className="results-count">
-            Showing {sortedConsultants.length} of {consultants.length} firms
+            Showing {filteredJobVacancies.length} of {jobVacancies.length} job vacancies
           </div>
         )}
       </div>
 
       {loading ? (
-        <div className="consultants-grid loading">
+        <div className="jobvacancies-grid loading">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="consultant-card loading">
+            <div key={i} className="jobvacancy-card loading">
               <div className="image-placeholder"></div>
               <div className="content-placeholder">
                 <div className="line"></div>
@@ -322,50 +386,56 @@ const ConsultantsList = () => {
             </div>
           ))}
         </div>
-      ) : sortedConsultants.length > 0 ? (
-        <div className="consultants-grid">
-          {sortedConsultants.map((consultant) => (
-            <div key={consultant._id} className="consultant-card">
+      ) : filteredJobVacancies.length > 0 ? (
+        <div className="jobvacancies-grid">
+          {filteredJobVacancies.map((vacancy) => (
+            <div key={vacancy._id} className="jobvacancy-card">
               <div className="card-header">
-                <div className="consultant-type" style={getTypeBadgeStyle(consultant.consultantType)}>
-                  {consultant.consultantType}
+                <div className="job-type" style={getJobTypeBadgeStyle(vacancy.jobType)}>
+                  {vacancy.jobType.replace('_', ' ')}
                 </div>
-                <h3>{consultant.name}</h3>
+                <h3>{vacancy.positionTitle}</h3>
+                <div className="company-info">
+                  {vacancy.company && typeof vacancy.company === 'object' && (
+                    <>
+                      {vacancy.company.logo && (
+                        <img src={vacancy.company.logo} alt={vacancy.company.name} className="company-logo" />
+                      )}
+                      <span className="company-name">{vacancy.company.name}</span>
+                    </>
+                  )}
+                  <span className="job-status" style={getStatusBadgeStyle(vacancy.status)}>
+                    {vacancy.status}
+                  </span>
+                </div>
               </div>
               
               <div className="card-body">
-                <div className="contact-info">
-                  <div className="info-item">
-                    <FiMail className="icon" />
-                    <span>{consultant.companyEmail}</span>
-                  </div>
-                  <div className="info-item">
+                <div className="job-details">
+                  <div className="detail-item">
                     <FiMapPin className="icon" />
-                    <span>{consultant.companyAddress}</span>
+                    <span>{vacancy.city}, {vacancy.country}</span>
                   </div>
-                  <div className="info-item">
-                    <FiPhone className="icon" />
-                    <span>{consultant.contactNumber || 'Not provided'}</span>
+                  <div className="detail-item">
+                    <FiBriefcase className="icon" />
+                    <span>{vacancy.employmentType}</span>
+                  </div>
+                  <div className="detail-item">
+                    <FiClock className="icon" />
+                    <span>{vacancy.experienceLevel} ({vacancy.yearsOfExperience} years)</span>
                   </div>
                 </div>
                 
-                <div className="specialties">
-                  {consultant.specialties?.slice(0, 3).map((specialty, i) => (
-                    <span key={i} className="specialty-badge">
-                      {specialty}
-                    </span>
-                  ))}
-                  {consultant.specialties?.length > 3 && (
-                    <span className="specialty-badge">
-                      +{consultant.specialties.length - 3} more
-                    </span>
-                  )}
-                </div>
+                {/* <div className="job-description">
+                  {vacancy.jobDescription.length > 150 ? 
+                    `${vacancy.jobDescription.substring(0, 150)}...` : 
+                    vacancy.jobDescription}
+                </div> */}
               </div>
               
               <div className="card-footer">
-                <Link to={`/consultants/${consultant._id}`} className="view-button">
-                  View Firm Details
+                <Link to={`/job-vacancies/${vacancy._id}`} className="view-button">
+                  View Details
                 </Link>
               </div>
             </div>
@@ -373,7 +443,7 @@ const ConsultantsList = () => {
         </div>
       ) : (
         <div className="empty-state">
-          <h3>No consultant firms match your search criteria</h3>
+          <h3>No job vacancies match your search criteria</h3>
           <p>Try adjusting your filters or search term</p>
           <button className="reset-button" onClick={resetFilters}>
             Reset All Filters
@@ -382,7 +452,7 @@ const ConsultantsList = () => {
       )}
 
       <style jsx>{`
-        .consultants-container {
+        .jobvacancies-container {
           font-family: 'Outfit', sans-serif;
           max-width: 1400px;
           margin: 25px auto;
@@ -391,18 +461,42 @@ const ConsultantsList = () => {
           background-color: ${colors.background};
         }
         
-        .consultants-header {
+        .error-message {
+          padding: 40px;
+          text-align: center;
+          color: ${colors.red};
+          font-size: 18px;
+        }
+        
+        .try-again-button {
+          display: block;
+          margin: 20px auto;
+          padding: 12px 24px;
+          background-color: ${colors.cardBg};
+          border: 1px solid ${colors.border};
+          border-radius: 8px;
+          color: ${colors.darkText};
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .try-again-button:hover {
+          border-color: ${colors.blue};
+          color: ${colors.blue};
+        }
+        
+        .jobvacancies-header {
           margin-bottom: 40px;
         }
         
-        .consultants-header h1 {
+        .jobvacancies-header h1 {
           font-size: 32px;
           font-weight: 700;
-          color: ${colors.darkText};
+          color: ${colors.black};
           margin-bottom: 16px;
         }
         
-        .consultants-header p {
+        .jobvacancies-header p {
           font-size: 16px;
           color: ${colors.red};
           margin-bottom: 24px;
@@ -524,12 +618,6 @@ const ConsultantsList = () => {
           accent-color: ${colors.blue};
         }
         
-        .specialties-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 8px;
-        }
-        
         .clear-option {
           background: none;
           border: none;
@@ -615,17 +703,17 @@ const ConsultantsList = () => {
           font-style: italic;
         }
         
-        .consultants-grid {
+        .jobvacancies-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
           gap: 24px;
         }
         
-        .consultants-grid.loading {
+        .jobvacancies-grid.loading {
           opacity: 0.6;
         }
         
-        .consultant-card {
+        .jobvacancy-card {
           background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
@@ -636,7 +724,7 @@ const ConsultantsList = () => {
           flex-direction: column;
         }
         
-        .consultant-card:hover {
+        .jobvacancy-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 15px 30px rgba(0,0,0,0.1);
           border-color: ${colors.yellow};
@@ -653,45 +741,54 @@ const ConsultantsList = () => {
           color: ${colors.darkText};
         }
         
+        .company-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin: 12px 0 16px;
+        }
+        
+        .company-logo {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          object-fit: contain;
+        }
+        
+        .company-name {
+          font-size: 14px;
+          color: ${colors.lightText};
+          flex: 1;
+        }
+        
         .card-body {
           padding: 0 20px;
           flex: 1;
         }
         
-        .contact-info {
+        .job-details {
           margin: 16px 0;
         }
         
-        .info-item {
+        .detail-item {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           gap: 8px;
           margin-bottom: 12px;
           color: ${colors.lightText};
           font-size: 14px;
         }
         
-        .info-item .icon {
+        .detail-item .icon {
           color: ${colors.blue};
           flex-shrink: 0;
-          margin-top: 2px;
         }
         
-        .specialties {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin: 16px 0;
-        }
-        
-        .specialty-badge {
-          display: inline-block;
-          padding: 4px 12px;
-          background-color: #E8F0FE;
-          border-radius: 50px;
-          font-size: 12px;
-          font-weight: 600;
-          color: ${colors.blue};
+        .job-description {
+          color: ${colors.darkText};
+          font-size: 14px;
+          line-height: 1.5;
+          margin-bottom: 16px;
         }
         
         .card-footer {
@@ -718,7 +815,7 @@ const ConsultantsList = () => {
           background-color: #3367d6;
         }
         
-        .consultant-card.loading {
+        .jobvacancy-card.loading {
           background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
@@ -791,11 +888,11 @@ const ConsultantsList = () => {
         }
         
         @media (max-width: 768px) {
-          .consultants-container {
+          .jobvacancies-container {
             padding: 20px 16px;
           }
           
-          .consultants-header h1 {
+          .jobvacancies-header h1 {
             font-size: 24px;
           }
           
@@ -803,16 +900,12 @@ const ConsultantsList = () => {
             flex-direction: column;
           }
           
-          .consultants-grid {
+          .jobvacancies-grid {
             grid-template-columns: 1fr;
           }
           
           .filters-panel {
             padding: 16px;
-          }
-          
-          .specialties-grid {
-            grid-template-columns: 1fr;
           }
         }
       `}</style>
@@ -820,4 +913,4 @@ const ConsultantsList = () => {
   );
 };
 
-export default ConsultantsList;
+export default JobVacancyList;

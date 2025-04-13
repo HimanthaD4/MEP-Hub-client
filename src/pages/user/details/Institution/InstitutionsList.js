@@ -1,115 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiSearch, FiPhone, FiMail, FiMapPin } from 'react-icons/fi';
+import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiSearch, FiPhone, FiMail, FiMapPin, FiBook, FiGlobe } from 'react-icons/fi';
 
-const ConsultantsList = () => {
-  const [consultants, setConsultants] = useState([]);
+const InstitutionsList = () => {
+  const [institutions, setInstitutions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    consultantType: '',
-    specialties: [],
-    location: '',
+    institutionType: '',
+    status: '',
     sort: 'name-asc'
   });
   const [showFilters, setShowFilters] = useState(false);
   const [expandedFilter, setExpandedFilter] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
-  // Google brand colors
   const colors = {
     blue: '#4285F4',
     red: '#EA4335',
     yellow: '#FBBC05',
-    green: '#34A853', 
+    green: '#34A853',
     darkText: '#202124',
     lightText: '#5F6368',
     background: '#F8F9FA',
     cardBg: '#FFFFFF',
-    border: '#DADCE0'
+    border: '#DADCE0',
+    black: '#000000'
   };
 
   useEffect(() => {
-    const fetchConsultants = async () => {
+    const fetchInstitutions = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/consultants`);
-        const visibleConsultants = response.data.filter(consultant => consultant.visible);
-        setConsultants(visibleConsultants || []);
+        const response = await axios.get(`${API_BASE_URL}/institutions`);
+        const visibleInstitutions = response.data.filter(institution => institution.visible === true);
+        setInstitutions(visibleInstitutions || []);
+        setLoading(false);
       } catch (err) {
-        console.error('Failed to fetch consultants:', err);
-        setError('Failed to load consultant firms. Please try again later.');
-      } finally {
+        console.error('Failed to fetch institutions:', err);
+        setError('Failed to load institutions. Please try again later.');
         setLoading(false);
       }
     };
-    fetchConsultants();
+    fetchInstitutions();
   }, []);
 
-  const filteredConsultants = consultants.filter((consultant) => {
+  const filteredInstitutions = institutions.filter((institution) => {
     const matchesSearch = 
-      consultant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.companyEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.companyAddress?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.specialties?.some(specialty => 
-        specialty.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      institution.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (institution.email && institution.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (institution.address && institution.address.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesType = !filters.consultantType || consultant?.consultantType === filters.consultantType;
-    const matchesSpecialties = filters.specialties.length === 0 || 
-      filters.specialties.every(filterSpecialty => consultant?.specialties?.includes(filterSpecialty));
-    const matchesLocation = !filters.location || 
-      consultant?.companyAddress?.toLowerCase().includes(filters.location.toLowerCase());
+    const matchesType = !filters.institutionType || institution.type === filters.institutionType;
+    const matchesStatus = !filters.status || institution.status === filters.status;
     
-    return matchesSearch && matchesType && matchesSpecialties && matchesLocation;
+    return matchesSearch && matchesType && matchesStatus;
   });
 
-  const sortedConsultants = [...filteredConsultants].sort((a, b) => {
+  const sortedInstitutions = [...filteredInstitutions].sort((a, b) => {
     if (filters.sort === 'name-asc') return a.name.localeCompare(b.name);
     if (filters.sort === 'name-desc') return b.name.localeCompare(a.name);
+    if (filters.sort === 'date-asc') return new Date(a.createdAt) - new Date(b.createdAt);
+    if (filters.sort === 'date-desc') return new Date(b.createdAt) - new Date(a.createdAt);
     return 0;
   });
 
-  const allSpecialties = [
-    'Air Conditioning systems (Central, Packaged, VRF & Splits)',
-    'Mechanical ventilation systems',
-    'Water supply & drainage systems',
-    'Fire Protection systems',
-    'Fire Detection systems',
-    'Storm water & rain water harvesting systems',
-    'Low Voltage Electrical Systems',
-    'Extra low voltages systems - BMS, Data, CCTV, IPTV, AC',
-    'Lighting systems',
-    'Elevator & escalators',
-    'Boilers & steam systems',
-    'Swimming pools',
-    'LPG distribution',
-    'Solar electricity',
-    'Compressed air systems',
-    'Generators',
-    'Structured cabling & IT network',
-    'Waste water treatment',
-    'Solid waste management',
-    'Facade Engineering',
-    'Cold rooms'
-  ].sort();
-
-  const toggleSpecialty = (specialty) => {
-    setFilters({
-      ...filters,
-      specialties: filters.specialties.includes(specialty)
-        ? filters.specialties.filter(s => s !== specialty)
-        : [...filters.specialties, specialty]
-    });
-  };
+  const allInstitutionTypes = ['LEARNING', 'TRAINING'];
+  const allStatuses = ['Active', 'Inactive'];
 
   const resetFilters = () => {
     setSearchTerm('');
     setFilters({
-      consultantType: '',
-      specialties: [],
-      location: '',
+      institutionType: '',
+      status: '',
       sort: 'name-asc'
     });
   };
@@ -125,29 +89,41 @@ const ConsultantsList = () => {
     };
     
     switch(type) {
-      case 'MEP': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
-      case 'Project Management': return { ...baseStyle, backgroundColor: '#FEE8E8', color: colors.red };
-      case 'Cost': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' }; // Darker yellow for better contrast
+      case 'LEARNING': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
+      case 'TRAINING': return { ...baseStyle, backgroundColor: '#E6F4EA', color: colors.green };
       default: return baseStyle;
     }
   };
 
+  if (error) {
+    return (
+      <div className="institutions-container">
+        <div className="error-message">
+          {error}
+          <button onClick={() => window.location.reload()} className="try-again-button">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="consultants-container">
+    <div className="institutions-container">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
       
-      <div className="consultants-header">
-        <h1>Consultant Firms Directory</h1>
-        <p>Browse our directory of professional MEP, Project Management, and Cost consulting firms in Sri Lanka.</p>
+      <div className="institutions-header">
+        <h1>Institutions Directory</h1>
+        <p>Browse our directory of partner institutions and training centers</p>
         
         <div className="search-controls">
           <div className="search-bar">
             <FiSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search firms..."
+              placeholder="Search institutions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -158,9 +134,9 @@ const ConsultantsList = () => {
             onClick={() => setShowFilters(!showFilters)}
           >
             <FiFilter /> Filters
-            {(filters.consultantType || filters.specialties.length > 0 || filters.location) && (
+            {(filters.institutionType || filters.status) && (
               <span className="filter-count">
-                {[filters.consultantType, ...filters.specialties, filters.location].filter(Boolean).length}
+                {[filters.institutionType, filters.status].filter(Boolean).length}
               </span>
             )}
           </button>
@@ -173,26 +149,26 @@ const ConsultantsList = () => {
                 className="filter-header"
                 onClick={() => setExpandedFilter(expandedFilter === 'type' ? null : 'type')}
               >
-                <h3>Consultant Type</h3>
+                <h3>Institution Type</h3>
                 {expandedFilter === 'type' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
               {expandedFilter === 'type' && (
                 <div className="filter-options">
-                  {['MEP', 'Project Management', 'Cost'].map(type => (
+                  {allInstitutionTypes.map(type => (
                     <label key={type} className="filter-option">
                       <input
                         type="radio"
-                        name="consultantType"
-                        checked={filters.consultantType === type}
-                        onChange={() => setFilters({...filters, consultantType: type})}
+                        name="institutionType"
+                        checked={filters.institutionType === type}
+                        onChange={() => setFilters({...filters, institutionType: type})}
                       />
                       <span>{type}</span>
                     </label>
                   ))}
                   <button 
                     className="clear-option"
-                    onClick={() => setFilters({...filters, consultantType: ''})}
+                    onClick={() => setFilters({...filters, institutionType: ''})}
                   >
                     Clear
                   </button>
@@ -203,59 +179,82 @@ const ConsultantsList = () => {
             <div className="filter-section">
               <div 
                 className="filter-header"
-                onClick={() => setExpandedFilter(expandedFilter === 'specialties' ? null : 'specialties')}
+                onClick={() => setExpandedFilter(expandedFilter === 'status' ? null : 'status')}
               >
-                <h3>Specialties ({filters.specialties.length})</h3>
-                {expandedFilter === 'specialties' ? <FiChevronUp /> : <FiChevronDown />}
+                <h3>Status</h3>
+                {expandedFilter === 'status' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
-              {expandedFilter === 'specialties' && (
-                <div className="filter-options specialties-grid">
-                  {allSpecialties.map(specialty => (
-                    <label key={specialty} className="filter-option">
+              {expandedFilter === 'status' && (
+                <div className="filter-options">
+                  {allStatuses.map(status => (
+                    <label key={status} className="filter-option">
                       <input
-                        type="checkbox"
-                        checked={filters.specialties.includes(specialty)}
-                        onChange={() => toggleSpecialty(specialty)}
+                        type="radio"
+                        name="status"
+                        checked={filters.status === status}
+                        onChange={() => setFilters({...filters, status})}
                       />
-                      <span>{specialty}</span>
+                      <span>{status}</span>
                     </label>
                   ))}
                   <button 
                     className="clear-option"
-                    onClick={() => setFilters({...filters, specialties: []})}
+                    onClick={() => setFilters({...filters, status: ''})}
                   >
-                    Clear All
+                    Clear
                   </button>
                 </div>
               )}
             </div>
-            
+
             <div className="filter-section">
               <div 
                 className="filter-header"
-                onClick={() => setExpandedFilter(expandedFilter === 'location' ? null : 'location')}
+                onClick={() => setExpandedFilter(expandedFilter === 'sort' ? null : 'sort')}
               >
-                <h3>Location</h3>
-                {expandedFilter === 'location' ? <FiChevronUp /> : <FiChevronDown />}
+                <h3>Sort By</h3>
+                {expandedFilter === 'sort' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
-              {expandedFilter === 'location' && (
+              {expandedFilter === 'sort' && (
                 <div className="filter-options">
-                  <input
-                    type="text"
-                    placeholder="Enter location..."
-                    value={filters.location}
-                    onChange={(e) => setFilters({...filters, location: e.target.value})}
-                  />
-                  {filters.location && (
-                    <button 
-                      className="clear-option"
-                      onClick={() => setFilters({...filters, location: ''})}
-                    >
-                      Clear
-                    </button>
-                  )}
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'name-asc'}
+                      onChange={() => setFilters({...filters, sort: 'name-asc'})}
+                    />
+                    <span>Name (A-Z)</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'name-desc'}
+                      onChange={() => setFilters({...filters, sort: 'name-desc'})}
+                    />
+                    <span>Name (Z-A)</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'date-desc'}
+                      onChange={() => setFilters({...filters, sort: 'date-desc'})}
+                    />
+                    <span>Newest First</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'date-asc'}
+                      onChange={() => setFilters({...filters, sort: 'date-asc'})}
+                    />
+                    <span>Oldest First</span>
+                  </label>
                 </div>
               )}
             </div>
@@ -271,30 +270,21 @@ const ConsultantsList = () => {
           </div>
         )}
         
-        {(filters.consultantType || filters.specialties.length > 0 || filters.location) && (
+        {(filters.institutionType || filters.status) && (
           <div className="active-filters">
-            {filters.consultantType && (
+            {filters.institutionType && (
               <span className="active-filter">
-                {filters.consultantType}
-                <button onClick={() => setFilters({...filters, consultantType: ''})}>
+                {filters.institutionType}
+                <button onClick={() => setFilters({...filters, institutionType: ''})}>
                   <FiX />
                 </button>
               </span>
             )}
             
-            {filters.specialties.map(specialty => (
-              <span key={specialty} className="active-filter">
-                {specialty}
-                <button onClick={() => toggleSpecialty(specialty)}>
-                  <FiX />
-                </button>
-              </span>
-            ))}
-            
-            {filters.location && (
+            {filters.status && (
               <span className="active-filter">
-                {filters.location}
-                <button onClick={() => setFilters({...filters, location: ''})}>
+                {filters.status}
+                <button onClick={() => setFilters({...filters, status: ''})}>
                   <FiX />
                 </button>
               </span>
@@ -304,15 +294,15 @@ const ConsultantsList = () => {
         
         {!loading && (
           <div className="results-count">
-            Showing {sortedConsultants.length} of {consultants.length} firms
+            Showing {sortedInstitutions.length} of {institutions.length} institutions
           </div>
         )}
       </div>
 
       {loading ? (
-        <div className="consultants-grid loading">
+        <div className="institutions-grid loading">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="consultant-card loading">
+            <div key={i} className="institution-card loading">
               <div className="image-placeholder"></div>
               <div className="content-placeholder">
                 <div className="line"></div>
@@ -322,50 +312,44 @@ const ConsultantsList = () => {
             </div>
           ))}
         </div>
-      ) : sortedConsultants.length > 0 ? (
-        <div className="consultants-grid">
-          {sortedConsultants.map((consultant) => (
-            <div key={consultant._id} className="consultant-card">
+      ) : sortedInstitutions.length > 0 ? (
+        <div className="institutions-grid">
+          {sortedInstitutions.map((institution) => (
+            <div key={institution._id} className="institution-card">
               <div className="card-header">
-                <div className="consultant-type" style={getTypeBadgeStyle(consultant.consultantType)}>
-                  {consultant.consultantType}
+                <div className="institution-type" style={getTypeBadgeStyle(institution.type)}>
+                  {institution.type}
                 </div>
-                <h3>{consultant.name}</h3>
+                <h3>{institution.name}</h3>
               </div>
               
               <div className="card-body">
                 <div className="contact-info">
                   <div className="info-item">
                     <FiMail className="icon" />
-                    <span>{consultant.companyEmail}</span>
-                  </div>
-                  <div className="info-item">
-                    <FiMapPin className="icon" />
-                    <span>{consultant.companyAddress}</span>
+                    <span>{institution.email || 'Email not provided'}</span>
                   </div>
                   <div className="info-item">
                     <FiPhone className="icon" />
-                    <span>{consultant.contactNumber || 'Not provided'}</span>
+                    <span>{institution.contactNumber || 'Phone not provided'}</span>
+                  </div>
+                  <div className="info-item">
+                    <FiMapPin className="icon" />
+                    <span>{institution.address || 'Address not specified'}</span>
                   </div>
                 </div>
                 
-                <div className="specialties">
-                  {consultant.specialties?.slice(0, 3).map((specialty, i) => (
-                    <span key={i} className="specialty-badge">
-                      {specialty}
-                    </span>
-                  ))}
-                  {consultant.specialties?.length > 3 && (
-                    <span className="specialty-badge">
-                      +{consultant.specialties.length - 3} more
-                    </span>
-                  )}
+                <div className="status-badge" style={{ 
+                  color: institution.status === 'Active' ? colors.green : colors.red,
+                  backgroundColor: institution.status === 'Active' ? '#E6F4EA' : '#FEE8E8'
+                }}>
+                  {institution.status}
                 </div>
               </div>
               
               <div className="card-footer">
-                <Link to={`/consultants/${consultant._id}`} className="view-button">
-                  View Firm Details
+                <Link to={`/institutions/${institution._id}`} className="view-button">
+                  View Details
                 </Link>
               </div>
             </div>
@@ -373,7 +357,7 @@ const ConsultantsList = () => {
         </div>
       ) : (
         <div className="empty-state">
-          <h3>No consultant firms match your search criteria</h3>
+          <h3>No institutions match your search criteria</h3>
           <p>Try adjusting your filters or search term</p>
           <button className="reset-button" onClick={resetFilters}>
             Reset All Filters
@@ -382,7 +366,7 @@ const ConsultantsList = () => {
       )}
 
       <style jsx>{`
-        .consultants-container {
+        .institutions-container {
           font-family: 'Outfit', sans-serif;
           max-width: 1400px;
           margin: 25px auto;
@@ -391,18 +375,42 @@ const ConsultantsList = () => {
           background-color: ${colors.background};
         }
         
-        .consultants-header {
+        .error-message {
+          padding: 40px;
+          text-align: center;
+          color: ${colors.red};
+          font-size: 18px;
+        }
+        
+        .try-again-button {
+          display: block;
+          margin: 20px auto;
+          padding: 12px 24px;
+          background-color: ${colors.cardBg};
+          border: 1px solid ${colors.border};
+          border-radius: 8px;
+          color: ${colors.darkText};
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .try-again-button:hover {
+          border-color: ${colors.blue};
+          color: ${colors.blue};
+        }
+        
+        .institutions-header {
           margin-bottom: 40px;
         }
         
-        .consultants-header h1 {
+        .institutions-header h1 {
           font-size: 32px;
           font-weight: 700;
-          color: ${colors.darkText};
+          color: ${colors.black};
           margin-bottom: 16px;
         }
         
-        .consultants-header p {
+        .institutions-header p {
           font-size: 16px;
           color: ${colors.red};
           margin-bottom: 24px;
@@ -524,12 +532,6 @@ const ConsultantsList = () => {
           accent-color: ${colors.blue};
         }
         
-        .specialties-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 8px;
-        }
-        
         .clear-option {
           background: none;
           border: none;
@@ -615,17 +617,17 @@ const ConsultantsList = () => {
           font-style: italic;
         }
         
-        .consultants-grid {
+        .institutions-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
           gap: 24px;
         }
         
-        .consultants-grid.loading {
+        .institutions-grid.loading {
           opacity: 0.6;
         }
         
-        .consultant-card {
+        .institution-card {
           background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
@@ -636,7 +638,7 @@ const ConsultantsList = () => {
           flex-direction: column;
         }
         
-        .consultant-card:hover {
+        .institution-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 15px 30px rgba(0,0,0,0.1);
           border-color: ${colors.yellow};
@@ -677,21 +679,13 @@ const ConsultantsList = () => {
           margin-top: 2px;
         }
         
-        .specialties {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin: 16px 0;
-        }
-        
-        .specialty-badge {
+        .status-badge {
           display: inline-block;
-          padding: 4px 12px;
-          background-color: #E8F0FE;
+          padding: 6px 12px;
           border-radius: 50px;
           font-size: 12px;
           font-weight: 600;
-          color: ${colors.blue};
+          margin: 16px 0;
         }
         
         .card-footer {
@@ -718,7 +712,7 @@ const ConsultantsList = () => {
           background-color: #3367d6;
         }
         
-        .consultant-card.loading {
+        .institution-card.loading {
           background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
@@ -791,11 +785,11 @@ const ConsultantsList = () => {
         }
         
         @media (max-width: 768px) {
-          .consultants-container {
+          .institutions-container {
             padding: 20px 16px;
           }
           
-          .consultants-header h1 {
+          .institutions-header h1 {
             font-size: 24px;
           }
           
@@ -803,16 +797,12 @@ const ConsultantsList = () => {
             flex-direction: column;
           }
           
-          .consultants-grid {
+          .institutions-grid {
             grid-template-columns: 1fr;
           }
           
           .filters-panel {
             padding: 16px;
-          }
-          
-          .specialties-grid {
-            grid-template-columns: 1fr;
           }
         }
       `}</style>
@@ -820,4 +810,4 @@ const ConsultantsList = () => {
   );
 };
 
-export default ConsultantsList;
+export default InstitutionsList;

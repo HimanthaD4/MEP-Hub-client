@@ -13,6 +13,10 @@ const HomePage = () => {
   const [contractorFirms, setContractorFirms] = useState([]);
   const [agents, setAgents] = useState([]);
   const [directors, setDirectors] = useState([]);
+  const [institutions, setInstitutions] = useState([]);
+  const [jobseekers, setJobseekers] = useState([]);
+  const [jobVacancies, setJobVacancies] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -20,13 +24,26 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projectsRes, consultantsRes, contractorsRes, agentsRes, directorsRes, lecturersRes] = await Promise.all([
+        const [
+          projectsRes, 
+          consultantsRes, 
+          contractorsRes, 
+          agentsRes, 
+          directorsRes, 
+          lecturersRes, 
+          jobVacanciesRes,
+          jobseekersRes,
+          institutionsRes
+        ] = await Promise.all([
           axios.get(`${API_BASE_URL}/projects`),
           axios.get(`${API_BASE_URL}/consultants`),
           axios.get(`${API_BASE_URL}/contractors`),
           axios.get(`${API_BASE_URL}/agents`),
-          axios.get(`${API_BASE_URL}/directors`), 
+          axios.get(`${API_BASE_URL}/directors`),
           axios.get(`${API_BASE_URL}/lecturers`),
+          axios.get(`${API_BASE_URL}/job-vacancies`),
+          axios.get(`${API_BASE_URL}/jobseekers`),
+          axios.get(`${API_BASE_URL}/institutions`),
         ]);
         
         setProjects(projectsRes.data || []);
@@ -35,6 +52,9 @@ const HomePage = () => {
         setAgents(agentsRes.data || []);
         setDirectors(directorsRes.data || []);
         setLecturers(lecturersRes.data || []);
+        setInstitutions(institutionsRes.data || []);
+        setJobseekers(jobseekersRes.data || []);
+        setJobVacancies(jobVacanciesRes.data || []);
       } catch (err) {
         console.error('Failed to fetch data:', err);
         setError(err.message);
@@ -43,7 +63,7 @@ const HomePage = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [API_BASE_URL]);
 
   const styles = {
     container: {
@@ -72,14 +92,7 @@ const HomePage = () => {
         setSearchTerm={setSearchTerm}
       />
       
-      <CategoriesSection 
-        projects={projects}
-        consultantFirms={consultantFirms}
-        contractorFirms={contractorFirms}
-        agents={agents}
-        directors={directors}
-        lecturers={lecturers}
-      />
+      <CtaSection />
       
       <ProjectsSection 
         projects={projects}
@@ -87,8 +100,20 @@ const HomePage = () => {
         loading={loading}
         setSearchTerm={setSearchTerm}
       />
+
+<CategoriesSection 
+        projects={projects}
+        consultantFirms={consultantFirms}
+        contractorFirms={contractorFirms}
+        agents={agents}
+        directors={directors}
+        lecturers={lecturers}
+        institutions={institutions}
+        jobVacancies={jobVacancies}
+        jobseekers={jobseekers}
+      />
       
-      <CtaSection />
+    
     </div>
   );
 };

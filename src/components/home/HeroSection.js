@@ -1,33 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import engineerImage from '../../images/bp.png'; // Adjust path as needed
 
 const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searchTerm, setSearchTerm }) => {
   const styles = {
     hero: {
       position: 'relative',
-      padding: '120px 24px 80px',
-      color: '#202124', // Google's dark text color
+      padding: '120px 24px 0', // Reduced bottom padding since image touches bottom
+      color: '#202124',
       textAlign: 'left',
       overflow: 'hidden',
-      backgroundColor: '#f8f9fa', // Light background
+      backgroundColor: '#f8f9fa',
       display: 'flex',
       alignItems: 'center',
       minHeight: '90vh',
       '@media (max-width: 768px)': {
         flexDirection: 'column',
         textAlign: 'center',
-        padding: '100px 24px 60px'
+        padding: '100px 24px 0'
       }
     },
     container: {
       maxWidth: '1280px',
       margin: '0 auto',
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'flex-end', // Align to bottom
       justifyContent: 'space-between',
       width: '100%',
+      height: '100%',
+      position: 'relative',
+      zIndex: 2,
       '@media (max-width: 768px)': {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'center'
       }
     },
     content: {
@@ -36,6 +41,7 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       maxWidth: '600px',
       position: 'relative',
       zIndex: 2,
+      marginBottom: '40px', // Space for bottom-aligned content
       '@media (max-width: 768px)': {
         paddingRight: '0',
         marginBottom: '40px',
@@ -48,25 +54,25 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       marginBottom: '24px',
       lineHeight: 1.2,
       letterSpacing: '-0.5px',
-      color: '#1a0dab', // Google blue for titles
+      color: '#1a0dab',
       position: 'relative',
-      display: 'inline-block',
-      '::after': {
-        content: '""',
-        position: 'absolute',
-        bottom: '-8px',
-        left: '0',
-        width: '80px',
-        height: '4px',
-        background: '#f4b400', // Google yellow
-        borderRadius: '2px'
-      }
+      display: 'inline-block'
+    },
+    titleAfter: {
+      content: '""',
+      position: 'absolute',
+      bottom: '-8px',
+      left: '0',
+      width: '80px',
+      height: '4px',
+      background: '#f4b400',
+      borderRadius: '2px'
     },
     subtitle: {
       fontSize: 'clamp(16px, 2vw, 20px)',
       fontWeight: 400,
       marginBottom: '32px',
-      color: '#5f6368', // Google's secondary text
+      color: '#5f6368',
       lineHeight: 1.6,
       maxWidth: '520px'
     },
@@ -98,12 +104,12 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       fontWeight: 400,
       borderRadius: '24px',
       '::placeholder': {
-        color: '#9aa0a6' // Google's placeholder color
+        color: '#9aa0a6'
       }
     },
     searchButton: {
       padding: '0 32px',
-      backgroundColor: '#1a73e8', // Google blue
+      backgroundColor: '#1a73e8',
       color: 'white',
       border: 'none',
       fontSize: '16px',
@@ -112,9 +118,6 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       transition: 'all 0.3s ease',
       ':hover': {
         backgroundColor: '#1765cc'
-      },
-      '@media (max-width: 480px)': {
-        padding: '0 24px'
       }
     },
     statsContainer: {
@@ -141,23 +144,44 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       }
     },
     statHighlight: {
-      color: '#1a73e8', // Google blue
       fontWeight: 600,
       marginRight: '4px'
     },
-    illustration: {
+    illustrationContainer: {
       flex: 1,
       maxWidth: '600px',
+      height: '100%',
       position: 'relative',
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'flex-end',
       '@media (max-width: 768px)': {
         maxWidth: '100%',
-        marginTop: '40px'
+        marginTop: '40px',
+        justifyContent: 'center'
       }
     },
     svgIllustration: {
+      position: 'absolute',
       width: '100%',
       height: 'auto',
-      maxHeight: '500px'
+      maxHeight: '500px',
+      bottom: '0',
+      right: '0',
+      zIndex: 1
+    },
+    engineerImage: {
+      height: '80%',
+      maxHeight: '400px',
+      zIndex: 3,
+      position: 'relative',
+      objectFit: 'contain',
+      objectPosition: 'bottom right',
+      '@media (max-width: 768px)': {
+        height: 'auto',
+        width: '100%',
+        maxHeight: '400px'
+      }
     },
     decorativeElements: {
       position: 'absolute',
@@ -166,7 +190,7 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       top: 0,
       left: 0,
       overflow: 'hidden',
-      zIndex: 1
+      zIndex: 0
     },
     decorativeCircle: {
       position: 'absolute',
@@ -177,7 +201,7 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       position: 'absolute',
       fontSize: '300px',
       fontWeight: 800,
-      color: 'rgba(234,67,53,0.03)', // Google red very subtle
+      color: 'rgba(234,67,53,0.03)',
       zIndex: 0,
       lineHeight: 1,
       userSelect: 'none',
@@ -188,8 +212,7 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       '@media (max-width: 768px)': {
         fontSize: '200px',
         left: '50%',
-        transform: 'translate(-50%, -50%)',
-        opacity: 0.1
+        transform: 'translate(-50%, -50%)'
       }
     }
   };
@@ -208,31 +231,31 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
       {/* Subtle background letters */}
       <div style={styles.lettersBackground}>MEP</div>
       
-      {/* Decorative elements */}
+      {/* Decorative elements - positioned to show through nicely */}
       <div style={styles.decorativeElements}>
         <div style={{
           ...styles.decorativeCircle,
-          width: '300px',
-          height: '300px',
+          width: '320px',
+          height: '320px',
           backgroundColor: googleColors.blue,
-          top: '-100px',
-          right: '-100px'
+          top: '-120px',
+          right: '-120px'
         }} />
         <div style={{
           ...styles.decorativeCircle,
-          width: '200px',
-          height: '200px',
+          width: '220px',
+          height: '220px',
           backgroundColor: googleColors.yellow,
-          bottom: '-50px',
-          right: '20%'
+          bottom: '100px',
+          right: '25%'
         }} />
         <div style={{
           ...styles.decorativeCircle,
-          width: '150px',
-          height: '150px',
+          width: '180px',
+          height: '180px',
           backgroundColor: googleColors.red,
-          top: '30%',
-          left: '10%'
+          top: '40%',
+          left: '15%'
         }} />
       </div>
 
@@ -240,6 +263,7 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
         <div style={styles.content}>
           <h1 style={styles.title}>
             Sri Lanka's Premier <span style={{ color: googleColors.red }}>MEP</span> Network
+            <span style={styles.titleAfter}></span>
           </h1>
           
           <p style={styles.subtitle}>
@@ -277,47 +301,54 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms, agents, searc
           </div>
         </div>
 
-        <div style={styles.illustration}>
+        <div style={styles.illustrationContainer}>
           <svg style={styles.svgIllustration} viewBox="0 0 600 500" fill="none" xmlns="http://www.w3.org/2000/svg">
             {/* Modern abstract illustration with Google colors */}
-            <rect width="600" height="500" fill="#f8f9fa" />
+            <rect width="600" height="500" fill="#f8f9fa" fillOpacity="0.01" />
             
-            {/* Blue elements */}
-            <path d="M450 150C450 206.228 404.228 252 348 252C291.772 252 246 206.228 246 150C246 93.7715 291.772 48 348 48C404.228 48 450 93.7715 450 150Z" fill={googleColors.blue} fillOpacity="0.1" />
-            <path d="M500 350C500 380.928 475.928 405 445 405C414.072 405 390 380.928 390 350C390 319.072 414.072 295 445 295C475.928 295 500 319.072 500 350Z" fill={googleColors.blue} fillOpacity="0.1" />
+            {/* Blue elements - adjusted positions */}
+            <path d="M420 120C420 176.228 374.228 222 318 222C261.772 222 216 176.228 216 120C216 63.7715 261.772 18 318 18C374.228 18 420 63.7715 420 120Z" fill={googleColors.blue} fillOpacity="0.1" />
+            <path d="M470 320C470 350.928 445.928 375 415 375C384.072 375 360 350.928 360 320C360 289.072 384.072 265 415 265C445.928 265 470 289.072 470 320Z" fill={googleColors.blue} fillOpacity="0.1" />
             
-            {/* Red elements */}
-            <path d="M150 250C150 289.823 183.177 323 223 323C262.823 323 296 289.823 296 250C296 210.177 262.823 177 223 177C183.177 177 150 210.177 150 250Z" fill={googleColors.red} fillOpacity="0.1" />
-            <path d="M100 400C100 428.719 123.281 452 152 452C180.719 452 204 428.719 204 400C204 371.281 180.719 348 152 348C123.281 348 100 371.281 100 400Z" fill={googleColors.red} fillOpacity="0.1" />
+            {/* Red elements - adjusted positions */}
+            <path d="M120 220C120 259.823 153.177 293 193 293C232.823 293 266 259.823 266 220C266 180.177 232.823 147 193 147C153.177 147 120 180.177 120 220Z" fill={googleColors.red} fillOpacity="0.1" />
+            <path d="M70 370C70 398.719 93.281 422 122 422C150.719 422 174 398.719 174 370C174 341.281 150.719 318 122 318C93.281 318 70 341.281 70 370Z" fill={googleColors.red} fillOpacity="0.1" />
             
-            {/* Yellow elements */}
-            <path d="M300 100C300 133.137 273.137 160 240 160C206.863 160 180 133.137 180 100C180 66.8629 206.863 40 240 40C273.137 40 300 66.8629 300 100Z" fill={googleColors.yellow} fillOpacity="0.1" />
+            {/* Yellow elements - adjusted positions */}
+            <path d="M270 70C270 103.137 243.137 130 210 130C176.863 130 150 103.137 150 70C150 36.8629 176.863 10 210 10C243.137 10 270 36.8629 270 70Z" fill={googleColors.yellow} fillOpacity="0.1" />
             
-            {/* Main illustration - Construction professionals */}
-            <path d="M348 150C348 172.091 330.091 190 308 190H288C265.909 190 248 172.091 248 150V130C248 107.909 265.909 90 288 90H308C330.091 90 348 107.909 348 130V150Z" fill={googleColors.blue} />
-            <path d="M223 250C223 272.091 205.091 290 183 290H163C140.909 290 123 272.091 123 250V230C123 207.909 140.909 190 163 190H183C205.091 190 223 207.909 223 230V250Z" fill={googleColors.red} />
-            <path d="M240 100C240 111.046 231.046 120 220 120H200C188.954 120 180 111.046 180 100V80C180 68.9543 188.954 60 200 60H220C231.046 60 240 68.9543 240 80V100Z" fill={googleColors.yellow} />
+            {/* Main illustration elements */}
+            <path d="M318 120C318 142.091 300.091 160 278 160H258C235.909 160 218 142.091 218 120V100C218 77.9086 235.909 60 258 60H278C300.091 60 318 77.9086 318 100V120Z" fill={googleColors.blue} />
+            <path d="M193 220C193 242.091 175.091 260 153 260H133C110.909 260 93 242.091 93 220V200C93 177.909 110.909 160 133 160H153C175.091 160 193 177.909 193 200V220Z" fill={googleColors.red} />
+            <path d="M210 70C210 81.0457 201.046 90 190 90H170C158.954 90 150 81.0457 150 70V50C150 38.9543 158.954 30 170 30H190C201.046 30 210 38.9543 210 50V70Z" fill={googleColors.yellow} />
             
             {/* Connecting lines */}
-            <path d="M308 150L348 150" stroke={googleColors.blue} strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
-            <path d="M240 100L288 130" stroke={googleColors.yellow} strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
-            <path d="M223 230L183 230" stroke={googleColors.red} strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
-            <path d="M308 130L348 150" stroke={googleColors.blue} strokeWidth="2" strokeLinecap="round" />
-            <path d="M240 80L288 130" stroke={googleColors.yellow} strokeWidth="2" strokeLinecap="round" />
-            <path d="M223 250L183 230" stroke={googleColors.red} strokeWidth="2" strokeLinecap="round" />
+            <path d="M278 120L318 120" stroke={googleColors.blue} strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
+            <path d="M210 70L258 100" stroke={googleColors.yellow} strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
+            <path d="M193 200L153 200" stroke={googleColors.red} strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
+            <path d="M278 100L318 120" stroke={googleColors.blue} strokeWidth="2" strokeLinecap="round" />
+            <path d="M210 50L258 100" stroke={googleColors.yellow} strokeWidth="2" strokeLinecap="round" />
+            <path d="M193 220L153 200" stroke={googleColors.red} strokeWidth="2" strokeLinecap="round" />
             
-            {/* Small dots representing network nodes */}
-            <circle cx="400" cy="200" r="4" fill={googleColors.gray} />
-            <circle cx="380" cy="230" r="4" fill={googleColors.gray} />
-            <circle cx="420" cy="180" r="4" fill={googleColors.gray} />
-            <circle cx="350" cy="220" r="4" fill={googleColors.gray} />
-            <circle cx="300" cy="180" r="4" fill={googleColors.gray} />
-            <circle cx="270" cy="210" r="4" fill={googleColors.gray} />
-            <circle cx="200" cy="270" r="4" fill={googleColors.gray} />
-            <circle cx="170" cy="300" r="4" fill={googleColors.gray} />
-            <circle cx="140" cy="330" r="4" fill={googleColors.gray} />
-            <circle cx="110" cy="360" r="4" fill={googleColors.gray} />
+            {/* Network nodes */}
+            <circle cx="370" cy="170" r="4" fill={googleColors.gray} />
+            <circle cx="350" cy="200" r="4" fill={googleColors.gray} />
+            <circle cx="390" cy="150" r="4" fill={googleColors.gray} />
+            <circle cx="320" cy="190" r="4" fill={googleColors.gray} />
+            <circle cx="270" cy="150" r="4" fill={googleColors.gray} />
+            <circle cx="240" cy="180" r="4" fill={googleColors.gray} />
+            <circle cx="170" cy="240" r="4" fill={googleColors.gray} />
+            <circle cx="140" cy="270" r="4" fill={googleColors.gray} />
+            <circle cx="110" cy="300" r="4" fill={googleColors.gray} />
+            <circle cx="80" cy="330" r="4" fill={googleColors.gray} />
           </svg>
+
+          {/* Engineer PNG Image - perfectly aligned to bottom */}
+          <img 
+            src={engineerImage} 
+            alt="MEP Engineer" 
+            style={styles.engineerImage} 
+          />
         </div>
       </div>
     </div>

@@ -2,12 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const CategoriesSection = ({ 
-  projects, 
-  consultantFirms, 
-  contractorFirms, 
-  agents, 
-  directors, 
-  lecturers 
+  projects = [], 
+  consultantFirms = [], 
+  contractorFirms = [], 
+  agents = [], 
+  directors = [], 
+  lecturers = [],
+  institutions = [],
+  jobVacancies = [],
+  jobseekers = []
 }) => {
   const styles = {
     contentSection: {
@@ -22,16 +25,16 @@ const CategoriesSection = ({
       marginBottom: '40px',
       textAlign: 'center',
       color: '#1e3a8a',
-      position: 'relative',
-      '::after': {
-        content: '""',
-        display: 'block',
-        width: '80px',
-        height: '4px',
-        backgroundColor: '#dc2626',
-        margin: '16px auto 0',
-        borderRadius: '2px'
-      }
+      position: 'relative'
+    },
+    sectionTitleAfter: {
+      content: '""',
+      display: 'block',
+      width: '80px',
+      height: '4px',
+      backgroundColor: '#dc2626',
+      margin: '16px auto 0',
+      borderRadius: '2px'
     },
     categoriesGrid: {
       display: 'grid',
@@ -94,7 +97,7 @@ const CategoriesSection = ({
       display: 'inline-block',
       padding: '12px 24px',
       backgroundColor: '#fbbf24',
-      color: '#1a56db',
+      color: '#ffffff',
       borderRadius: '8px',
       fontWeight: 600,
       textDecoration: 'none',
@@ -140,7 +143,10 @@ const CategoriesSection = ({
 
   return (
     <div style={styles.contentSection}>
-      <h2 style={styles.sectionTitle}>Explore Our Network</h2>
+      <h2 style={styles.sectionTitle}>
+        Explore Our Network
+        <div style={styles.sectionTitleAfter}></div>
+      </h2>
       
       <div style={styles.categoriesGrid}>
         {/* Consultants Card */}
@@ -247,6 +253,60 @@ const CategoriesSection = ({
             </p>
             <Link to="/projects" style={styles.yellowCtaButton}>
               View Projects
+            </Link>
+          </div>
+        </div>
+
+        {/* Institutions Card */}
+        <div style={styles.categoryCard}>
+          <div style={{...styles.decorativeElementBlue, bottom: '-20px', right: '-20px'}} />
+          <div style={styles.categoryContent}>
+            <svg style={styles.categoryIcon} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#1a56db">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <h3 style={styles.categoryTitle}>Institutions</h3>
+            <div style={styles.categoryCount}>{institutions.length}+ Institutions</div>
+            <p style={styles.categoryDescription}>
+              Access top MEP educators and training programs to enhance your skills and knowledge.
+            </p>
+            <Link to="/institutions" style={styles.ctaButton}>
+              View Institutions
+            </Link>
+          </div>
+        </div>
+
+        {/* Job Vacancies Card */}
+        <div style={styles.categoryCard}>
+          <div style={{...styles.decorativeElementRed, top: '-20px', left: '-20px'}} />
+          <div style={styles.categoryContent}>
+            <svg style={styles.categoryIcon} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#dc2626">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <h3 style={styles.categoryTitle}>Job Vacancies</h3>
+            <div style={styles.categoryCount}>{jobVacancies.length}+ Open Positions</div>
+            <p style={styles.categoryDescription}>
+              Browse current job openings in the MEP industry and find your next career opportunity.
+            </p>
+            <Link to="/job-vacancies" style={{...styles.ctaButton, backgroundColor: '#dc2626', ':hover': { backgroundColor: '#b91c1c' }}}>
+              View Vacancies
+            </Link>
+          </div>
+        </div>
+
+        {/* Job Seekers Card */}
+        <div style={styles.categoryCard}>
+          <div style={{...styles.decorativeElement, bottom: '-20px', right: '-20px'}} />
+          <div style={styles.categoryContent}>
+            <svg style={styles.categoryIcon} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#fbbf24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <h3 style={styles.categoryTitle}>Job Seekers</h3>
+            <div style={styles.categoryCount}>{jobseekers.length}+ Professionals</div>
+            <p style={styles.categoryDescription}>
+              Connect with skilled MEP professionals looking for new opportunities in the industry.
+            </p>
+            <Link to="/jobseekers" style={styles.yellowCtaButton}>
+              Find Talent
             </Link>
           </div>
         </div>
