@@ -4,12 +4,12 @@ import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiPlus, FiEdit2, FiTrash2, FiEye, FiEyeOff, FiX, FiAlertTriangle, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
-const Contractors = () => {
-  const [contractors, setContractors] = useState([]);
+const Consultants = () => {
+  const [consultants, setConsultants] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentContractor, setCurrentContractor] = useState(null);
-  const [expandedContractorId, setExpandedContractorId] = useState(null);
+  const [currentConsultant, setCurrentConsultant] = useState(null);
+  const [expandedConsultantId, setExpandedConsultantId] = useState(null);
   const [toast, setToast] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [showProjectsSection, setShowProjectsSection] = useState(false);
@@ -32,7 +32,7 @@ const Contractors = () => {
     },
     status: 'pending',
     visible: true,
-    contractorType: ''
+    consultantType: '' // Added consultantType to formData
   });
 
   const [errors, setErrors] = useState({});
@@ -62,14 +62,14 @@ const Contractors = () => {
     'Cold rooms'
   ];
 
-  const contractorTypeOptions = [
-    'Installation',
-    'Service & maintenance',
-    'Labour'
+  const consultantTypeOptions = [
+    'MEP',
+    'Project Management',
+    'Cost'
   ];
 
   useEffect(() => {
-    fetchContractors();
+    fetchConsultants();
   }, []);
 
   useEffect(() => {
@@ -81,12 +81,14 @@ const Contractors = () => {
     }
   }, [toast]);
 
-  const fetchContractors = async () => {
+  
+
+  const fetchConsultants = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/contractors`);
-      setContractors(response.data);
+      const response = await axios.get(`${API_BASE_URL}/consultants`);
+      setConsultants(response.data);
     } catch (error) {
-      showNotification('Failed to load contractors', 'error');
+      showNotification('Failed to load consultants', 'error');
     }
   };
 
@@ -174,7 +176,7 @@ const Contractors = () => {
     if (formData.specialties.length === 0) newErrors.specialties = 'At least one specialty is required';
     if (formData.registrationMode === 'multi-year' && (!formData.registrationYears || isNaN(formData.registrationYears)))
       newErrors.registrationYears = 'Valid registration years is required';
-    if (!formData.contractorType) newErrors.contractorType = 'Contractor type is required'; 
+    if (!formData.consultantType) newErrors.consultantType = 'Consultant type is required'; // Validate consultantType
     
     // Validate projects
     formData.projects.forEach((project, index) => {
@@ -217,20 +219,20 @@ const Contractors = () => {
         }))
       };
 
-      const response = currentContractor
-        ? await axios.put(`${API_BASE_URL}/contractors/${currentContractor._id}`, dataToSend)
-        : await axios.post(`${API_BASE_URL}/contractors`, dataToSend);
+      const response = currentConsultant
+        ? await axios.put(`${API_BASE_URL}/consultants/${currentConsultant._id}`, dataToSend)
+        : await axios.post(`${API_BASE_URL}/consultants`, dataToSend);
 
       showNotification(
-        currentContractor ? 'Contractor updated successfully' : 'Contractor added successfully',
+        currentConsultant ? 'Consultant updated successfully' : 'Consultant added successfully',
         'success'
       );
 
       setIsModalOpen(false);
       resetForm();
-      await fetchContractors();
+      await fetchConsultants();
     } catch (error) {
-      showNotification(error.response?.data?.message || 'Failed to save contractor', 'error');
+      showNotification(error.response?.data?.message || 'Failed to save consultant', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -254,73 +256,73 @@ const Contractors = () => {
       },
       status: 'pending',
       visible: true,
-      contractorType: ''
+      consultantType: '' // Reset consultantType
     });
-    setCurrentContractor(null);
+    setCurrentConsultant(null);
     setShowProjectsSection(false);
     setShowPaymentSection(false);
   };
 
-  const openNewContractorModal = () => {
+  const openNewConsultantModal = () => {
     resetForm();
     setIsModalOpen(true);
   };
 
-  const openEditContractorModal = (contractor) => {
-    setCurrentContractor(contractor);
+  const openEditConsultantModal = (consultant) => {
+    setCurrentConsultant(consultant);
     setFormData({
-      name: contractor.name,
-      contactNumber: contractor.contactNumber,
-      companyEmail: contractor.companyEmail,
-      companyWebsite: contractor.companyWebsite || '',
-      companyAddress: contractor.companyAddress,
-      yearsOfExperience: contractor.yearsOfExperience.toString(),
-      specialties: contractor.specialties,
-      projects: contractor.projects || [],
-      registrationMode: contractor.registrationMode,
-      registrationYears: contractor.registrationYears?.toString() || '',
-      paymentModeDetails: contractor.paymentModeDetails || {
+      name: consultant.name,
+      contactNumber: consultant.contactNumber,
+      companyEmail: consultant.companyEmail,
+      companyWebsite: consultant.companyWebsite || '',
+      companyAddress: consultant.companyAddress,
+      yearsOfExperience: consultant.yearsOfExperience.toString(),
+      specialties: consultant.specialties,
+      projects: consultant.projects || [],
+      registrationMode: consultant.registrationMode,
+      registrationYears: consultant.registrationYears?.toString() || '',
+      paymentModeDetails: consultant.paymentModeDetails || {
         paymentMode: 'online',
         paymentDate: format(new Date(), 'yyyy-MM-dd')
       },
-      status: contractor.status,
-      visible: contractor.visible,
-      contractorType: contractor.contractorType || ''
+      status: consultant.status,
+      visible: consultant.visible,
+      consultantType: consultant.consultantType || '' // Set consultantType for editing
     });
     setIsModalOpen(true);
-    if (contractor.projects?.length > 0) setShowProjectsSection(true);
+    if (consultant.projects?.length > 0) setShowProjectsSection(true);
   };
 
-  const deleteContractor = async (id) => {
+  const deleteConsultant = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/contractors/${id}`);
-      showNotification('Contractor deleted successfully', 'success');
-      setContractors(contractors.filter(contractor => contractor._id !== id));
+      await axios.delete(`${API_BASE_URL}/consultants/${id}`);
+      showNotification('Consultant deleted successfully', 'success');
+      setConsultants(consultants.filter(consultant => consultant._id !== id));
       setConfirmDialog(null);
     } catch (error) {
-      showNotification('Failed to delete contractor', 'error');
+      showNotification('Failed to delete consultant', 'error');
       setConfirmDialog(null);
     }
   };
 
-  const toggleVisibility = async (contractor) => {
+  const toggleVisibility = async (consultant) => {
     try {
-      await axios.put(`${API_BASE_URL}/contractors/${contractor._id}`, {
-        ...contractor,
-        visible: !contractor.visible
+      await axios.put(`${API_BASE_URL}/consultants/${consultant._id}`, {
+        ...consultant,
+        visible: !consultant.visible
       });
       showNotification(
-        `Contractor is now ${!contractor.visible ? 'visible' : 'hidden'}`,
+        `Consultant is now ${!consultant.visible ? 'visible' : 'hidden'}`,
         'success'
       );
-      fetchContractors();
+      fetchConsultants();
     } catch {
       showNotification('Failed to update visibility', 'error');
     }
   };
 
-  const toggleDescription = (contractorId) => {
-    setExpandedContractorId(expandedContractorId === contractorId ? null : contractorId);
+  const toggleDescription = (consultantId) => {
+    setExpandedConsultantId(expandedConsultantId === consultantId ? null : consultantId);
   };
 
   const toggleProjectsSection = () => {
@@ -335,10 +337,10 @@ const Contractors = () => {
     setToast({ message, type, id: Date.now() });
   };
 
-  const showConfirmDialog = (contractorId) => {
+  const showConfirmDialog = (consultantId) => {
     setConfirmDialog({
-      id: contractorId,
-      message: 'Are you sure you want to delete this contractor? This action cannot be undone.',
+      id: consultantId,
+      message: 'Are you sure you want to delete this consultant? This action cannot be undone.',
       title: 'Confirm Deletion'
     });
   };
@@ -403,7 +405,7 @@ const Contractors = () => {
                 </motion.button>
                 <motion.button
                   style={styles.deleteConfirmButton}
-                  onClick={() => deleteContractor(confirmDialog.id)}
+                  onClick={() => deleteConsultant(confirmDialog.id)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -416,21 +418,21 @@ const Contractors = () => {
       </AnimatePresence>
 
       <div style={styles.header}>
-        <h1 style={styles.title}>Contractors Management</h1>
+        <h1 style={styles.title}>Consultants Management</h1>
         <motion.button
-          onClick={openNewContractorModal}
+          onClick={openNewConsultantModal}
           style={styles.addButton}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.98 }}
         >
           <FiPlus style={{ marginRight: '8px' }} />
-          Add Contractor
+          Add Consultant
         </motion.button>
       </div>
 
-      {contractors.length === 0 ? (
+      {consultants.length === 0 ? (
         <div style={styles.emptyState}>
-          <p>No contractors found. Create your first contractor to get started.</p>
+          <p>No consultants found. Create your first consultant to get started.</p>
         </div>
       ) : (
         <div style={styles.tableContainer}>
@@ -447,54 +449,54 @@ const Contractors = () => {
               </tr>
             </thead>
             <tbody>
-              {contractors.map((contractor) => (
+              {consultants.map((consultant) => (
                 <motion.tr 
-                  key={contractor._id}
+                  key={consultant._id}
                   style={styles.tableRow}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
                 >
                   <td style={styles.tableCell}>
-                    <div style={styles.contractorName}>{contractor.name || 'N/A'}</div>
-                    <div style={styles.contractorEmail}>{contractor.companyEmail || 'N/A'}</div>
+                    <div style={styles.consultantName}>{consultant.name || 'N/A'}</div>
+                    <div style={styles.consultantEmail}>{consultant.companyEmail || 'N/A'}</div>
                   </td>
-                  <td style={styles.tableCell}>{contractor.contactNumber || 'N/A'}</td>
+                  <td style={styles.tableCell}>{consultant.contactNumber || 'N/A'}</td>
                   <td style={styles.tableCell}>
                     <div style={styles.specialtiesContainer}>
-                      {contractor.specialties.slice(0, 2).map(specialty => (
+                      {consultant.specialties.slice(0, 2).map(specialty => (
                         <span key={specialty} style={styles.specialtyBadge}>
                           {specialty.split(' ')[0]}...
                         </span>
                       ))}
-                      {contractor.specialties.length > 2 && (
+                      {consultant.specialties.length > 2 && (
                         <span style={styles.moreSpecialties}>
-                          +{contractor.specialties.length - 2} more
+                          +{consultant.specialties.length - 2} more
                         </span>
                       )}
                     </div>
                   </td>
                   <td style={styles.tableCell}>
-                    {contractor.yearsOfExperience || 'N/A'} years
+                    {consultant.yearsOfExperience || 'N/A'} years
                   </td>
                   <td style={styles.tableCell}>
                     <span style={{
                       ...styles.statusBadge,
-                      ...(contractor.status === 'active' ? styles.statusActive : 
-                        contractor.status === 'suspended' ? styles.statusSuspended : 
+                      ...(consultant.status === 'active' ? styles.statusActive : 
+                           consultant.status === 'suspended' ? styles.statusSuspended : 
                            styles.statusPending)
                     }}>
-                      {contractor.status}
+                      {consultant.status}
                     </span>
                   </td>
                   <td style={styles.tableCell}>
                     <motion.button 
-                      onClick={() => toggleVisibility(contractor)}
+                      onClick={() => toggleVisibility(consultant)}
                       style={styles.visibilityButton}
                       whileHover={{ scale: 1.2 }}
                       whileTap={{ scale: 0.9 }}
                     >
-                      {contractor.visible ? (
+                      {consultant.visible ? (
                         <FiEye style={styles.visibleIcon} />
                       ) : (
                         <FiEyeOff style={styles.hiddenIcon} />
@@ -504,7 +506,7 @@ const Contractors = () => {
                   <td style={styles.tableCell}>
                     <div style={styles.actionButtons}>
                       <motion.button
-                        onClick={() => openEditContractorModal(contractor)}
+                        onClick={() => openEditConsultantModal(consultant)}
                         style={styles.editButton}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -512,7 +514,7 @@ const Contractors = () => {
                         <FiEdit2 />
                       </motion.button>
                       <motion.button
-                        onClick={() => showConfirmDialog(contractor._id)}
+                        onClick={() => showConfirmDialog(consultant._id)}
                         style={styles.deleteButton}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -528,7 +530,7 @@ const Contractors = () => {
         </div>
       )}
 
-      {/* contractor Modal */}
+      {/* Consultant Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -545,7 +547,7 @@ const Contractors = () => {
             >
               <div style={styles.modalHeader}>
                 <h2 style={styles.modalTitle}>
-                  {currentContractor ? 'Edit contractor' : 'Add New Contractor'}
+                  {currentConsultant ? 'Edit Consultant' : 'Add New Consultant'}
                 </h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
@@ -661,22 +663,22 @@ const Contractors = () => {
                 </div>
 
                 <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>Contractor Type</label>
+                  <label style={styles.formLabel}>Consultant Type</label>
                   <select
-                    name="contractorType"
-                    value={formData.contractorType}
+                    name="consultantType"
+                    value={formData.consultantType}
                     onChange={handleChange}
                     style={{
                       ...styles.formSelect,
-                      ...(errors.contractorType && styles.formInputError)
+                      ...(errors.consultantType && styles.formInputError)
                     }}
                   >
-                    <option value="">Select Contractor Type</option>
-                    {contractorTypeOptions.map(type => (
+                    <option value="">Select Consultant Type</option>
+                    {consultantTypeOptions.map(type => (
                       <option key={type} value={type}>{type}</option>
                     ))}
                   </select>
-                  {errors.contractorype && <p style={styles.errorText}>{errors.contractorType}</p>}
+                  {errors.consultantType && <p style={styles.errorText}>{errors.consultantType}</p>}
                 </div>
 
                 <div style={styles.formGroup}>
@@ -869,10 +871,10 @@ const Contractors = () => {
                 >
                   {isLoading ? (
                     <span style={styles.loadingText}>Processing...</span>
-                  ) : currentContractor? (
-                    'Update Contractor'
+                  ) : currentConsultant ? (
+                    'Update Consultant'
                   ) : (
-                    'Add Contractor'
+                    'Add Consultant'
                   )}
                 </motion.button>
               </form>
@@ -957,11 +959,11 @@ const styles = {
     fontSize: '14px',
     color: '#111827'
   },
-  contractorName: {
+  consultantName: {
     fontWeight: 500,
     marginBottom: '4px'
   },
-  contractorEmail: {
+  consultantEmail: {
     fontSize: '13px',
     color: '#6B7280'
   },
@@ -1389,4 +1391,4 @@ const styles = {
   }
 };
 
-export default Contractors;
+export default Consultants;

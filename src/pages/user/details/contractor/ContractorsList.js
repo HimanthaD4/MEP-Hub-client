@@ -18,6 +18,20 @@ const ContractorsList = () => {
   const [expandedFilter, setExpandedFilter] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+  // Google brand colors
+  const colors = {
+    blue: '#4285F4',
+    red: '#EA4335',
+    yellow: '#FBBC05',
+    green: '#34A853',
+    darkText: '#202124',
+    lightText: '#5F6368',
+    background: '#F8F9FA',
+    cardBg: '#FFFFFF',
+    border: '#DADCE0',
+    black:'#000000'
+  };
+
   useEffect(() => {
     const fetchContractors = async () => {
       try {
@@ -112,9 +126,9 @@ const ContractorsList = () => {
     };
     
     switch(type) {
-      case 'MEP': return { ...baseStyle, backgroundColor: '#e0f2fe', color: '#0369a1' };
-      case 'Project Management': return { ...baseStyle, backgroundColor: '#dcfce7', color: '#166534' };
-      case 'Cost': return { ...baseStyle, backgroundColor: '#fef3c7', color: '#92400e' };
+      case 'MEP': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
+      case 'Project Management': return { ...baseStyle, backgroundColor: '#FEE8E8', color: colors.red };
+      case 'Cost': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' };
       default: return baseStyle;
     }
   };
@@ -126,8 +140,8 @@ const ContractorsList = () => {
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
       
       <div className="contractors-header">
-        <h1>Consultant Firms Directory</h1>
-        <p>Browse our directory of professional MEP, Project Management, and Cost contractoring firms in Sri Lanka.</p>
+        <h1>Contractor Firms Directory</h1>
+        <p>Browse our directory of professional MEP, Project Management, and Cost contracting firms in Sri Lanka.</p>
         
         <div className="search-controls">
           <div className="search-bar">
@@ -160,7 +174,7 @@ const ContractorsList = () => {
                 className="filter-header"
                 onClick={() => setExpandedFilter(expandedFilter === 'type' ? null : 'type')}
               >
-                <h3>Consultant Type</h3>
+                <h3>Contractor Type</h3>
                 {expandedFilter === 'type' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
@@ -374,8 +388,8 @@ const ContractorsList = () => {
           max-width: 1400px;
           margin: 25px auto;
           padding: 40px 20px;
-          color: #111827;
-
+          color: ${colors.darkText};
+          background-color: ${colors.background};
         }
         
         .contractors-header {
@@ -385,13 +399,13 @@ const ContractorsList = () => {
         .contractors-header h1 {
           font-size: 32px;
           font-weight: 700;
-          color: #111827;
+          color: ${colors.black};
           margin-bottom: 16px;
         }
         
         .contractors-header p {
           font-size: 16px;
-          color: #4b5563;
+          color: ${colors.red};
           margin-bottom: 24px;
         }
         
@@ -411,14 +425,14 @@ const ContractorsList = () => {
           width: 100%;
           padding: 12px 16px 12px 40px;
           border-radius: 8px;
-          border: 1px solid #e2e8f0;
+          border: 1px solid ${colors.border};
           font-size: 16px;
           outline: none;
           transition: border 0.3s ease;
         }
         
         .search-bar input:focus {
-          border-color: #1a56db;
+          border-color: ${colors.blue};
         }
         
         .search-icon {
@@ -426,7 +440,7 @@ const ContractorsList = () => {
           left: 16px;
           top: 50%;
           transform: translateY(-50%);
-          color: #64748b;
+          color: ${colors.lightText};
         }
         
         .filter-toggle {
@@ -435,21 +449,22 @@ const ContractorsList = () => {
           gap: 8px;
           padding: 12px 20px;
           border-radius: 8px;
-          background-color: white;
-          border: 1px solid #e2e8f0;
-          color: #374151;
+          background-color: ${colors.cardBg};
+          border: 1px solid ${colors.border};
+          color: ${colors.darkText};
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s ease;
         }
         
         .filter-toggle:hover {
-          border-color: #d1d5db;
+          border-color: ${colors.blue};
         }
         
         .filter-toggle.active {
-          background-color: #f3f4f6;
-          border-color: #d1d5db;
+          background-color: ${colors.blue};
+          color: white;
+          border-color: ${colors.blue};
         }
         
         .filter-count {
@@ -459,23 +474,24 @@ const ContractorsList = () => {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background-color: #1a56db;
+          background-color: ${colors.red};
           color: white;
           font-size: 12px;
           margin-left: 4px;
         }
         
         .filters-panel {
-          background-color: white;
+          background-color: ${colors.cardBg};
           border-radius: 12px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.08);
           padding: 20px;
           margin-bottom: 24px;
+          border: 1px solid ${colors.border};
         }
         
         .filter-section {
           margin-bottom: 16px;
-          border-bottom: 1px solid #f1f5f9;
+          border-bottom: 1px solid ${colors.border};
         }
         
         .filter-header {
@@ -489,7 +505,7 @@ const ContractorsList = () => {
         .filter-header h3 {
           font-size: 16px;
           font-weight: 600;
-          color: #111827;
+          color: ${colors.darkText};
           margin: 0;
         }
         
@@ -506,7 +522,7 @@ const ContractorsList = () => {
         }
         
         .filter-option input {
-          accent-color: #1a56db;
+          accent-color: ${colors.blue};
         }
         
         .specialties-grid {
@@ -518,7 +534,7 @@ const ContractorsList = () => {
         .clear-option {
           background: none;
           border: none;
-          color: #64748b;
+          color: ${colors.lightText};
           font-size: 14px;
           cursor: pointer;
           padding: 8px 0;
@@ -526,7 +542,7 @@ const ContractorsList = () => {
         }
         
         .clear-option:hover {
-          color: #1a56db;
+          color: ${colors.blue};
         }
         
         .filter-actions {
@@ -544,23 +560,24 @@ const ContractorsList = () => {
         }
         
         .apply-filters {
-          background-color: #1a56db;
+          background-color: ${colors.blue};
           color: white;
-          border: 1px solid #1a56db;
+          border: 1px solid ${colors.blue};
         }
         
         .apply-filters:hover {
-          background-color: #1648c7;
+          background-color: #3367d6;
         }
         
         .reset-filters {
           background-color: transparent;
-          color: #64748b;
-          border: 1px solid #e2e8f0;
+          color: ${colors.lightText};
+          border: 1px solid ${colors.border};
         }
         
         .reset-filters:hover {
-          border-color: #d1d5db;
+          border-color: ${colors.blue};
+          color: ${colors.blue};
         }
         
         .active-filters {
@@ -574,10 +591,11 @@ const ContractorsList = () => {
           display: inline-flex;
           align-items: center;
           padding: 6px 12px;
-          background-color: #e0f2fe;
+          background-color: #E8F0FE;
           border-radius: 50px;
           font-size: 14px;
           font-weight: 500;
+          color: ${colors.blue};
         }
         
         .active-filter button {
@@ -588,12 +606,12 @@ const ContractorsList = () => {
           border: none;
           margin-left: 6px;
           cursor: pointer;
-          color: #64748b;
+          color: ${colors.lightText};
         }
         
         .results-count {
           font-size: 14px;
-          color: #6b7280;
+          color: ${colors.lightText};
           margin-bottom: 24px;
           font-style: italic;
         }
@@ -609,11 +627,11 @@ const ContractorsList = () => {
         }
         
         .contractor-card {
-          background-color: white;
+          background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-          border: 1px solid rgba(0,0,0,0.05);
+          border: 1px solid ${colors.border};
           transition: all 0.3s ease;
           display: flex;
           flex-direction: column;
@@ -622,6 +640,7 @@ const ContractorsList = () => {
         .contractor-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+          border-color: ${colors.yellow};
         }
         
         .card-header {
@@ -632,7 +651,7 @@ const ContractorsList = () => {
           font-size: 20px;
           font-weight: 700;
           margin: 8px 0 0;
-          color: #111827;
+          color: ${colors.darkText};
         }
         
         .card-body {
@@ -649,12 +668,12 @@ const ContractorsList = () => {
           align-items: flex-start;
           gap: 8px;
           margin-bottom: 12px;
-          color: #64748b;
+          color: ${colors.lightText};
           font-size: 14px;
         }
         
         .info-item .icon {
-          color: #1a56db;
+          color: ${colors.blue};
           flex-shrink: 0;
           margin-top: 2px;
         }
@@ -669,16 +688,16 @@ const ContractorsList = () => {
         .specialty-badge {
           display: inline-block;
           padding: 4px 12px;
-          background-color: #f1f5f9;
+          background-color: #E8F0FE;
           border-radius: 50px;
           font-size: 12px;
           font-weight: 600;
-          color: #1a56db;
+          color: ${colors.blue};
         }
         
         .card-footer {
           padding: 20px;
-          border-top: 1px solid #f1f5f9;
+          border-top: 1px solid ${colors.border};
         }
         
         .view-button {
@@ -686,7 +705,7 @@ const ContractorsList = () => {
           align-items: center;
           justify-content: center;
           padding: 12px 24px;
-          background-color: #1a56db;
+          background-color: ${colors.blue};
           color: white;
           border-radius: 8px;
           font-size: 14px;
@@ -697,15 +716,15 @@ const ContractorsList = () => {
         }
         
         .view-button:hover {
-          background-color: #1648c7;
+          background-color: #3367d6;
         }
         
         .contractor-card.loading {
-          background-color: white;
+          background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-          border: 1px solid rgba(0,0,0,0.05);
+          border: 1px solid ${colors.border};
         }
         
         .image-placeholder {
@@ -738,10 +757,10 @@ const ContractorsList = () => {
         
         .empty-state {
           padding: 60px 40px;
-          background-color: #f8fafc;
+          background-color: ${colors.cardBg};
           border-radius: 12px;
           text-align: center;
-          border: 1px dashed rgba(0,0,0,0.1);
+          border: 1px dashed ${colors.border};
           grid-column: 1 / -1;
         }
         
@@ -749,19 +768,19 @@ const ContractorsList = () => {
           font-size: 20px;
           font-weight: 600;
           margin-bottom: 16px;
-          color: #1e293b;
+          color: ${colors.darkText};
         }
         
         .empty-state p {
-          color: #6b7280;
+          color: ${colors.lightText};
           margin-bottom: 24px;
         }
         
         .reset-button {
           padding: 12px 24px;
           background-color: transparent;
-          color: #1a56db;
-          border: 1px solid #1a56db;
+          color: ${colors.blue};
+          border: 1px solid ${colors.blue};
           border-radius: 8px;
           font-weight: 500;
           cursor: pointer;
@@ -769,7 +788,7 @@ const ContractorsList = () => {
         }
         
         .reset-button:hover {
-          background-color: rgba(26, 86, 219, 0.1);
+          background-color: rgba(66, 133, 244, 0.1);
         }
         
         @media (max-width: 768px) {

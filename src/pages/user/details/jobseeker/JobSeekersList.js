@@ -1,120 +1,110 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiSearch, FiPhone, FiMail, FiMapPin } from 'react-icons/fi';
+import { 
+  FiFilter, FiX, FiChevronDown, FiChevronUp, 
+  FiSearch, FiPhone, FiMail, FiBriefcase, 
+  FiUser, FiAward, FiClock 
+} from 'react-icons/fi';
 
-const ConsultantsList = () => {
-  const [consultants, setConsultants] = useState([]);
+const JobSeekersList = () => {
+  const [jobSeekers, setJobSeekers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
-    consultantType: '',
-    specialties: [],
-    location: '',
-    sort: 'name-asc'
+    professionalType: '',
+    minExperience: '',
+    maxExperience: '',
+    qualification: '',
+    sort: 'experience-desc'
   });
   const [showFilters, setShowFilters] = useState(false);
   const [expandedFilter, setExpandedFilter] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
-  // Google brand colors
   const colors = {
     blue: '#4285F4',
     red: '#EA4335',
     yellow: '#FBBC05',
-    green: '#34A853', 
+    green: '#34A853',
     darkText: '#202124',
     lightText: '#5F6368',
     background: '#F8F9FA',
     cardBg: '#FFFFFF',
-    border: '#DADCE0'
+    border: '#DADCE0',
+    black: '#000000'
   };
 
   useEffect(() => {
-    const fetchConsultants = async () => {
+    const fetchJobSeekers = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/consultants`);
-        const visibleConsultants = response.data.filter(consultant => consultant.visible);
-        setConsultants(visibleConsultants || []);
+        const response = await axios.get(`${API_BASE_URL}/jobseekers`);
+        const visibleJobSeekers = response.data.filter(seeker => seeker.visible === true);
+        setJobSeekers(visibleJobSeekers || []);
+        setLoading(false);
       } catch (err) {
-        console.error('Failed to fetch consultants:', err);
-        setError('Failed to load consultant firms. Please try again later.');
-      } finally {
+        console.error('Failed to fetch job seekers:', err);
+        setError('Failed to load job seekers. Please try again later.');
         setLoading(false);
       }
     };
-    fetchConsultants();
+    fetchJobSeekers();
   }, []);
 
-  const filteredConsultants = consultants.filter((consultant) => {
+  const filteredJobSeekers = jobSeekers.filter((seeker) => {
     const matchesSearch = 
-      consultant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.companyEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.companyAddress?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consultant?.specialties?.some(specialty => 
-        specialty.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      `${seeker.firstName || ''} ${seeker.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (seeker.email && seeker.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (seeker.currentCompany && seeker.currentCompany.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesType = !filters.consultantType || consultant?.consultantType === filters.consultantType;
-    const matchesSpecialties = filters.specialties.length === 0 || 
-      filters.specialties.every(filterSpecialty => consultant?.specialties?.includes(filterSpecialty));
-    const matchesLocation = !filters.location || 
-      consultant?.companyAddress?.toLowerCase().includes(filters.location.toLowerCase());
+    const matchesType = !filters.professionalType || seeker.professionalType === filters.professionalType;
+    const matchesQualification = !filters.qualification || seeker.highestQualification === filters.qualification;
     
-    return matchesSearch && matchesType && matchesSpecialties && matchesLocation;
+    const minExp = filters.minExperience ? Number(filters.minExperience) : 0;
+    const maxExp = filters.maxExperience ? Number(filters.maxExperience) : 50;
+    const matchesExperience = (seeker.yearsOfExperience || 0) >= minExp && 
+                             (seeker.yearsOfExperience || 0) <= maxExp;
+    
+    return matchesSearch && matchesType && matchesQualification && matchesExperience;
   });
 
-  const sortedConsultants = [...filteredConsultants].sort((a, b) => {
-    if (filters.sort === 'name-asc') return a.name.localeCompare(b.name);
-    if (filters.sort === 'name-desc') return b.name.localeCompare(a.name);
+  const sortedJobSeekers = [...filteredJobSeekers].sort((a, b) => {
+    if (filters.sort === 'name-asc') return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
+    if (filters.sort === 'name-desc') return `${b.firstName} ${b.lastName}`.localeCompare(`${a.firstName} ${a.lastName}`);
+    if (filters.sort === 'experience-asc') return (a.yearsOfExperience || 0) - (b.yearsOfExperience || 0);
+    if (filters.sort === 'experience-desc') return (b.yearsOfExperience || 0) - (a.yearsOfExperience || 0);
     return 0;
   });
 
-  const allSpecialties = [
-    'Air Conditioning systems (Central, Packaged, VRF & Splits)',
-    'Mechanical ventilation systems',
-    'Water supply & drainage systems',
-    'Fire Protection systems',
-    'Fire Detection systems',
-    'Storm water & rain water harvesting systems',
-    'Low Voltage Electrical Systems',
-    'Extra low voltages systems - BMS, Data, CCTV, IPTV, AC',
-    'Lighting systems',
-    'Elevator & escalators',
-    'Boilers & steam systems',
-    'Swimming pools',
-    'LPG distribution',
-    'Solar electricity',
-    'Compressed air systems',
-    'Generators',
-    'Structured cabling & IT network',
-    'Waste water treatment',
-    'Solid waste management',
-    'Facade Engineering',
-    'Cold rooms'
-  ].sort();
+  const allProfessionalTypes = [
+    'Chartered Engineer',
+    'Project Manager',
+    'Engineer',
+    'Assistant Engineer',
+    'Technologist',
+    'Technical Officer',
+    'Supervisor',
+    'Chargehand'
+  ];
 
-  const toggleSpecialty = (specialty) => {
-    setFilters({
-      ...filters,
-      specialties: filters.specialties.includes(specialty)
-        ? filters.specialties.filter(s => s !== specialty)
-        : [...filters.specialties, specialty]
-    });
-  };
+  const allQualifications = [
+    'PhD', 'Master', 'Bachelor', 'Diploma',
+    'Professional Certification', 'Trade Certification'
+  ];
 
   const resetFilters = () => {
     setSearchTerm('');
     setFilters({
-      consultantType: '',
-      specialties: [],
-      location: '',
-      sort: 'name-asc'
+      professionalType: '',
+      minExperience: '',
+      maxExperience: '',
+      qualification: '',
+      sort: 'experience-desc'
     });
   };
 
-  const getTypeBadgeStyle = (type) => {
+  const getProfessionalBadgeStyle = (type) => {
     const baseStyle = {
       display: 'inline-block',
       padding: '4px 12px',
@@ -125,29 +115,44 @@ const ConsultantsList = () => {
     };
     
     switch(type) {
-      case 'MEP': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
-      case 'Project Management': return { ...baseStyle, backgroundColor: '#FEE8E8', color: colors.red };
-      case 'Cost': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' }; // Darker yellow for better contrast
-      default: return baseStyle;
+      case 'Chartered Engineer': return { ...baseStyle, backgroundColor: '#E8F0FE', color: colors.blue };
+      case 'Project Manager': return { ...baseStyle, backgroundColor: '#E6F4EA', color: colors.green };
+      case 'Engineer': return { ...baseStyle, backgroundColor: '#FEF7E0', color: '#F29900' };
+      case 'Assistant Engineer': return { ...baseStyle, backgroundColor: '#FEE8E8', color: colors.red };
+      case 'Technologist': return { ...baseStyle, backgroundColor: '#E8E0FE', color: '#7B61FF' };
+      default: return { ...baseStyle, backgroundColor: '#F1F3F4', color: colors.darkText };
     }
   };
 
+  if (error) {
+    return (
+      <div className="jobseekers-container">
+        <div className="error-message">
+          {error}
+          <button onClick={() => window.location.reload()} className="try-again-button">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="consultants-container">
+    <div className="jobseekers-container">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
       
-      <div className="consultants-header">
-        <h1>Consultant Firms Directory</h1>
-        <p>Browse our directory of professional MEP, Project Management, and Cost consulting firms in Sri Lanka.</p>
+      <div className="jobseekers-header">
+        <h1>Job Seekers Directory</h1>
+        <p>Browse our directory of professional job seekers in the MEP industry</p>
         
         <div className="search-controls">
           <div className="search-bar">
             <FiSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search firms..."
+              placeholder="Search job seekers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -158,9 +163,9 @@ const ConsultantsList = () => {
             onClick={() => setShowFilters(!showFilters)}
           >
             <FiFilter /> Filters
-            {(filters.consultantType || filters.specialties.length > 0 || filters.location) && (
+            {(filters.professionalType || filters.qualification || filters.minExperience || filters.maxExperience) && (
               <span className="filter-count">
-                {[filters.consultantType, ...filters.specialties, filters.location].filter(Boolean).length}
+                {[filters.professionalType, filters.qualification, filters.minExperience, filters.maxExperience].filter(Boolean).length}
               </span>
             )}
           </button>
@@ -173,26 +178,26 @@ const ConsultantsList = () => {
                 className="filter-header"
                 onClick={() => setExpandedFilter(expandedFilter === 'type' ? null : 'type')}
               >
-                <h3>Consultant Type</h3>
+                <h3>Professional Type</h3>
                 {expandedFilter === 'type' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
               {expandedFilter === 'type' && (
                 <div className="filter-options">
-                  {['MEP', 'Project Management', 'Cost'].map(type => (
+                  {allProfessionalTypes.map(type => (
                     <label key={type} className="filter-option">
                       <input
                         type="radio"
-                        name="consultantType"
-                        checked={filters.consultantType === type}
-                        onChange={() => setFilters({...filters, consultantType: type})}
+                        name="professionalType"
+                        checked={filters.professionalType === type}
+                        onChange={() => setFilters({...filters, professionalType: type})}
                       />
                       <span>{type}</span>
                     </label>
                   ))}
                   <button 
                     className="clear-option"
-                    onClick={() => setFilters({...filters, consultantType: ''})}
+                    onClick={() => setFilters({...filters, professionalType: ''})}
                   >
                     Clear
                   </button>
@@ -203,59 +208,127 @@ const ConsultantsList = () => {
             <div className="filter-section">
               <div 
                 className="filter-header"
-                onClick={() => setExpandedFilter(expandedFilter === 'specialties' ? null : 'specialties')}
+                onClick={() => setExpandedFilter(expandedFilter === 'qualification' ? null : 'qualification')}
               >
-                <h3>Specialties ({filters.specialties.length})</h3>
-                {expandedFilter === 'specialties' ? <FiChevronUp /> : <FiChevronDown />}
+                <h3>Highest Qualification</h3>
+                {expandedFilter === 'qualification' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
-              {expandedFilter === 'specialties' && (
-                <div className="filter-options specialties-grid">
-                  {allSpecialties.map(specialty => (
-                    <label key={specialty} className="filter-option">
+              {expandedFilter === 'qualification' && (
+                <div className="filter-options">
+                  {allQualifications.map(qualification => (
+                    <label key={qualification} className="filter-option">
                       <input
-                        type="checkbox"
-                        checked={filters.specialties.includes(specialty)}
-                        onChange={() => toggleSpecialty(specialty)}
+                        type="radio"
+                        name="qualification"
+                        checked={filters.qualification === qualification}
+                        onChange={() => setFilters({...filters, qualification})}
                       />
-                      <span>{specialty}</span>
+                      <span>{qualification}</span>
                     </label>
                   ))}
                   <button 
                     className="clear-option"
-                    onClick={() => setFilters({...filters, specialties: []})}
+                    onClick={() => setFilters({...filters, qualification: ''})}
                   >
-                    Clear All
+                    Clear
                   </button>
                 </div>
               )}
             </div>
-            
+
             <div className="filter-section">
               <div 
                 className="filter-header"
-                onClick={() => setExpandedFilter(expandedFilter === 'location' ? null : 'location')}
+                onClick={() => setExpandedFilter(expandedFilter === 'experience' ? null : 'experience')}
               >
-                <h3>Location</h3>
-                {expandedFilter === 'location' ? <FiChevronUp /> : <FiChevronDown />}
+                <h3>Experience Range (years)</h3>
+                {expandedFilter === 'experience' ? <FiChevronUp /> : <FiChevronDown />}
               </div>
               
-              {expandedFilter === 'location' && (
+              {expandedFilter === 'experience' && (
+                <div className="filter-options experience-range">
+                  <div className="range-inputs">
+                    <div className="range-input">
+                      <label>Min:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="50"
+                        placeholder="0"
+                        value={filters.minExperience}
+                        onChange={(e) => setFilters({...filters, minExperience: e.target.value})}
+                      />
+                    </div>
+                    <div className="range-input">
+                      <label>Max:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="50"
+                        placeholder="50"
+                        value={filters.maxExperience}
+                        onChange={(e) => setFilters({...filters, maxExperience: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  <button 
+                    className="clear-option"
+                    onClick={() => setFilters({...filters, minExperience: '', maxExperience: ''})}
+                  >
+                    Clear Range
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="filter-section">
+              <div 
+                className="filter-header"
+                onClick={() => setExpandedFilter(expandedFilter === 'sort' ? null : 'sort')}
+              >
+                <h3>Sort By</h3>
+                {expandedFilter === 'sort' ? <FiChevronUp /> : <FiChevronDown />}
+              </div>
+              
+              {expandedFilter === 'sort' && (
                 <div className="filter-options">
-                  <input
-                    type="text"
-                    placeholder="Enter location..."
-                    value={filters.location}
-                    onChange={(e) => setFilters({...filters, location: e.target.value})}
-                  />
-                  {filters.location && (
-                    <button 
-                      className="clear-option"
-                      onClick={() => setFilters({...filters, location: ''})}
-                    >
-                      Clear
-                    </button>
-                  )}
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'name-asc'}
+                      onChange={() => setFilters({...filters, sort: 'name-asc'})}
+                    />
+                    <span>Name (A-Z)</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'name-desc'}
+                      onChange={() => setFilters({...filters, sort: 'name-desc'})}
+                    />
+                    <span>Name (Z-A)</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'experience-desc'}
+                      onChange={() => setFilters({...filters, sort: 'experience-desc'})}
+                    />
+                    <span>Most Experienced</span>
+                  </label>
+                  <label className="filter-option">
+                    <input
+                      type="radio"
+                      name="sort"
+                      checked={filters.sort === 'experience-asc'}
+                      onChange={() => setFilters({...filters, sort: 'experience-asc'})}
+                    />
+                    <span>Least Experienced</span>
+                  </label>
                 </div>
               )}
             </div>
@@ -271,30 +344,39 @@ const ConsultantsList = () => {
           </div>
         )}
         
-        {(filters.consultantType || filters.specialties.length > 0 || filters.location) && (
+        {(filters.professionalType || filters.qualification || filters.minExperience || filters.maxExperience) && (
           <div className="active-filters">
-            {filters.consultantType && (
+            {filters.professionalType && (
               <span className="active-filter">
-                {filters.consultantType}
-                <button onClick={() => setFilters({...filters, consultantType: ''})}>
+                {filters.professionalType}
+                <button onClick={() => setFilters({...filters, professionalType: ''})}>
                   <FiX />
                 </button>
               </span>
             )}
             
-            {filters.specialties.map(specialty => (
-              <span key={specialty} className="active-filter">
-                {specialty}
-                <button onClick={() => toggleSpecialty(specialty)}>
+            {filters.qualification && (
+              <span className="active-filter">
+                {filters.qualification}
+                <button onClick={() => setFilters({...filters, qualification: ''})}>
                   <FiX />
                 </button>
               </span>
-            ))}
+            )}
             
-            {filters.location && (
+            {filters.minExperience && (
               <span className="active-filter">
-                {filters.location}
-                <button onClick={() => setFilters({...filters, location: ''})}>
+                Min {filters.minExperience} years
+                <button onClick={() => setFilters({...filters, minExperience: ''})}>
+                  <FiX />
+                </button>
+              </span>
+            )}
+            
+            {filters.maxExperience && (
+              <span className="active-filter">
+                Max {filters.maxExperience} years
+                <button onClick={() => setFilters({...filters, maxExperience: ''})}>
                   <FiX />
                 </button>
               </span>
@@ -304,15 +386,15 @@ const ConsultantsList = () => {
         
         {!loading && (
           <div className="results-count">
-            Showing {sortedConsultants.length} of {consultants.length} firms
+            Showing {sortedJobSeekers.length} of {jobSeekers.length} job seekers
           </div>
         )}
       </div>
 
       {loading ? (
-        <div className="consultants-grid loading">
+        <div className="jobseekers-grid loading">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="consultant-card loading">
+            <div key={i} className="jobseeker-card loading">
               <div className="image-placeholder"></div>
               <div className="content-placeholder">
                 <div className="line"></div>
@@ -322,50 +404,49 @@ const ConsultantsList = () => {
             </div>
           ))}
         </div>
-      ) : sortedConsultants.length > 0 ? (
-        <div className="consultants-grid">
-          {sortedConsultants.map((consultant) => (
-            <div key={consultant._id} className="consultant-card">
+      ) : sortedJobSeekers.length > 0 ? (
+        <div className="jobseekers-grid">
+          {sortedJobSeekers.map((seeker) => (
+            <div key={seeker._id} className="jobseeker-card">
               <div className="card-header">
-                <div className="consultant-type" style={getTypeBadgeStyle(consultant.consultantType)}>
-                  {consultant.consultantType}
+                <div className="professional-type" style={getProfessionalBadgeStyle(seeker.professionalType)}>
+                  {seeker.professionalType}
                 </div>
-                <h3>{consultant.name}</h3>
+                <h3>{seeker.firstName} {seeker.lastName}</h3>
+                <div className="jobseeker-qualification">
+                  <FiAward className="icon" />
+                  <span>{seeker.highestQualification || 'Qualification not specified'}</span>
+                </div>
               </div>
               
               <div className="card-body">
                 <div className="contact-info">
                   <div className="info-item">
                     <FiMail className="icon" />
-                    <span>{consultant.companyEmail}</span>
-                  </div>
-                  <div className="info-item">
-                    <FiMapPin className="icon" />
-                    <span>{consultant.companyAddress}</span>
+                    <span>{seeker.email || 'Email not provided'}</span>
                   </div>
                   <div className="info-item">
                     <FiPhone className="icon" />
-                    <span>{consultant.contactNumber || 'Not provided'}</span>
+                    <span>{seeker.contactNumber || 'Phone not provided'}</span>
                   </div>
-                </div>
-                
-                <div className="specialties">
-                  {consultant.specialties?.slice(0, 3).map((specialty, i) => (
-                    <span key={i} className="specialty-badge">
-                      {specialty}
+                  <div className="info-item">
+                    <FiBriefcase className="icon" />
+                    <span>
+                      {seeker.currentlyEmployed ? 
+                        `Currently at ${seeker.currentCompany || 'unspecified company'}` : 
+                        'Currently seeking opportunities'}
                     </span>
-                  ))}
-                  {consultant.specialties?.length > 3 && (
-                    <span className="specialty-badge">
-                      +{consultant.specialties.length - 3} more
-                    </span>
-                  )}
+                  </div>
+                  <div className="info-item">
+                    <FiClock className="icon" />
+                    <span>{seeker.yearsOfExperience ? `${seeker.yearsOfExperience} years experience` : 'Experience not specified'}</span>
+                  </div>
                 </div>
               </div>
               
               <div className="card-footer">
-                <Link to={`/consultants/${consultant._id}`} className="view-button">
-                  View Firm Details
+                <Link to={`/jobseekers/${seeker._id}`} className="view-button">
+                  View Profile
                 </Link>
               </div>
             </div>
@@ -373,7 +454,7 @@ const ConsultantsList = () => {
         </div>
       ) : (
         <div className="empty-state">
-          <h3>No consultant firms match your search criteria</h3>
+          <h3>No job seekers match your search criteria</h3>
           <p>Try adjusting your filters or search term</p>
           <button className="reset-button" onClick={resetFilters}>
             Reset All Filters
@@ -382,7 +463,7 @@ const ConsultantsList = () => {
       )}
 
       <style jsx>{`
-        .consultants-container {
+        .jobseekers-container {
           font-family: 'Outfit', sans-serif;
           max-width: 1400px;
           margin: 25px auto;
@@ -391,18 +472,42 @@ const ConsultantsList = () => {
           background-color: ${colors.background};
         }
         
-        .consultants-header {
+        .error-message {
+          padding: 40px;
+          text-align: center;
+          color: ${colors.red};
+          font-size: 18px;
+        }
+        
+        .try-again-button {
+          display: block;
+          margin: 20px auto;
+          padding: 12px 24px;
+          background-color: ${colors.cardBg};
+          border: 1px solid ${colors.border};
+          border-radius: 8px;
+          color: ${colors.darkText};
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .try-again-button:hover {
+          border-color: ${colors.blue};
+          color: ${colors.blue};
+        }
+        
+        .jobseekers-header {
           margin-bottom: 40px;
         }
         
-        .consultants-header h1 {
+        .jobseekers-header h1 {
           font-size: 32px;
           font-weight: 700;
-          color: ${colors.darkText};
+          color: ${colors.black};
           margin-bottom: 16px;
         }
         
-        .consultants-header p {
+        .jobseekers-header p {
           font-size: 16px;
           color: ${colors.red};
           margin-bottom: 24px;
@@ -524,10 +629,33 @@ const ConsultantsList = () => {
           accent-color: ${colors.blue};
         }
         
-        .specialties-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 8px;
+        .experience-range {
+          padding: 12px 0;
+        }
+        
+        .range-inputs {
+          display: flex;
+          gap: 16px;
+          margin-bottom: 12px;
+        }
+        
+        .range-input {
+          flex: 1;
+        }
+        
+        .range-input label {
+          display: block;
+          margin-bottom: 4px;
+          font-size: 14px;
+          color: ${colors.lightText};
+        }
+        
+        .range-input input {
+          width: 100%;
+          padding: 8px 12px;
+          border-radius: 8px;
+          border: 1px solid ${colors.border};
+          font-size: 14px;
         }
         
         .clear-option {
@@ -615,17 +743,17 @@ const ConsultantsList = () => {
           font-style: italic;
         }
         
-        .consultants-grid {
+        .jobseekers-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
           gap: 24px;
         }
         
-        .consultants-grid.loading {
+        .jobseekers-grid.loading {
           opacity: 0.6;
         }
         
-        .consultant-card {
+        .jobseeker-card {
           background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
@@ -636,7 +764,7 @@ const ConsultantsList = () => {
           flex-direction: column;
         }
         
-        .consultant-card:hover {
+        .jobseeker-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 15px 30px rgba(0,0,0,0.1);
           border-color: ${colors.yellow};
@@ -651,6 +779,19 @@ const ConsultantsList = () => {
           font-weight: 700;
           margin: 8px 0 0;
           color: ${colors.darkText};
+        }
+        
+        .jobseeker-qualification {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: ${colors.lightText};
+          font-size: 14px;
+          margin: 8px 0 16px;
+        }
+        
+        .jobseeker-qualification .icon {
+          color: ${colors.blue};
         }
         
         .card-body {
@@ -677,23 +818,6 @@ const ConsultantsList = () => {
           margin-top: 2px;
         }
         
-        .specialties {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin: 16px 0;
-        }
-        
-        .specialty-badge {
-          display: inline-block;
-          padding: 4px 12px;
-          background-color: #E8F0FE;
-          border-radius: 50px;
-          font-size: 12px;
-          font-weight: 600;
-          color: ${colors.blue};
-        }
-        
         .card-footer {
           padding: 20px;
           border-top: 1px solid ${colors.border};
@@ -718,7 +842,7 @@ const ConsultantsList = () => {
           background-color: #3367d6;
         }
         
-        .consultant-card.loading {
+        .jobseeker-card.loading {
           background-color: ${colors.cardBg};
           border-radius: 12px;
           overflow: hidden;
@@ -791,11 +915,11 @@ const ConsultantsList = () => {
         }
         
         @media (max-width: 768px) {
-          .consultants-container {
+          .jobseekers-container {
             padding: 20px 16px;
           }
           
-          .consultants-header h1 {
+          .jobseekers-header h1 {
             font-size: 24px;
           }
           
@@ -803,7 +927,7 @@ const ConsultantsList = () => {
             flex-direction: column;
           }
           
-          .consultants-grid {
+          .jobseekers-grid {
             grid-template-columns: 1fr;
           }
           
@@ -811,8 +935,9 @@ const ConsultantsList = () => {
             padding: 16px;
           }
           
-          .specialties-grid {
-            grid-template-columns: 1fr;
+          .range-inputs {
+            flex-direction: column;
+            gap: 8px;
           }
         }
       `}</style>
@@ -820,4 +945,4 @@ const ConsultantsList = () => {
   );
 };
 
-export default ConsultantsList;
+export default JobSeekersList;

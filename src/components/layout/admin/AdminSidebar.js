@@ -12,7 +12,7 @@ const AdminSidebar = ({ isOpen, isMobile, closeSidebar }) => {
     {
       title: 'Management',
       items: [
-        { path: 'dashboard', label: 'Dashboard', icon: <FiHome size={18} /> },
+        // { path: 'dashboard', label: 'Dashboard', icon: <FiHome size={18} /> },
         { path: 'projects', label: 'Projects', icon: <FiFolder size={18} /> },
       ]
     },
@@ -28,7 +28,7 @@ const AdminSidebar = ({ isOpen, isMobile, closeSidebar }) => {
       title: 'Operations',
       items: [
         { path: 'agents', label: 'Suppliers', icon: <FiTruck size={18} /> },
-        { path: 'authorities', label: 'Authorities', icon: <FiAward size={18} /> },
+        // { path: 'authorities', label: 'Authorities', icon: <FiAward size={18} /> },
       ]
     },
     {
@@ -36,14 +36,14 @@ const AdminSidebar = ({ isOpen, isMobile, closeSidebar }) => {
       items: [
         { path: 'institutions', label: 'Institutions', icon: <FiBook size={18} /> },
         { path: 'lecturers', label: 'Lecturers', icon: <FiUser size={18} /> },
-        { path: 'training', label: 'Training', icon: <FiClipboard size={18} /> }
+      
       ]
     },
     {
       title: 'Employment',
       items: [
         { path: 'vacancies', label: 'Vacancies', icon: <FiFileText size={18} /> },
-        { path: 'candidates', label: 'Candidates', icon: <FiUsers size={18} /> },
+        { path: 'jobseekers', label: 'Job Seekers', icon: <FiUsers size={18} /> },
       ]
     }
   ];
