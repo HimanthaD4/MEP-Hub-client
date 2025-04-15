@@ -5,7 +5,6 @@ import MainHeader from './components/layout/user/Header';
 import MainFooter from './components/layout/user/Footer.js';
 import HomePage from './pages/user/Home';
 
-import MemberPanel from './pages/user/Member';
 import AdminLogin from './components/auth/admin/AdminLogin';
 import AdminLayout from './components/layout/admin/AdminLayout';
 
@@ -40,8 +39,12 @@ import JobVacanciesDetail from './pages/user/details/JobVacancies/JobVacancyDeta
 
 import ContactUs from './pages/user/ContactUs';
 import AboutUs from './pages/user/AboutUs.js';
+import Privacy from './pages/user/Privacy.js'
+import Term from './pages/user/Term.js'
+
 
 import './styles/main.css';
+import { Cookie } from 'lucide-react';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
@@ -104,16 +107,13 @@ function App() {
           <Route path="/contact" element={<LayoutWithHeader><ContactUs /></LayoutWithHeader>} />
           <Route path="/about" element={<LayoutWithHeader><AboutUs /></LayoutWithHeader>} />
           <Route path="/privacy" element={<LayoutWithHeader><Privacy /></LayoutWithHeader>} />
-          
-
-          <Route path="/member" element={<LayoutWithHeader><MemberPanel /></LayoutWithHeader>} />
+          <Route path="/terms" element={<LayoutWithHeader><Term /></LayoutWithHeader>} />
 
           <Route path="/projects" element={<LayoutWithHeader><ProjectsList /></LayoutWithHeader>} />
           <Route path="/projects/:id" element={<LayoutWithHeader><ProjectDetail /></LayoutWithHeader>} />
 
           <Route path="/consultants" element={<LayoutWithHeader><ConsultantsList /></LayoutWithHeader>} />
           <Route path="/consultants/:id" element={<LayoutWithHeader><ConsultantDetail /></LayoutWithHeader>} />
-
           
           <Route path="/contractors" element={<LayoutWithHeader><ContractorsList /></LayoutWithHeader>} />
           <Route path="/contractors/:id" element={<LayoutWithHeader><ContractorDetail /></LayoutWithHeader>} />
@@ -121,23 +121,17 @@ function App() {
           <Route path="/agents" element={<LayoutWithHeader><AgentList /></LayoutWithHeader>} />
           <Route path="/agents/:id" element={<LayoutWithHeader><AgentDetail /></LayoutWithHeader>} />
 
-
           <Route path="/lecturers" element={<LayoutWithHeader><LecturerList /></LayoutWithHeader>} />
           <Route path="/lecturers/:id" element={<LayoutWithHeader><LecturerDetail /></LayoutWithHeader>} />
 
-          
           <Route path="/Institutions" element={<LayoutWithHeader><InstitutionsList /></LayoutWithHeader>} />
           <Route path="/Institutions/:id" element={<LayoutWithHeader><InstitutionsDetail/></LayoutWithHeader>} />
-
 
           <Route path="/directors" element={<LayoutWithHeader><DirectorList /></LayoutWithHeader>} />
           <Route path="/directors/:id" element={<LayoutWithHeader><DirectorDetail /></LayoutWithHeader>} />
 
-
           <Route path="/job-vacancies" element={<LayoutWithHeader><JobVacanciesList /></LayoutWithHeader>} />
           <Route path="/job-vacancies/:id" element={<LayoutWithHeader><JobVacanciesDetail /></LayoutWithHeader>} />
-
-
 
           <Route path="/jobseekers" element={<LayoutWithHeader><JobSeekersList /></LayoutWithHeader>} />
           <Route path="/jobseekers/:id" element={<LayoutWithHeader><JobSeekersDetail /></LayoutWithHeader>} />
