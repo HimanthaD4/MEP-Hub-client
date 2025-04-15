@@ -125,7 +125,7 @@ const Header = ({ toggleSidebar }) => {
             }}>
               Home
             </a>
-            <a href="/services" style={{
+            <a href="/about" style={{
               color: '#111827',
               textDecoration: 'none',
               fontWeight: 500,
@@ -135,9 +135,9 @@ const Header = ({ toggleSidebar }) => {
               borderRadius: '8px',
               transition: 'all 0.2s ease'
             }}>
-              Services
+              About Us
             </a>
-            <a href="/blog" style={{
+            <a href="/contact" style={{
               color: '#111827',
               textDecoration: 'none',
               fontWeight: 500,

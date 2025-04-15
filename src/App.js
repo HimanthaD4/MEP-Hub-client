@@ -39,6 +39,7 @@ import JobVacanciesDetail from './pages/user/details/JobVacancies/JobVacancyDeta
 
 
 import ContactUs from './pages/user/ContactUs';
+import AboutUs from './pages/user/AboutUs.js';
 
 import './styles/main.css';
 
@@ -101,8 +102,9 @@ function App() {
 
           <Route path="/" element={<LayoutWithHeader><HomePage /></LayoutWithHeader>} />
           <Route path="/contact" element={<LayoutWithHeader><ContactUs /></LayoutWithHeader>} />
-
-
+          <Route path="/about" element={<LayoutWithHeader><AboutUs /></LayoutWithHeader>} />
+          <Route path="/privacy" element={<LayoutWithHeader><Privacy /></LayoutWithHeader>} />
+          
 
           <Route path="/member" element={<LayoutWithHeader><MemberPanel /></LayoutWithHeader>} />
 
