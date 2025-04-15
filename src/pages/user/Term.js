@@ -23,6 +23,7 @@ const TermsOfService = () => {
         backgroundColor: colors.lightGray,
         padding: '120px 20px 60px',
         fontFamily: "'Outfit', sans-serif",
+        marginTop: '-40px',
       }}
     >
       <link rel="preconnect" href="https://fonts.googleapis.com" />
