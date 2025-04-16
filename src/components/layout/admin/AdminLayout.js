@@ -4,7 +4,7 @@ import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
 
-import Dashboard from '../../../pages/admin/Dashboard';
+// import Dashboard from '../../../pages/admin/Dashboard';
 import Projects from '../../../pages/admin/Projects';
 import Consultants from '../../../pages/admin/Consultants';
 import Contractors from '../../../pages/admin/Contractors';
@@ -14,6 +14,7 @@ import Lecturers from '../../../pages/admin/Lecturers'
 import JobSeekers from '../../../pages/admin/JobSeekers';
 import Vacancies from '../../../pages/admin/JobVacancies';
 import Institutions from '../../../pages/admin/Institutions';
+import Contact from '../../../pages/admin/Contact';
 
 const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => {
   const { user, loading, isAuthenticated } = useAuth();
@@ -82,8 +83,8 @@ const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => 
           overflowX: 'hidden'
         }}>
           <Routes>
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route index element={<Projects />} />
+            <Route path="dashboard" element={<Projects />} />
             <Route path="projects" element={<Projects />} />
             <Route path="consultants" element={<Consultants />} />
             <Route path="contractors" element={<Contractors />} />
@@ -93,6 +94,7 @@ const AdminLayout = ({ sidebarOpen, isMobile, toggleSidebar, closeSidebar }) => 
             <Route path="jobseekers" element={<JobSeekers />}/>
             <Route path="vacancies" element={<Vacancies />}/>
             <Route path="institutions" element={<Institutions />}/>
+            <Route path="contact" element={<Contact />} />
             <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Routes>
         </main>

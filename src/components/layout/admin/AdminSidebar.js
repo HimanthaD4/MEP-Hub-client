@@ -45,6 +45,12 @@ const AdminSidebar = ({ isOpen, isMobile, closeSidebar }) => {
         { path: 'vacancies', label: 'Vacancies', icon: <FiFileText size={18} /> },
         { path: 'jobseekers', label: 'Job Seekers', icon: <FiUsers size={18} /> },
       ]
+    },
+    {
+      title: 'Other',
+      items: [
+        { path: 'contact', label: 'Contact', icon: <FiClipboard size={18} /> },
+      ]
     }
   ];
 
@@ -96,9 +102,9 @@ const AdminSidebar = ({ isOpen, isMobile, closeSidebar }) => {
                 ))}
               </nav>
 
-              <div className="sidebar-settings">
+              {/* <div className="sidebar-settings">
                 <NavButton item={{ path: 'settings', label: 'Settings', icon: <FiSettings size={18} /> }} />
-              </div>
+              </div> */}
             </div>
 
             <style jsx>{`
