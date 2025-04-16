@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 import HeroSection from '../../components/home/HeroSection';
 import CategoriesSection from '../../components/home/CategoriesSection';
 import ProjectsSection from '../../components/home/ProjectsSection';
@@ -16,10 +17,10 @@ const HomePage = () => {
   const [institutions, setInstitutions] = useState([]);
   const [jobseekers, setJobseekers] = useState([]);
   const [jobVacancies, setJobVacancies] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +66,15 @@ const HomePage = () => {
     fetchData();
   }, [API_BASE_URL]);
 
+  useEffect(() => {
+    if (location.hash === '#categories-section') {
+      const element = document.getElementById('categories-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location]);
+
   const styles = {
     container: {
       fontFamily: "'Outfit', sans-serif",
@@ -101,7 +111,7 @@ const HomePage = () => {
         setSearchTerm={setSearchTerm}
       />
 
-<CategoriesSection 
+      <CategoriesSection 
         projects={projects}
         consultantFirms={consultantFirms}
         contractorFirms={contractorFirms}
@@ -112,8 +122,6 @@ const HomePage = () => {
         jobVacancies={jobVacancies}
         jobseekers={jobseekers}
       />
-      
-    
     </div>
   );
 };

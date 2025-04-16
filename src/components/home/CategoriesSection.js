@@ -142,7 +142,7 @@ const CategoriesSection = ({
   };
 
   return (
-    <div style={styles.contentSection}>
+    <div id="categories-section" style={styles.contentSection}>
       <h2 style={styles.sectionTitle}>
         Explore Our Network
         <div style={styles.sectionTitleAfter}></div>
