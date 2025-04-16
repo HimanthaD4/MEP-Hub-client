@@ -148,9 +148,9 @@ const AdminHeader = ({ toggleSidebar }) => {
               transform: 'translateY(-50%)',
               color: '#5f6368'
             }}>
-              <FiSearch size={18} />
+              {/* <FiSearch size={18} /> */}
             </div>
-            <input
+            {/* <input
               type="text"
               placeholder="Search across admin panel..."
               value={searchQuery}
@@ -170,7 +170,7 @@ const AdminHeader = ({ toggleSidebar }) => {
                   boxShadow: `0 0 0 2px ${colors.blue}20`
                 }
               }}
-            />
+            /> */}
           </form>
         </div>
 
