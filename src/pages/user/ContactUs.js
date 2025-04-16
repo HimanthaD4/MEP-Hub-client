@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { FiUser , FiMail, FiPhone, FiMessageSquare } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiMessageSquare } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 
 const ContactUs = () => {
@@ -83,12 +83,15 @@ const ContactUs = () => {
         }
       );
 
-      toast.success('Message sent successfully!', {
-        position: 'top-center',
+      toast.success('We received your message! We will get back to you soon.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
         style: {
-          backgroundColor: colors.blue,
-          color: colors.white,
-          borderRadius: '8px',
           fontFamily: "'Outfit', sans-serif",
         },
       });
@@ -175,7 +178,7 @@ const ContactUs = () => {
               color: colors.darkGray,
               marginBottom: '8px',
             }}>
-              <FiUser  style={{ marginRight: '8px', color: colors.blue }} />
+              <FiUser style={{ marginRight: '8px', color: colors.blue }} />
               Name
             </label>
             <input
@@ -291,7 +294,7 @@ const ContactUs = () => {
               borderLeft: `4px solid ${colors.red}`,
               display: 'flex',
               alignItems: 'center',
-              fontFamily: "'Out fit', sans-serif",
+              fontFamily: "'Outfit', sans-serif",
             }}>
               <div style={{ color: colors.red, marginRight: '8px' }}>!</div>
               <p style={{ fontSize: '14px', color: colors.red }}>{errors.contact}</p>
