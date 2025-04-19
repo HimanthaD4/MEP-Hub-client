@@ -33,7 +33,6 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms }) => {
       backgroundSize: 'cover',
       backgroundPosition: 'right center'
     },
-
     expertImagetwo: {
       width: '100%',
       height: 'auto',
@@ -168,7 +167,6 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms }) => {
         transform: 'scale(1.08) rotate(-3deg)'
       }
     },
-    
     expertImage: {
       width: '100%',
       height: 'auto',
@@ -177,8 +175,7 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms }) => {
       objectPosition: 'bottom',
       filter: 'drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.2))',
       transform: 'translateZ(0)'
-    },
-    
+    }
   };
 
   const mobileStyles = {
@@ -241,12 +238,12 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms }) => {
       maxWidth: '100%'
     },
     ctaButton: {
-      padding: '16px 40px',
+      padding: '20px 48px',
       backgroundColor: '#1a73e8',
       color: 'white',
       border: 'none',
       borderRadius: '12px',
-      fontSize: '9px',
+      fontSize: '18px',
       fontWeight: 600,
       cursor: 'pointer',
       transition: 'all 0.3s ease',
@@ -260,16 +257,16 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms }) => {
     statsContainer: {
       display: 'flex',
       flexWrap: 'wrap',
-      gap: '10px',
+      gap: '8px',
       justifyContent: 'center'
     },
     statItem: {
       display: 'flex',
       alignItems: 'center',
-      padding: '12px 20px',
+      padding: '10px 16px',
       backgroundColor: 'rgba(255,255,255,0.9)',
       borderRadius: '10px',
-      fontSize: '34px',
+      fontSize: '14px',
       fontWeight: 600,
       color: '#4b5563',
       boxShadow: '0 4px 10px rgba(0,0,0,0.08)',
@@ -278,7 +275,7 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms }) => {
     statHighlight: {
       fontWeight: 800,
       marginRight: '6px',
-      fontSize: '28px'
+      fontSize: '16px'
     }
   };
 
