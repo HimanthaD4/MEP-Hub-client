@@ -140,7 +140,7 @@ const ContractorsList = () => {
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
       
       <div className="contractors-header">
-        <h1>Contractor Firms Directory</h1>
+        <h1>Contracting Firms Directory</h1>
         <p>Browse our directory of professional MEP, Project Management, and Cost contracting firms in Sri Lanka.</p>
         
         <div className="search-controls">

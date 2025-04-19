@@ -6,6 +6,7 @@ import { FiMenu } from 'react-icons/fi';
 import { RiLogoutCircleRLine } from 'react-icons/ri';
 import { FaUserCircle } from 'react-icons/fa';
 import { MdAdminPanelSettings } from 'react-icons/md';
+import logo from '../../../images/logo.png'; 
 
 const Header = ({ toggleSidebar }) => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -19,7 +20,7 @@ const Header = ({ toggleSidebar }) => {
     blue: '#4285F4',
     red: '#EA4335',
     yellow: '#FBBC05',
-    green: '#34A853' // Adding green for completeness
+    green: '#34A853'
   };
 
   useEffect(() => {
@@ -87,8 +88,19 @@ const Header = ({ toggleSidebar }) => {
             display: 'flex', 
             alignItems: 'center', 
             textDecoration: 'none',
-            gap: '6px'
+            gap: '8px'
           }}>
+            {/* Logo Image */}
+            <img 
+              src={logo} 
+              alt="MEPhub Logo"
+              style={{
+                height: '32px',
+                width: 'auto',
+                objectFit: 'contain'
+              }} 
+            />
+            {/* Text Logo */}
             <span style={{
               fontSize: '22px',
               fontWeight: 700,
@@ -203,8 +215,6 @@ const Header = ({ toggleSidebar }) => {
             </>
           ) : (
             <>
-            
-
               {user?.userType === 'admin' && (
                 <a 
                   href="/admin" 

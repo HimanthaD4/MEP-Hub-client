@@ -139,7 +139,7 @@ const ConsultantsList = () => {
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
       
       <div className="consultants-header">
-        <h1>Consultant Firms Directory</h1>
+        <h1>Consultanting Firms Directory</h1>
         <p>Browse our directory of professional MEP, Project Management, and Cost consulting firms in Sri Lanka.</p>
         
         <div className="search-controls">
