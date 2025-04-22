@@ -10,9 +10,9 @@
 
 <header>
     <h1>MEPHub.lk - Professional Network for Sri Lanka's MEP Industry</h1>
-    <div>
+<!--     <div>
         <img src="https://github.com/HimanthaD4/MEP-Hub-client/blob/main/src/images/logo.png" alt="MEPHub Logo" class="logo">
-    </div>
+    </div> -->
     <p>
         A MERN stack professional networking platform connecting Mechanical, Electrical, and Plumbing (MEP) professionals,
         consultants, contractors, and suppliers across Sri Lanka's construction industry.
