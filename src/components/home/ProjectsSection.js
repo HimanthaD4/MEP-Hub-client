@@ -4,9 +4,9 @@ import { format } from 'date-fns';
 
 // Import different category images
 import residentialImg from '../../images/residentialImg.jpg';
-import commercialImg from '../../images/commercialImg.jpg';
+import commercialImg from '../../images/commercialImg.webp';
 import industrialImg from '../../images/industrialImg.jpg';
-import mixDevImg from '../../images/mix.jpg';
+import mixDevImg from '../../images/mix.webp';
 import officeImg from '../../images/officeImg.jpeg';
 
 const ProjectsSection = ({ projects = [], searchTerm = '', loading, setSearchTerm }) => {
