@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEPHub.lk - Professional Network for Sri Lanka's MEP Industry</title>
+   
     
 </head>
 <body>
@@ -34,12 +34,9 @@
     <ul>
         <li><strong>Professional Directory:</strong> Comprehensive database of MEP professionals, consultants, and contractors with advanced search and filtering</li>
         <li><strong>Project Showcase:</strong> Platform for professionals to showcase completed and ongoing projects with technical specifications</li>
-        <li><strong>Tender Notifications:</strong> Customizable alerts for new projects and tenders in the MEP sector</li>
         <li><strong>Business Networking:</strong> Secure messaging and connection system between industry professionals</li>
-        <li><strong>Resource Library:</strong> Technical documents, standards, and best practices for the MEP industry</li>
         <li><strong>Job Portal:</strong> Dedicated section for MEP-related job postings and career opportunities</li>
         <li><strong>Supplier Marketplace:</strong> Directory of MEP equipment suppliers and material providers</li>
-        <li><strong>Analytics Dashboard:</strong> Industry trends and market insights for professionals</li>
     </ul>
 </div>
 
@@ -55,59 +52,20 @@
     <div class="tech-item">Express.js</div>
     <div class="tech-item">React.js</div>
     <div class="tech-item">Node.js</div>
-    <div class="tech-item">Redux Toolkit</div>
     <div class="tech-item">JWT Authentication</div>
-    <div class="tech-item">AWS S3</div>
-    <div class="tech-item">Redis</div>
-    <div class="tech-item">Socket.io</div>
-    <div class="tech-item">Tailwind CSS</div>
-    <div class="tech-item">Chart.js</div>
     <div class="tech-item">Vercel (Frontend)</div>
     <div class="tech-item">Render (Backend)</div>
 </div>
 
 <h3>Key Technical Features</h3>
 <ul>
-    <li><strong>Real-time Notifications:</strong> Implemented with Socket.io for instant updates on connections and messages</li>
     <li><strong>Advanced Search:</strong> Elasticsearch integration for fast, relevant professional and project searches</li>
-    <li><strong>Document Management:</strong> Secure upload and sharing of technical documents with AWS S3 storage</li>
     <li><strong>Responsive Design:</strong> Mobile-first approach with Tailwind CSS for seamless cross-device experience</li>
     <li><strong>Performance Optimization:</strong> Code splitting, lazy loading, and Redis caching for fast load times</li>
     <li><strong>Security:</strong> JWT authentication, rate limiting, and input sanitization</li>
 </ul>
 
-<h2>Professional Screenshots</h2>
-<div class="screenshot-grid">
-    <div>
-        <h3>Professional Dashboard</h3>
-        <img src="https://mephub.lk/static/screenshots/dashboard.jpg" alt="Professional Dashboard">
-        <p>Customizable dashboard showing relevant projects, connections, and industry updates</p>
-    </div>
-    <div>
-        <h3>Project Showcase</h3>
-        <img src="https://mephub.lk/static/screenshots/project-showcase.jpg" alt="Project Showcase">
-        <p>Detailed project pages with technical specifications and team information</p>
-    </div>
-    <div>
-        <h3>Professional Directory</h3>
-        <img src="https://mephub.lk/static/screenshots/directory.jpg" alt="Professional Directory">
-        <p>Searchable directory of MEP professionals with filtering by specialty and experience</p>
-    </div>
-    <div>
-        <h3>Messaging System</h3>
-        <img src="https://mephub.lk/static/screenshots/messaging.jpg" alt="Messaging System">
-        <p>Secure professional messaging with file sharing capabilities</p>
-    </div>
-    <div>
-        <h3>Admin Panel</h3>
-        <img src="https://mephub.lk/static/screenshots/admin.jpg" alt="Admin Panel">
-        <p>Comprehensive admin interface for content and user management</p>
-    </div>
-    <div>
-        <h3>Mobile Responsive</h3>
-        <img src="https://mephub.lk/static/screenshots/mobile.jpg" alt="Mobile View">
-        <p>Fully responsive design for professionals on-the-go</p>
-    </div>
+
 </div>
 
 <h2>Installation & Deployment</h2>
