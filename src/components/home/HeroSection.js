@@ -107,7 +107,7 @@ const HeroSection = ({ projects, consultantFirms, contractorFirms }) => {
             }}
           >
             Your Trusted<br />
-            <span style={{ color: '#ea4335' }}>Entire Building Service Solutions</span><br />
+            <span style={{ color: '#ea4335' }}>Entire Building Service Solution</span><br />
             Partner
           </motion.h1>
           
