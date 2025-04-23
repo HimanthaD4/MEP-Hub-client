@@ -454,7 +454,7 @@ const Projects = () => {
       <div style={styles.header}>
         <h1 style={styles.title}>Projects Management</h1>
         <div style={styles.actions}>
-          <div style={styles.searchContainer}>
+          {/* <div style={styles.searchContainer}>
             <FiSearch style={styles.searchIcon} />
             <input
               type="text"
@@ -471,7 +471,7 @@ const Projects = () => {
             >
               <FiFilter style={styles.filterIcon} />
             </motion.button>
-          </div>
+          </div> */}
           <motion.button
             onClick={openNewProjectModal}
             style={styles.addButton}
