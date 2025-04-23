@@ -62,7 +62,7 @@ const Contractors = () => {
     'Cold rooms'
   ];
 
-  const contractorsTypeOptions = [
+  const contractorTypeOptions = [
     'MEP',
     'Project Management',
     'Cost'
