@@ -63,9 +63,9 @@ const Contractors = () => {
   ];
 
   const contractorTypeOptions = [
-    'MEP',
-    'Project Management',
-    'Cost'
+    'Installation',
+    'Service & maintenance',
+    'Labour'
   ];
 
   useEffect(() => {
