@@ -263,7 +263,7 @@ const LoginModal = ({ show, onClose, onSwitch }) => {
                   fontFamily: "'Jost', sans-serif"
                 }}>Remember me</span>
               </label>
-              <a href="/forgot-password" style={{
+           {/*   <a href="/forgot-password" style={{
                 fontSize: '14px',
                 color: '#3b82f6',
                 textDecoration: 'none',
@@ -275,7 +275,7 @@ const LoginModal = ({ show, onClose, onSwitch }) => {
                 }
               }}>
                 Forgot password?
-              </a>
+              </a>*/}
             </div>
             
             <button 
