@@ -3,105 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEPHub.lk - Professional Network for Sri Lanka's MEP Industry</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 20px 0;
-            border-bottom: 1px solid #e1e1e1;
-        }
-        h1 {
-            color: #1a365d;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        h2 {
-            color: #2c5282;
-            margin-top: 40px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-        h3 {
-            color: #4a5568;
-            margin-top: 30px;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 15px 0;
-            border: 1px solid #e2e8f0;
-        }
-        .logo {
-            width: 200px;
-            margin-bottom: 20px;
-        }
-        .feature-list {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .tech-item {
-            background-color: #edf2f7;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-        pre {
-            background-color: #2d3748;
-            color: #f7fafc;
-            padding: 15px;
-            border-radius: 6px;
-            overflow-x: auto;
-        }
-        code {
-            font-family: 'Courier New', Courier, monospace;
-        }
-        a {
-            color: #3182ce;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .screenshot-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .highlight {
-            background-color: #ebf8ff;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-    </style>
+   
+    
 </head>
 <body>
 
 <header>
     <h1>MEPHub.lk - Professional Network for Sri Lanka's MEP Industry</h1>
-    <div>
-        <img src="https://mephub.lk/static/images/logo.png" alt="MEPHub Logo" class="logo">
-    </div>
+<!--     <div>
+        <img src="https://github.com/HimanthaD4/MEP-Hub-client/blob/main/src/images/logo.png" alt="MEPHub Logo" class="logo">
+    </div> -->
     <p>
         A MERN stack professional networking platform connecting Mechanical, Electrical, and Plumbing (MEP) professionals,
         consultants, contractors, and suppliers across Sri Lanka's construction industry.
@@ -123,12 +34,9 @@
     <ul>
         <li><strong>Professional Directory:</strong> Comprehensive database of MEP professionals, consultants, and contractors with advanced search and filtering</li>
         <li><strong>Project Showcase:</strong> Platform for professionals to showcase completed and ongoing projects with technical specifications</li>
-        <li><strong>Tender Notifications:</strong> Customizable alerts for new projects and tenders in the MEP sector</li>
         <li><strong>Business Networking:</strong> Secure messaging and connection system between industry professionals</li>
-        <li><strong>Resource Library:</strong> Technical documents, standards, and best practices for the MEP industry</li>
         <li><strong>Job Portal:</strong> Dedicated section for MEP-related job postings and career opportunities</li>
         <li><strong>Supplier Marketplace:</strong> Directory of MEP equipment suppliers and material providers</li>
-        <li><strong>Analytics Dashboard:</strong> Industry trends and market insights for professionals</li>
     </ul>
 </div>
 
@@ -144,59 +52,20 @@
     <div class="tech-item">Express.js</div>
     <div class="tech-item">React.js</div>
     <div class="tech-item">Node.js</div>
-    <div class="tech-item">Redux Toolkit</div>
     <div class="tech-item">JWT Authentication</div>
-    <div class="tech-item">AWS S3</div>
-    <div class="tech-item">Redis</div>
-    <div class="tech-item">Socket.io</div>
-    <div class="tech-item">Tailwind CSS</div>
-    <div class="tech-item">Chart.js</div>
     <div class="tech-item">Vercel (Frontend)</div>
     <div class="tech-item">Render (Backend)</div>
 </div>
 
 <h3>Key Technical Features</h3>
 <ul>
-    <li><strong>Real-time Notifications:</strong> Implemented with Socket.io for instant updates on connections and messages</li>
     <li><strong>Advanced Search:</strong> Elasticsearch integration for fast, relevant professional and project searches</li>
-    <li><strong>Document Management:</strong> Secure upload and sharing of technical documents with AWS S3 storage</li>
     <li><strong>Responsive Design:</strong> Mobile-first approach with Tailwind CSS for seamless cross-device experience</li>
     <li><strong>Performance Optimization:</strong> Code splitting, lazy loading, and Redis caching for fast load times</li>
     <li><strong>Security:</strong> JWT authentication, rate limiting, and input sanitization</li>
 </ul>
 
-<h2>Professional Screenshots</h2>
-<div class="screenshot-grid">
-    <div>
-        <h3>Professional Dashboard</h3>
-        <img src="https://mephub.lk/static/screenshots/dashboard.jpg" alt="Professional Dashboard">
-        <p>Customizable dashboard showing relevant projects, connections, and industry updates</p>
-    </div>
-    <div>
-        <h3>Project Showcase</h3>
-        <img src="https://mephub.lk/static/screenshots/project-showcase.jpg" alt="Project Showcase">
-        <p>Detailed project pages with technical specifications and team information</p>
-    </div>
-    <div>
-        <h3>Professional Directory</h3>
-        <img src="https://mephub.lk/static/screenshots/directory.jpg" alt="Professional Directory">
-        <p>Searchable directory of MEP professionals with filtering by specialty and experience</p>
-    </div>
-    <div>
-        <h3>Messaging System</h3>
-        <img src="https://mephub.lk/static/screenshots/messaging.jpg" alt="Messaging System">
-        <p>Secure professional messaging with file sharing capabilities</p>
-    </div>
-    <div>
-        <h3>Admin Panel</h3>
-        <img src="https://mephub.lk/static/screenshots/admin.jpg" alt="Admin Panel">
-        <p>Comprehensive admin interface for content and user management</p>
-    </div>
-    <div>
-        <h3>Mobile Responsive</h3>
-        <img src="https://mephub.lk/static/screenshots/mobile.jpg" alt="Mobile View">
-        <p>Fully responsive design for professionals on-the-go</p>
-    </div>
+
 </div>
 
 <h2>Installation & Deployment</h2>
