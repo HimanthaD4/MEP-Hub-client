@@ -14,7 +14,7 @@ Explore the platform live:
 ➡️ [https://mephub.lk](https://mephub.lk)
 
 Admin Panel:  
-➡️ [https://mephub.lk/admin](https://mephub.lk/admin)
+➡️ [https://mephub.lk/admin](https://mephub.lk/admin/)
 
 ---
 
@@ -78,18 +78,18 @@ MEPHub.lk is a **MERN stack** professional networking platform tailored exclusiv
 
 ---
 
-## ⚙️ Full Installation & Setup Guide
+# ⚙️ Full Installation & Setup Guide
 
-### Prerequisites
+### ✅ Prerequisites
 
 - **Node.js** (v16 or above recommended)  
 - **MongoDB Atlas Cluster**  
 - **Git**  
-- **Redis** *(optional for caching, but recommended)*  
+- **Redis** *(optional for caching but recommended)*  
 
 ---
 
-### Step 1: Clone the Repositories
+### ✅ Step 1: Clone the Repositories
 
 ```bash
 # Clone frontend repository
@@ -97,3 +97,132 @@ git clone https://github.com/HimanthaD4/MEP-Hub-client.git
 
 # Clone backend repository
 git clone https://github.com/HimanthaD4/MEP-Hub-server.git
+```
+
+---
+
+### ✅ Step 2: Install Frontend Dependencies
+
+```bash
+cd MEP-Hub-client
+npm install
+```
+
+---
+
+### ✅ Step 3: Configure Frontend Environment Variables
+
+```bash
+cp .env.example .env
+```
+
+- Open the `.env` file and update the following:
+
+```bash
+REACT_APP_BACKEND_URL=http://localhost:5000
+```
+
+Adjust with your backend API URL or production URL if deploying.
+
+---
+
+### ✅ Step 4: Install Backend Dependencies
+
+```bash
+cd ../MEP-Hub-server
+npm install
+```
+
+---
+
+### ✅ Step 5: Configure Backend Environment Variables
+
+```bash
+cp .env.example .env
+```
+
+- Open `.env` and set the required values:
+
+```bash
+MONGODB_URI=your_mongodb_connection_string
+REDIS_URL=your_redis_connection_string (optional)
+JWT_SECRET=your_secret_key
+```
+
+---
+
+### ✅ Step 6: Run the Project Locally
+
+**Backend Terminal**
+
+```bash
+cd MEP-Hub-server
+npm run dev
+# Backend API will run at: http://localhost:5000
+```
+
+**Frontend Terminal**
+
+```bash
+cd MEP-Hub-client
+npm start
+# Frontend app will run at: http://localhost:3000
+```
+
+---
+
+### ✅ Step 7: Access the Application
+
+- Main site: [http://localhost:3000](http://localhost:3000)  
+- Admin Panel: [http://localhost:3000/admin](http://localhost:3000/admin/)  
+
+
+---
+
+## 🚀 Production Overview
+
+| Component    | Deployment Platform   | Notes                                  |
+|--------------|-----------------------|----------------------------------------|
+| Frontend     | Vercel                | Automatic deployments from GitHub      |
+| Backend API  | Render                | Secure, scalable backend deployment    |
+| Database     | MongoDB Atlas         | Cloud-hosted database with file storage |
+
+
+---
+
+## 📈 Future Roadmap
+
+- BIM tool integrations  
+- AI-powered professional matching  
+- Enhanced collaboration tools  
+- Mobile applications for iOS & Android  
+- Expansion to international markets  
+
+---
+
+## 🤝 Contribution Guidelines
+
+We welcome contributions!
+
+```bash
+# Fork the repository
+# Create a new branch
+git checkout -b feature-name
+
+# Make your changes
+git commit -m "Add new feature"
+
+# Push to your branch
+git push origin feature-name
+
+# Open a Pull Request
+```
+
+---
+
+## 💬 Client Feedback
+
+> "MEPHub.lk has transformed MEP networking in Sri Lanka. A must-have for the industry!"  
+> — **Industry Partner, Leading Construction Firm**
+
+
