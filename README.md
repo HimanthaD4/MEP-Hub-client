@@ -218,11 +218,3 @@ git push origin feature-name
 # Open a Pull Request
 ```
 
----
-
-## 💬 Client Feedback
-
-> "MEPHub.lk has transformed MEP networking in Sri Lanka. A must-have for the industry!"  
-> — **Industry Partner, Leading Construction Firm**
-
-
